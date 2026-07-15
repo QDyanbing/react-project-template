@@ -1,0 +1,10 @@
+{
+  "name": "react-project-template",
+  "version": "0.0.0",
+  "engines": {
+    "node": ">=24"
+  },
+  "volta": {
+    "node": "24.18.0"
+  }
+}

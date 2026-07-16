@@ -11,10 +11,10 @@
 
 ### 1.2 React 基础方案
 
-- [ ] 选择 React 版本。
-- [ ] 选择 JavaScript 或 TypeScript。
-- [ ] 确定 TypeScript 严格程度。
-- [ ] 确定是否启用 React Compiler。
+- [x] 选择 React 版本。
+- [x] 选择 JavaScript 或 TypeScript。
+- [x] 确定 TypeScript 严格程度。
+- [x] 确定是否启用 React Compiler。
 
 ### 1.3 工程构建
 

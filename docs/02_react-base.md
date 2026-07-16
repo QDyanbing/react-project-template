@@ -8,18 +8,18 @@
 | React 19.2 | 稳定版本；包含 Actions、`use`、`useOptimistic`、`useEffectEvent` 等能力；内置 React Compiler 所需的运行时 API | 部分长期未维护的依赖可能尚未适配 React 19 |
 | React Canary | 可以提前使用尚未进入稳定版的能力 | API 和行为可能变化，不适合作为通用模板的默认版本 |
 
-项目使用 React 19 及以上的稳定版本，当前基线为 React 19.2。`react` 和 `react-dom` 保持相同的版本范围，依赖版本使用 `^`，允许安装兼容的 Minor 和 Patch 更新，完整安装版本由锁文件固定。
+项目使用 React 19 及以上的稳定版本，当前基线为 React 19.2。`react` 和 `react-dom` 保持相同的版本范围，依赖版本使用 `^`，每次重新解析依赖时安装范围内最新的兼容版本。
 
 ```json
 {
   "dependencies": {
-    "react": "^19.2.0",
-    "react-dom": "^19.2.0"
+    "react": "^19.2.7",
+    "react-dom": "^19.2.7"
   }
 }
 ```
 
-`^19.2.0` 可以接收 React 19 范围内兼容的 Minor 和 Patch 更新，不会自动升级到新的 Major 版本。React Major 版本单独升级，并完成依赖兼容性和行为变化验证。Canary 不进入模板依赖。
+`^19.2.7` 可以接收 React 19 范围内兼容的 Minor 和 Patch 更新，不会自动升级到新的 Major 版本。React Major 版本单独升级，并完成依赖兼容性和行为变化验证。Canary 不进入模板依赖。
 
 ## TypeScript
 

@@ -15,25 +15,25 @@
 | 方案 | 优点 | 问题 | 结论 |
 | --- | --- | --- | --- |
 | Utoo（`ut`） | 安装快；兼容 npm 命令和 `package-lock.json` v3；可以直接联系作者反馈问题 | 工具较新；生态、CI 案例和项目级版本锁定能力不如 pnpm 成熟 | 首选 |
-| pnpm | 安装快；磁盘复用好；依赖边界严格；生态和 CI 支持成熟；可以从 `package-lock.json` 导入 | Volta 对 pnpm 的支持仍是实验性，通常需要使用 Corepack 管理版本 | 稳定回退方案 |
+| pnpm | 安装快；磁盘复用好；依赖边界严格；生态和 CI 支持成熟 | Volta 对 pnpm 的支持仍是实验性，通常需要使用 Corepack 管理版本 | 稳定回退方案 |
 | npm | Node 自带；兼容范围最广；Volta 支持完整 | 安装性能和磁盘复用一般，相比 Utoo 和 pnpm 缺少明显收益 | 不选 |
 | Yarn | Workspace 和约束能力完整 | 单应用模板收益有限，额外配置较多 | 不选 |
 | Bun | 安装快，并提供运行时和测试工具 | 与 Node + Volta 路线重叠，增加运行环境差异 | 不选 |
 
-我选择 Utoo（`ut`）作为默认包管理器。它的安装性能和 npm 锁文件兼容性符合模板需求；同时，我可以直接联系作者反馈问题，有助于控制新工具的采用风险。
+我选择 Utoo（`ut`）作为默认包管理器。它的安装性能和 npm 兼容性符合模板需求；同时，我可以直接联系作者反馈问题，有助于控制新工具的采用风险。
 
 稳定性风险通过保留 pnpm 回退路径处理。项目不使用只有 Utoo 才支持的依赖声明和脚本写法，确保必要时可以迁移到 pnpm。
 
 ## Utoo 到 pnpm 的回退策略
 
-- 日常开发和 CI 统一使用 `ut`，仓库只提交 `package-lock.json`。
+- 日常开发和 CI 统一使用 `ut`，仓库不提交锁文件。
 - 项目 scripts 保持标准 `package.json` 写法，不在脚本中依赖 `ut` 专属行为。
 - 为保持 pnpm 回退能力，不使用 `.utoo.toml`、Utoo Catalog 等专属配置。
-- 需要回退时，使用 `pnpm import` 从 `package-lock.json` 生成 `pnpm-lock.yaml`。
-- 回退完成后删除 `package-lock.json`，只保留 `pnpm-lock.yaml`，不长期维护两份锁文件。
+- 需要回退时，删除本地 `node_modules` 和 `package-lock.json`，再使用 pnpm 根据 `package.json` 安装依赖。
+- pnpm 生成的 `pnpm-lock.yaml` 同样不提交，由 `.gitignore` 统一忽略。
 - 同步将本地安装、CI 和文档命令切换为 `pnpm`，并重新执行完整验证。
 
-## 版本锁定策略
+## 依赖版本策略
 
 工具链和项目依赖分开处理：
 
@@ -41,20 +41,20 @@
 | --- | --- |
 | Node.js | Volta 固定精确补丁版本；`engines` 只声明最低版本为 Node 24 |
 | Utoo | CI 显式安装经过验证的精确版本；本地开发版本以 CI 基线为准 |
-| 直接依赖 | 正常使用 SemVer 范围，默认允许兼容的 patch/minor 更新 |
-| 完整依赖树 | 由 `package-lock.json` 精确锁定并提交仓库 |
+| 直接依赖 | 根据兼容风险使用 `^` 或 `~` |
+| 完整依赖树 | 不锁定；干净环境安装时重新解析最新兼容版本 |
 | CI 安装 | 使用 `ut install`；CI 环境会关闭 Utoo 自动更新 |
 
-直接依赖保留 SemVer 范围，完整安装结果由锁文件固定。该方式在保证可复现安装的同时，避免为每次兼容更新手动修改依赖声明。
+仓库不提交 `package-lock.json` 或其他包管理器锁文件。包管理器在本地生成的锁文件由 `.gitignore` 忽略；干净环境根据 `package.json` 重新解析依赖，因此同一提交在不同时间可能得到不同的完整依赖树。该策略以自动获得范围内的最新兼容版本为优先，不保证依赖安装结果完全可复现。
 
 ## 依赖升级策略
 
-- 安全修复立即处理。
-- Patch 和 Minor 更新定期集中处理。
-- Major 更新单独处理，并根据迁移文档完成验证。
+- 使用 `^` 的依赖允许兼容的 Minor 和 Patch 更新，使用 `~` 的依赖只允许 Patch 更新。
+- 版本范围内的更新在重新解析依赖时自动获取，不单独维护升级任务。
+- Major 更新需要显式修改依赖范围，并根据迁移文档完成验证。
+- 超出当前版本范围的安全修复需要显式升级依赖。
 - Node.js 只跟随 LTS，不跟随 Current。
-- Utoo 升级后同时验证安装结果和锁文件差异；出现阻断问题时先恢复到上一个已验证版本，再决定修复或回退 pnpm。
-- 依赖未发生变化时不主动刷新锁文件。
+- Utoo 升级后验证依赖安装结果；出现阻断问题时先恢复到上一个已验证版本，再决定修复或回退 pnpm。
 
 ## Node.js 版本管理方式
 
@@ -74,12 +74,11 @@
 | Node.js | Node 24 LTS，Volta 固定精确补丁版本 |
 | 默认包管理器 | Utoo（`ut`） |
 | 稳定回退方案 | pnpm |
-| 锁文件 | `package-lock.json` |
-| 回退后的锁文件 | `pnpm-lock.yaml` |
+| 锁文件 | 不提交；本地生成的锁文件加入 `.gitignore` |
 | CI 安装命令 | `ut install` |
 | Node.js 版本管理 | Volta |
 | `.nvmrc` / `.node-version` | 不配置 |
-| 依赖版本 | SemVer 范围 + 锁文件精确安装 |
+| 依赖版本 | 根据兼容风险使用 `^` 或 `~`，干净环境安装范围内最新版本 |
 
 `package.json` 基础配置：
 
@@ -101,4 +100,3 @@
 - [Volta：pnpm Support](https://docs.volta.sh/advanced/pnpm)
 - [Utoo 文档](https://utoo.land/en/docs/utoo)
 - [Utoo 自动更新](https://utoo.land/en/docs/utoo/auto-update)
-- [pnpm import](https://pnpm.io/cli/import)

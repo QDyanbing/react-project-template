@@ -7,13 +7,25 @@
 - Node.js 版本不低于 24，Volta 固定使用 `24.18.0`。
 - 默认使用 Utoo（`ut`）管理依赖，pnpm 作为回退方案。
 - 依赖优先使用最新稳定版本，版本范围默认使用 `^`；存在明确兼容风险时再使用 `~` 或精确版本。安装时解析范围内的最新版本，不提交锁文件。
+- 使用 Vite 8 构建 React 19 应用，并启用 React Compiler。
 - 使用 TypeScript 7，并启用严格类型检查。
+
+## 开发命令
+
+```bash
+ut install
+ut run dev
+ut run typecheck
+ut run build
+ut run preview
+```
 
 ## 文档
 
 - [项目任务清单](docs/project-plan.md)
 - [基础环境选型](docs/01_basic-environment.md)
 - [React 基础方案选型](docs/02_react-base.md)
+- [工程构建选型](docs/03_engineering-build.md)
 
 ## License
 

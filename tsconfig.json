@@ -13,7 +13,11 @@
     "noUncheckedIndexedAccess": true,
     "exactOptionalPropertyTypes": true,
     "jsx": "react-jsx",
-    "types": ["vite/client"]
+    "types": ["vite/client"],
+    "paths": {
+      "@/*": ["./src/*"],
+      "@config/*": ["./config/*"]
+    }
   },
-  "include": ["src", "vite.config.ts"]
+  "include": ["config", "src", "typing.d.ts", "vite.config.ts"]
 }

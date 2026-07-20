@@ -4,10 +4,10 @@ export function RootLayout() {
   return (
     <>
       <header>
-        <nav aria-label="Main navigation">
-          <Link to="/">Home</Link>
+        <nav aria-label="主导航">
+          <Link to="/">首页</Link>
           {' · '}
-          <Link to="/about">About</Link>
+          <Link to="/about">关于</Link>
         </nav>
       </header>
       <Outlet />

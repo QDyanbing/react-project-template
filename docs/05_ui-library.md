@@ -82,17 +82,22 @@
 
 Ant Design 的组件覆盖、React 19 兼容性、主题能力和维护成熟度能够满足通用 React 项目的基础需求。我长期参与其社区贡献，也能更及时地跟进版本变化和解决兼容问题。
 
+## 图标方案
+
+选择 Ant Design Icons 6。它与 Ant Design 由同一团队维护，视觉规范和组件 API 保持一致，不需要为基础图标再引入另一套设计体系。
+
 ## 选型边界
 
-- 只选择 Ant Design 核心组件库，不默认加入 ProComponents 或 Ant Design X。
+- 默认依赖只包含核心 `antd` 和 `@ant-design/icons`，不加入 ProComponents 或 Ant Design X。
 - 主题定制基于官方 Design Token 能力，不依赖组件内部 DOM 和私有类名。
-- CSS 方案、主题内容、暗色模式和图标方案保持独立选型。
+- CSS 方案、主题内容和暗色模式保持独立选型。
 
 ## 参考
 
 - [Ant Design 介绍](https://ant.design/docs/spec/introduce)
 - [Ant Design 5 到 6 迁移说明](https://ant.design/docs/react/migration-v6)
 - [Ant Design 主题定制](https://ant.design/docs/react/customize-theme)
+- [Ant Design Icons](https://ant.design/components/icon)
 - [Material UI 版本](https://mui.com/material-ui/getting-started/versions/)
 - [Material UI 安装说明](https://mui.com/material-ui/getting-started/installation/)
 - [MUI X 许可说明](https://mui.com/x/introduction/licensing/)

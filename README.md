@@ -27,6 +27,7 @@ ut run preview
 - [React 基础方案选型](docs/02_react-base.md)
 - [工程构建选型](docs/03_engineering-build.md)
 - [路由选型](docs/04_routing.md)
+- [UI 组件库选型](docs/05_ui-library.md)
 
 ## License
 

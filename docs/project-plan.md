@@ -30,8 +30,8 @@
 
 ### 1.5 UI 与样式
 
-- [ ] 确定是否内置 UI 组件库。
-- [ ] 对比 Ant Design、MUI、Arco Design、shadcn/ui 等方案。
+- [x] 确定是否内置 UI 组件库。
+- [x] 对比 Ant Design、MUI、Arco Design、shadcn/ui 等方案。
 - [ ] 选择 CSS Modules、Sass、Tailwind CSS、CSS-in-JS 或其他样式方案。
 - [ ] 确定主题和暗色模式方案。
 - [ ] 确定图标方案。

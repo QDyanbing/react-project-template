@@ -16,7 +16,10 @@
     "node": "24.18.0"
   },
   "dependencies": {
+    "@ant-design/icons": "^6.3.2",
     "@tanstack/react-router": "^1.170.18",
+    "antd": "^6.5.1",
+    "dayjs": "^1.11.21",
     "react": "^19.2.7",
     "react-dom": "^19.2.7"
   },

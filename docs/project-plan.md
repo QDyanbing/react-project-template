@@ -32,11 +32,11 @@
 
 - [x] 确定是否内置 UI 组件库。
 - [x] 对比 Ant Design、MUI、Arco Design、shadcn/ui 等方案。
-- [ ] 选择 CSS Modules、Sass、Tailwind CSS、CSS-in-JS 或其他样式方案。
+- [x] 对比 Less、SCSS、CSS Modules、Tailwind CSS 和 CSS-in-JS，并选择默认样式方案。
 - [ ] 确定主题和暗色模式方案。
 - [x] 确定图标方案。
 - [ ] 确定响应式布局方案。
-- [ ] 确定全局样式、局部样式和设计变量的边界。
+- [x] 确定全局样式、局部样式和设计变量的边界。
 
 ### 1.6 状态管理
 

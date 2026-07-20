@@ -28,6 +28,7 @@ ut run preview
 - [工程构建选型](docs/03_engineering-build.md)
 - [路由选型](docs/04_routing.md)
 - [UI 组件库选型](docs/05_ui-library.md)
+- [样式方案选型](docs/06_styling.md)
 
 ## License
 

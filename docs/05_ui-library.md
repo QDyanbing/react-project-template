@@ -90,7 +90,7 @@ Ant Design 的组件覆盖、React 19 兼容性、主题能力和维护成熟度
 
 - 默认依赖只包含核心 `antd` 和 `@ant-design/icons`，不加入 ProComponents 或 Ant Design X。
 - 主题定制基于官方 Design Token 能力，不依赖组件内部 DOM 和私有类名。
-- CSS 方案、主题内容和暗色模式保持独立选型。
+- 模板保留主题配置入口，不预置具体主题、暗色切换和状态持久化。
 
 ## 参考
 

@@ -11,7 +11,7 @@ dayjs.locale("zh-cn");
 export default function App() {
   return (
     <ConfigProvider locale={zhCN} theme={theme}>
-      <AntdApp>
+      <AntdApp className="app">
         <RouterProvider router={router} />
       </AntdApp>
     </ConfigProvider>

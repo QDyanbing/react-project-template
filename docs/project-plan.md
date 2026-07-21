@@ -41,7 +41,6 @@
 
 - [x] 确定是否内置状态管理库。
 - [x] 对比 Zustand、Redux Toolkit、Jotai、Valtio 等方案。
-- [ ] 确定状态持久化和退出登录清理策略。
 
 ### 1.7 请求与接口
 

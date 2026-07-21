@@ -12,9 +12,4 @@ declare namespace API {
     status: "进行中" | "已完成";
     updatedAt: string;
   }
-
-  interface HomeResult {
-    list: HomeData[];
-    total: number;
-  }
 }

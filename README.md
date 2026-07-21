@@ -30,6 +30,7 @@ ut run preview
 - [UI 组件库选型](docs/05_ui-library.md)
 - [样式方案选型](docs/06_styling.md)
 - [状态管理选型](docs/07_state-management.md)
+- [请求方案选型](docs/08_request.md)
 
 ## License
 

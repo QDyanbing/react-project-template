@@ -2,13 +2,13 @@ import babel from '@rolldown/plugin-babel';
 import react, { reactCompilerPreset } from '@vitejs/plugin-react';
 import { fileURLToPath, URL } from 'node:url';
 import { defineConfig } from 'vite';
-import mockServiceWorker from './plugins/mock';
+import mockServer from './plugins/mock';
 
 export default defineConfig(({ mode }) => ({
   plugins: [
     react(),
     babel({ presets: [reactCompilerPreset()] }),
-    mode === 'mock' && mockServiceWorker(),
+    mode === 'mock' && mockServer(),
   ],
   resolve: {
     alias: {

@@ -5,6 +5,7 @@
   "license": "MIT",
   "scripts": {
     "dev": "vite",
+    "dev:mock": "vite --mode mock",
     "build": "tsc --noEmit && vite build",
     "preview": "vite preview",
     "typecheck": "tsc --noEmit"
@@ -34,6 +35,7 @@
     "@vitejs/plugin-react": "^6.0.3",
     "babel-plugin-react-compiler": "^1.0.0",
     "less": "^4.7.0",
+    "msw": "^2.15.0",
     "typescript": "^7.0.2",
     "vite": "^8.1.5"
   }

@@ -9,12 +9,14 @@
 - 依赖优先使用最新稳定版本，版本范围默认使用 `^`；存在明确兼容风险时再使用 `~` 或精确版本。安装时解析范围内的最新版本，不提交锁文件。
 - 使用 Vite 8 构建 React 19 应用，并启用 React Compiler。
 - 使用 TypeScript 7，并启用严格类型检查。
+- 使用原生 Fetch 作为底层请求能力，由统一请求层处理接口响应和全局错误，可通过 MSW 启动接口 Mock。
 
 ## 开发命令
 
 ```bash
 ut install
 ut run dev
+ut run dev:mock
 ut run typecheck
 ut run build
 ut run preview
@@ -31,6 +33,7 @@ ut run preview
 - [样式方案选型](docs/06_styling.md)
 - [状态管理选型](docs/07_state-management.md)
 - [请求方案选型](docs/08_request.md)
+- [接口 Mock 方案选型](docs/09_api-mock.md)
 
 ## License
 

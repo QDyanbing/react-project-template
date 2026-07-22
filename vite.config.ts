@@ -2,9 +2,14 @@ import babel from '@rolldown/plugin-babel';
 import react, { reactCompilerPreset } from '@vitejs/plugin-react';
 import { fileURLToPath, URL } from 'node:url';
 import { defineConfig } from 'vite';
+import mockServiceWorker from './plugins/mock';
 
-export default defineConfig({
-  plugins: [react(), babel({ presets: [reactCompilerPreset()] })],
+export default defineConfig(({ mode }) => ({
+  plugins: [
+    react(),
+    babel({ presets: [reactCompilerPreset()] }),
+    mode === 'mock' && mockServiceWorker(),
+  ],
   resolve: {
     alias: {
       '@': fileURLToPath(new URL('./src', import.meta.url)),
@@ -14,4 +19,4 @@ export default defineConfig({
   server: {
     port: 8000,
   },
-});
+}));

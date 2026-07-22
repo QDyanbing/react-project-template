@@ -1,4 +1,9 @@
 declare namespace API {
+  interface HomeSetParams {
+    name: string;
+    description?: string;
+  }
+
   interface HomeParams {
     keyword?: string;
     pageNum: number;
@@ -6,10 +11,8 @@ declare namespace API {
   }
 
   interface HomeData {
-    id: number;
+    uuid: string;
     name: string;
-    owner: string;
-    status: "进行中" | "已完成";
-    updatedAt: string;
+    description?: string;
   }
 }

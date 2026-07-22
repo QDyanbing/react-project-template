@@ -1,16 +1,25 @@
-import { Link, Outlet } from '@tanstack/react-router';
+import { Outlet } from "@tanstack/react-router";
+import { Layout } from "antd";
+import { useState } from "react";
+import Header from "./header";
+import Sider from "./sider";
+import styles from "./root.module.less";
 
-export function RootLayout() {
+export default () => {
+  const [collapsed, setCollapsed] = useState(false);
+
   return (
-    <>
-      <header>
-        <nav aria-label="主导航">
-          <Link to="/">首页</Link>
-          {' · '}
-          <Link to="/about">关于</Link>
-        </nav>
-      </header>
-      <Outlet />
-    </>
+    <Layout hasSider className={styles.layout}>
+      <Sider collapsed={collapsed} />
+      <Layout>
+        <Header
+          collapsed={collapsed}
+          onCollapse={() => setCollapsed((value) => !value)}
+        />
+        <Layout.Content>
+          <Outlet />
+        </Layout.Content>
+      </Layout>
+    </Layout>
   );
-}
+};

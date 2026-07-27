@@ -33,7 +33,7 @@ export default create<Store>((set) => {
 
   usePage.subscribe((state) => {
     if (!state.ready) {
-      set({ data: [], loading: false, total: 0 });
+      set({ loading: false, data: [], total: 0 });
     } else {
       getData();
     }

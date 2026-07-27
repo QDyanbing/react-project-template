@@ -1,40 +1,58 @@
-import { ReloadOutlined } from '@ant-design/icons';
-import { Button, Input, Table, Typography } from 'antd';
-import type { TableProps } from 'antd';
-import { useEffect } from 'react';
+import { useNavigate } from "@tanstack/react-router";
+import { Button, Pagination, Popconfirm, Space, Spin, Table } from "antd";
+import { useEffect } from "react";
+import styles from "./index.module.less";
+import SearchBar from "./components/SearchBar";
+import useDelete from "./hooks/useDelete";
+import useData from "./models/useData";
+import usePage from "./models/usePage";
 
-import styles from './index.module.less';
-import useData from './models/useData';
-import usePage from './models/usePage';
+export default () => {
+  const { mount, unmount, params, onPaginationChange } = usePage();
+  const { loading, total, data } = useData();
 
-const columns = [
-  {
-    title: '项目名称',
-    dataIndex: 'name',
-  },
-  {
-    title: '负责人',
-    dataIndex: 'owner',
-  },
-  {
-    title: '状态',
-    dataIndex: 'status',
-  },
-  {
-    title: '更新时间',
-    dataIndex: 'updatedAt',
-  },
-] satisfies NonNullable<TableProps<API.HomeData>['columns']>;
+  const { loading: deleteLoading, onDelete } = useDelete();
 
-export default function HomePage() {
-  const params = usePage((state) => state.params);
-  const mount = usePage((state) => state.mount);
-  const unmount = usePage((state) => state.unmount);
-  const onSearch = usePage((state) => state.onSearch);
-  const onPaginationChange = usePage(
-    (state) => state.onPaginationChange,
-  );
-  const { data, loading, onRefresh, total } = useData();
+  const navigate = useNavigate();
+
+  const columns = [
+    {
+      title: "项目名称",
+      dataIndex: "name",
+    },
+    {
+      title: "项目描述",
+      dataIndex: "description",
+    },
+    {
+      width: 180,
+      title: "操作",
+      dataIndex: "uuid",
+      render: (uuid: string) => (
+        <Space size="medium">
+          <Button
+            type="link"
+            className={styles.btn}
+            onClick={() => navigate({ to: "/home/detail", search: { uuid } })}
+          >
+            详情
+          </Button>
+          <Button
+            type="link"
+            className={styles.btn}
+            onClick={() => navigate({ to: "/home/modify", search: { uuid } })}
+          >
+            编辑
+          </Button>
+          <Popconfirm title="确认删除该项目？" onConfirm={() => onDelete(uuid)}>
+            <Button danger type="link" className={styles.btn}>
+              删除
+            </Button>
+          </Popconfirm>
+        </Space>
+      ),
+    },
+  ];
 
   useEffect(() => {
     mount();
@@ -43,51 +61,30 @@ export default function HomePage() {
   }, [mount, unmount]);
 
   return (
-    <main className={styles.page}>
-      <section className={styles.content}>
-        <header className={styles.header}>
-          <Typography.Title level={2}>项目列表</Typography.Title>
-          <Typography.Paragraph>
-            使用页面模型管理查询条件、分页状态和列表请求。
-          </Typography.Paragraph>
-        </header>
-
-        <div className={styles.toolbar}>
-          <Input.Search
-            allowClear
-            className={styles.search}
-            defaultValue={params.keyword}
-            disabled={loading}
-            enterButton="查询"
-            loading={loading}
-            placeholder="请输入项目名称或负责人"
-            onSearch={onSearch}
-          />
-          <Button
-            icon={<ReloadOutlined />}
-            loading={loading}
-            onClick={onRefresh}
-          >
-            刷新
-          </Button>
-        </div>
-
-        <Table<API.HomeData>
-          columns={columns}
-          dataSource={data}
-          loading={loading}
-          pagination={{
-            current: params.pageNum,
-            disabled: loading,
-            pageSize: params.pageSize,
-            showSizeChanger: true,
-            showTotal: (value) => `共 ${value} 条`,
-            total,
-            onChange: onPaginationChange,
-          }}
-          rowKey="id"
-        />
-      </section>
-    </main>
+    <Spin
+      spinning={loading || deleteLoading}
+      classNames={{ root: styles.home, container: styles.container }}
+    >
+      <SearchBar />
+      <Table
+        sticky
+        rowKey="uuid"
+        pagination={false}
+        columns={columns}
+        dataSource={data}
+        className={styles.body}
+      />
+      <Pagination
+        align="end"
+        showSizeChanger
+        current={params.pageNum}
+        disabled={loading}
+        pageSize={params.pageSize}
+        total={total}
+        className={styles.footer}
+        showTotal={(value) => `共 ${value} 条`}
+        onChange={onPaginationChange}
+      />
+    </Spin>
   );
-}
+};

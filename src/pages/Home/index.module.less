@@ -1,22 +1,28 @@
-.page {
-  padding: 24px;
+.home {
+  height: 100%;
 
-  .content {
-    max-width: 1120px;
-    margin: 0 auto;
-  }
-
-  .header {
-    margin-bottom: 24px;
-  }
-
-  .toolbar {
+  .container {
     display: flex;
-    gap: 16px;
-    margin-bottom: 16px;
-  }
+    flex-direction: column;
+    gap: var(--ant-margin);
+    height: 100%;
+    padding: var(--ant-padding);
+    overflow: hidden;
+    background: var(--ant-color-bg-layout);
 
-  .search {
-    width: 360px;
+    .body {
+      flex: 1;
+      height: 0;
+      overflow-y: auto;
+
+      .btn {
+        height: auto;
+        padding-inline: 0;
+      }
+    }
+
+    .footer {
+      flex: none;
+    }
   }
 }

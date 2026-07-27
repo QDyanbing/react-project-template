@@ -6,13 +6,14 @@
     flex-direction: column;
     gap: var(--ant-margin);
     height: 100%;
-    padding: var(--ant-padding);
+    padding-block: var(--ant-padding);
     overflow: hidden;
     background: var(--ant-color-bg-layout);
 
     .body {
       flex: 1;
       height: 0;
+      padding-inline: var(--ant-padding);
       overflow-y: auto;
 
       .btn {
@@ -23,6 +24,7 @@
 
     .footer {
       flex: none;
+      padding-inline: var(--ant-padding);
     }
   }
 }

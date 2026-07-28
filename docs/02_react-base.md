@@ -32,10 +32,10 @@ React 类型依赖使用 `^`，并与 React 保持相同的 Major 版本。TypeS
 | 方案 | 优点 | 问题 |
 | --- | --- | --- |
 | 不启用 `strict` | 类型约束较少，迁移既有 JavaScript 代码更容易 | 容易遗漏空值、隐式 `any` 和函数参数等类型问题 |
-| 仅启用 `strict` | 覆盖 TypeScript 的主要严格检查，配置简单 | 索引访问和可选属性仍保留较宽松的行为 |
-| `strict` + 额外严格选项 | 进一步约束索引访问和可选属性，尽早暴露潜在问题 | 编写类型和处理边界值时要求更高 |
+| 仅启用 `strict` | 覆盖 TypeScript 的主要严格检查，配置简单 | 索引访问仍保留较宽松的行为 |
+| `strict` + `noUncheckedIndexedAccess` | 进一步约束索引访问，尽早暴露数组或对象索引不存在的问题 | 索引访问需要处理值不存在的情况 |
 
-结论：选择 `strict`，并额外启用 `noUncheckedIndexedAccess` 和 `exactOptionalPropertyTypes`。严格规则从项目创建时启用，可以避免代码增长后再开启产生集中迁移成本。
+结论：选择 `strict`，并额外启用 `noUncheckedIndexedAccess`。这两项配置可以覆盖主要的严格类型检查，并要求索引访问显式处理值不存在的情况。
 
 配置如下：
 
@@ -43,8 +43,7 @@ React 类型依赖使用 `^`，并与 React 保持相同的 Major 版本。TypeS
 {
   "compilerOptions": {
     "strict": true,
-    "noUncheckedIndexedAccess": true,
-    "exactOptionalPropertyTypes": true
+    "noUncheckedIndexedAccess": true
   }
 }
 ```
@@ -53,7 +52,6 @@ React 类型依赖使用 `^`，并与 React 保持相同的 Major 版本。TypeS
 | --- | --- |
 | `strict` | 启用 TypeScript 的严格类型检查集合 |
 | `noUncheckedIndexedAccess` | 数组索引和对象索引访问需要处理值不存在的情况 |
-| `exactOptionalPropertyTypes` | 区分属性缺失与显式传入 `undefined` |
 
 未使用变量、导入顺序和代码风格由代码规范工具处理，不纳入 TypeScript 严格程度的选择。
 
@@ -77,7 +75,7 @@ React Compiler 的接入方式跟随构建工具确定，不在 React 基础方�
 | 开发语言 | TypeScript |
 | TypeScript | TypeScript 7 稳定版本线，使用 `^` 接收 Minor 和 Patch 更新 |
 | React 类型 | `@types/react` 和 `@types/react-dom` 使用 `^`，与 React 保持相同 Major 版本 |
-| TypeScript 严格程度 | `strict` + `noUncheckedIndexedAccess` + `exactOptionalPropertyTypes` |
+| TypeScript 严格程度 | `strict` + `noUncheckedIndexedAccess` |
 | React Compiler | 启用，具体接入方式跟随构建工具 |
 | 实验版本 | 不使用 Canary、Beta、RC 或 Nightly |
 
@@ -89,4 +87,3 @@ React Compiler 的接入方式跟随构建工具确定，不在 React 基础方�
 - [React Compiler 稳定版发布](https://react.dev/blog/2025/10/07/react-compiler-1)
 - [TypeScript TSConfig：strict](https://www.typescriptlang.org/tsconfig/strict.html)
 - [TypeScript TSConfig：noUncheckedIndexedAccess](https://www.typescriptlang.org/tsconfig/noUncheckedIndexedAccess.html)
-- [TypeScript TSConfig：exactOptionalPropertyTypes](https://www.typescriptlang.org/tsconfig/exactOptionalPropertyTypes.html)

@@ -1,5 +1,9 @@
 export const router = [
   {
+    path: '/',
+    redirect: '/home',
+  },
+  {
     component: () => import('@/layouts/root'),
     children: [
       {

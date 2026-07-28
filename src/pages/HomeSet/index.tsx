@@ -1,7 +1,7 @@
-import { useNavigate } from "@tanstack/react-router";
 import { Button, Flex, Form, Input, Spin } from "antd";
 import { useEffect } from "react";
 import useUrlState from "@/hooks/useUrlState";
+import onBack from "@/utils/onBack";
 import styles from "./index.module.less";
 import useCreate from "./hooks/useCreate";
 import useModify from "./hooks/useModify";
@@ -15,7 +15,6 @@ export default () => {
   const { loading: createLoading, onCreate } = useCreate();
   const { loading: modifyLoading, onModify } = useModify();
 
-  const navigate = useNavigate();
   const [{ uuid }] = useUrlState<{ uuid?: string }>();
   const [form] = Form.useForm<API.HomeSetParams>();
 
@@ -82,7 +81,7 @@ export default () => {
         </Form>
       </Flex>
       <Flex gap="medium" justify="flex-end" className={styles.footer}>
-        <Button onClick={() => navigate({ to: "/home" })}>取消</Button>
+        <Button onClick={() => onBack("/home")}>取消</Button>
         <Button type="primary" onClick={() => form.submit()}>
           保存
         </Button>

@@ -1,11 +1,10 @@
-import { useNavigate } from "@tanstack/react-router";
 import { App } from "antd";
 import { useRequest } from "ahooks";
 
 import { setCreate } from "@/services/home";
+import onBack from "@/utils/onBack";
 
 export default () => {
-  const navigate = useNavigate();
   const { message } = App.useApp();
   const { loading, runAsync } = useRequest(setCreate, { manual: true });
 
@@ -14,7 +13,7 @@ export default () => {
     if (!result) return;
 
     message.success("项目创建成功");
-    navigate({ to: "/home" });
+    onBack("/home");
   };
 
   return { loading, onCreate };

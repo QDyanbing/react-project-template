@@ -3,6 +3,7 @@ import { Button, Descriptions, Flex, Spin, Empty } from "antd";
 import type { DescriptionsProps } from "antd";
 import { useEffect } from "react";
 import useUrlState from "@/hooks/useUrlState";
+import onBack from "@/utils/onBack";
 import styles from "./index.module.less";
 import useDetail from "./models/useDetail";
 import usePage from "./models/usePage";
@@ -40,9 +41,9 @@ export default () => {
       <Flex justify="space-between" className={styles.header}>
         <Button
           icon={<ArrowLeftOutlined />}
-          onClick={() => navigate({ to: "/home" })}
+          onClick={() => onBack("/home")}
         >
-          返回列表
+          返回
         </Button>
         <Button
           type="primary"

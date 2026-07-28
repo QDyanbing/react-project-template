@@ -1,12 +1,11 @@
-import { useNavigate } from "@tanstack/react-router";
 import { App } from "antd";
 import { useRequest } from "ahooks";
 
 import { setModify } from "@/services/home";
+import onBack from "@/utils/onBack";
 import usePage from "../models/usePage";
 
 export default () => {
-  const navigate = useNavigate();
   const { message } = App.useApp();
   const { loading, runAsync } = useRequest(setModify, { manual: true });
 
@@ -18,7 +17,7 @@ export default () => {
     if (!result) return;
 
     message.success("项目修改成功");
-    navigate({ to: "/home" });
+    onBack("/home");
   };
 
   return { loading, onModify };

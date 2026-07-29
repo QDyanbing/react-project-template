@@ -12,11 +12,7 @@
     padding: var(--ant-padding-xl) 64px;
     overflow: hidden;
     background:
-      radial-gradient(
-        circle at 78% 18%,
-        #ffffff33,
-        #00000000 25%
-      ),
+      radial-gradient(circle at 78% 18%, #ffffff33, #00000000 25%),
       linear-gradient(
         145deg,
         var(--ant-color-primary-active),
@@ -28,23 +24,16 @@
     &::after {
       position: absolute;
       pointer-events: none;
-      content: "";
+      content: '';
     }
 
     &::before {
       inset: 0;
-      background-image: linear-gradient(
-          #ffffff12 1px,
-          #00000000 1px
-        ),
+      background-image:
+        linear-gradient(#ffffff12 1px, #00000000 1px),
         linear-gradient(90deg, #ffffff12 1px, #00000000 1px);
       background-size: 48px 48px;
-      mask-image: linear-gradient(
-        135deg,
-        #00000000 8%,
-        #000000ff 50%,
-        #00000000 92%
-      );
+      mask-image: linear-gradient(135deg, #00000000 8%, #000000ff 50%, #00000000 92%);
     }
 
     &::after {
@@ -130,7 +119,7 @@
         #00000000 1px
       );
       background-size: 24px 24px;
-      content: "";
+      content: '';
       mask-image: linear-gradient(135deg, #000000ff, #00000000 72%);
       pointer-events: none;
     }

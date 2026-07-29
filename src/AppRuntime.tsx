@@ -1,6 +1,6 @@
-import { App } from "antd";
-import { useEffect } from "react";
-import { setMessageHandler } from "@/utils/message";
+import { App } from 'antd';
+import { useEffect } from 'react';
+import { setMessageHandler } from '@/utils/message';
 
 export default function AppRuntime() {
   const app = App.useApp();

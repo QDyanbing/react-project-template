@@ -18,12 +18,5 @@
       "@config/*": ["./config/*"]
     }
   },
-  "include": [
-    "config",
-    "mock",
-    "plugins",
-    "src",
-    "typing.d.ts",
-    "vite.config.ts"
-  ]
+  "include": ["config", "mock", "plugins", "src", "typing.d.ts", "vite.config.ts"]
 }

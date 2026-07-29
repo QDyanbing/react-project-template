@@ -1,7 +1,7 @@
-import { create } from "zustand";
+import { create } from 'zustand';
 
-import { getDetail } from "@/services/home";
-import usePage from "./usePage";
+import { getDetail } from '@/services/home';
+import usePage from './usePage';
 
 interface Store {
   loading: boolean;

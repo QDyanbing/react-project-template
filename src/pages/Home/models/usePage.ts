@@ -1,5 +1,5 @@
-import { create } from "zustand";
-import DEFAULT_PAGE_SIZE from "@/utils/pageSize";
+import { create } from 'zustand';
+import DEFAULT_PAGE_SIZE from '@/utils/pageSize';
 
 interface Store {
   ready: boolean;

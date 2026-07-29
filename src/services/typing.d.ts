@@ -7,7 +7,7 @@ declare namespace API {
   interface ErrorResult {
     success: false;
     errorCode?: string;
-    errorType?: "ERROR" | "WARNING";
+    errorType?: 'ERROR' | 'WARNING';
     errorMessage?: string;
     data?: unknown;
   }

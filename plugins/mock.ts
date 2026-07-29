@@ -1,9 +1,9 @@
-import { globSync } from "node:fs";
-import type { IncomingMessage } from "node:http";
-import { resolve, sep } from "node:path";
-import type { Plugin, RunnableDevEnvironment, ViteDevServer } from "vite";
+import { globSync } from 'node:fs';
+import type { IncomingMessage } from 'node:http';
+import { resolve, sep } from 'node:path';
+import type { Plugin, RunnableDevEnvironment, ViteDevServer } from 'vite';
 
-export type MockMethod = "DELETE" | "GET" | "PATCH" | "POST" | "PUT";
+export type MockMethod = 'DELETE' | 'GET' | 'PATCH' | 'POST' | 'PUT';
 
 export interface MockContext<TBody = unknown> {
   body: TBody;
@@ -25,8 +25,8 @@ export interface MockRoute {
 }
 
 function matchPath(routePath: string, pathname: string) {
-  const routeSegments = routePath.split("/").filter(Boolean);
-  const pathSegments = pathname.split("/").filter(Boolean);
+  const routeSegments = routePath.split('/').filter(Boolean);
+  const pathSegments = pathname.split('/').filter(Boolean);
   if (routeSegments.length !== pathSegments.length) return;
 
   const params: Record<string, string> = {};
@@ -36,7 +36,7 @@ function matchPath(routePath: string, pathname: string) {
     const pathSegment = pathSegments[index];
     if (!routeSegment || !pathSegment) return;
 
-    if (routeSegment.startsWith(":")) {
+    if (routeSegment.startsWith(':')) {
       params[routeSegment.slice(1)] = decodeURIComponent(pathSegment);
     } else if (routeSegment !== pathSegment) {
       return;
@@ -47,7 +47,7 @@ function matchPath(routePath: string, pathname: string) {
 }
 
 async function getRequestBody(request: IncomingMessage) {
-  if (request.method === "GET" || request.method === "HEAD") return;
+  if (request.method === 'GET' || request.method === 'HEAD') return;
 
   const chunks: Buffer[] = [];
   for await (const chunk of request) {
@@ -56,7 +56,7 @@ async function getRequestBody(request: IncomingMessage) {
   if (chunks.length === 0) return;
 
   const body = Buffer.concat(chunks).toString();
-  if (request.headers["content-type"]?.includes("application/json")) {
+  if (request.headers['content-type']?.includes('application/json')) {
     return JSON.parse(body) as unknown;
   }
 
@@ -64,14 +64,14 @@ async function getRequestBody(request: IncomingMessage) {
 }
 
 async function getRoutes(server: ViteDevServer) {
-  const files = globSync("mock/**/*.ts", { cwd: server.config.root })
-    .filter((file) => !file.endsWith(".d.ts"))
+  const files = globSync('mock/**/*.ts', { cwd: server.config.root })
+    .filter((file) => !file.endsWith('.d.ts'))
     .sort();
   const modules = await Promise.all(
     files.map((file) =>
-      (server.environments.ssr as RunnableDevEnvironment).runner.import<
-        Record<string, unknown>
-      >(`/${file.replaceAll("\\", "/")}`),
+      (server.environments.ssr as RunnableDevEnvironment).runner.import<Record<string, unknown>>(
+        `/${file.replaceAll('\\', '/')}`,
+      ),
     ),
   );
 
@@ -82,33 +82,32 @@ async function getRoutes(server: ViteDevServer) {
 
 export default function mockServer(): Plugin {
   return {
-    name: "mock-server",
-    apply: "serve",
+    name: 'mock-server',
+    apply: 'serve',
     async configureServer(server) {
-      const mockDirectory = `${resolve(server.config.root, "mock")}${sep}`;
+      const mockDirectory = `${resolve(server.config.root, 'mock')}${sep}`;
       let routes = await getRoutes(server);
 
       const reloadRoutes = (file: string) => {
-        if (!file.startsWith(mockDirectory) || !file.endsWith(".ts")) return;
+        if (!file.startsWith(mockDirectory) || !file.endsWith('.ts')) return;
         void getRoutes(server)
           .then((nextRoutes) => {
             routes = nextRoutes;
           })
           .catch((error: unknown) => {
-            const message =
-              error instanceof Error ? error.message : String(error);
+            const message = error instanceof Error ? error.message : String(error);
             server.config.logger.error(`Mock 路由加载失败：${message}`);
           });
       };
 
-      server.watcher.on("add", reloadRoutes);
-      server.watcher.on("change", reloadRoutes);
-      server.watcher.on("unlink", reloadRoutes);
+      server.watcher.on('add', reloadRoutes);
+      server.watcher.on('change', reloadRoutes);
+      server.watcher.on('unlink', reloadRoutes);
 
       server.middlewares.use(async (request, response, next) => {
         try {
-          const url = new URL(request.url ?? "/", "http://localhost");
-          if (!url.pathname.startsWith("/api/")) {
+          const url = new URL(request.url ?? '/', 'http://localhost');
+          if (!url.pathname.startsWith('/api/')) {
             next();
             return;
           }
@@ -150,8 +149,8 @@ export default function mockServer(): Plugin {
             return;
           }
 
-          if (!response.hasHeader("Content-Type")) {
-            response.setHeader("Content-Type", "application/json; charset=utf-8");
+          if (!response.hasHeader('Content-Type')) {
+            response.setHeader('Content-Type', 'application/json; charset=utf-8');
           }
           response.end(JSON.stringify(result.body));
         } catch (error) {
@@ -159,10 +158,10 @@ export default function mockServer(): Plugin {
         }
       });
 
-      server.httpServer?.once("close", () => {
-        server.watcher.off("add", reloadRoutes);
-        server.watcher.off("change", reloadRoutes);
-        server.watcher.off("unlink", reloadRoutes);
+      server.httpServer?.once('close', () => {
+        server.watcher.off('add', reloadRoutes);
+        server.watcher.off('change', reloadRoutes);
+        server.watcher.off('unlink', reloadRoutes);
       });
     },
   };

@@ -1,4 +1,4 @@
-import Request from "@/utils/request";
+import Request from '@/utils/request';
 
 export function setCreate(data: API.HomeSetParams) {
   return Request.post<API.HomeSetParams, boolean>(`/api/home`, data);
@@ -13,10 +13,7 @@ export function setDelete(uuid: string) {
 }
 
 export function getSearch(data: API.HomeParams) {
-  return Request.get<API.HomeParams, API.PageResult<API.HomeData>>(
-    `/api/home`,
-    data
-  );
+  return Request.get<API.HomeParams, API.PageResult<API.HomeData>>(`/api/home`, data);
 }
 
 export function getDetail(uuid: string) {

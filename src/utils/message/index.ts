@@ -1,4 +1,4 @@
-export type MessageType = "warning" | "error";
+export type MessageType = 'warning' | 'error';
 
 type MessageHandler = ((type: MessageType, content: string) => void) | null;
 

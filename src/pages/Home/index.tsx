@@ -1,11 +1,11 @@
-import { useNavigate } from "@tanstack/react-router";
-import { Button, Pagination, Popconfirm, Space, Spin, Table } from "antd";
-import { useEffect } from "react";
-import styles from "./index.module.less";
-import SearchBar from "./components/SearchBar";
-import useDelete from "./hooks/useDelete";
-import useData from "./models/useData";
-import usePage from "./models/usePage";
+import { useNavigate } from '@tanstack/react-router';
+import { Button, Pagination, Popconfirm, Space, Spin, Table } from 'antd';
+import { useEffect } from 'react';
+import styles from './index.module.less';
+import SearchBar from './components/SearchBar';
+import useDelete from './hooks/useDelete';
+import useData from './models/useData';
+import usePage from './models/usePage';
 
 export default () => {
   const { mount, unmount, params, onPaginationChange } = usePage();
@@ -17,30 +17,30 @@ export default () => {
 
   const columns = [
     {
-      title: "项目名称",
-      dataIndex: "name",
+      title: '项目名称',
+      dataIndex: 'name',
     },
     {
-      title: "项目描述",
-      dataIndex: "description",
+      title: '项目描述',
+      dataIndex: 'description',
     },
     {
       width: 180,
-      title: "操作",
-      dataIndex: "uuid",
+      title: '操作',
+      dataIndex: 'uuid',
       render: (uuid: string) => (
         <Space size="medium">
           <Button
             type="link"
             className={styles.btn}
-            onClick={() => navigate({ to: "/home/detail", search: { uuid } })}
+            onClick={() => navigate({ to: '/home/detail', search: { uuid } })}
           >
             详情
           </Button>
           <Button
             type="link"
             className={styles.btn}
-            onClick={() => navigate({ to: "/home/modify", search: { uuid } })}
+            onClick={() => navigate({ to: '/home/modify', search: { uuid } })}
           >
             编辑
           </Button>

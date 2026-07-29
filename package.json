@@ -1,22 +1,16 @@
 {
   "name": "react-project-template",
   "version": "0.0.0",
-  "type": "module",
   "license": "MIT",
+  "type": "module",
   "scripts": {
+    "build": "tsc --noEmit && vite build",
     "dev": "vite",
     "dev:mock": "vite --mode mock",
-    "build": "tsc --noEmit && vite build",
-    "preview": "vite preview",
-    "typecheck": "tsc --noEmit",
     "format": "prettier --write .",
-    "format:check": "prettier --check ."
-  },
-  "engines": {
-    "node": ">=24"
-  },
-  "volta": {
-    "node": "24.18.0"
+    "format:check": "prettier --check .",
+    "preview": "vite preview",
+    "typecheck": "tsc --noEmit"
   },
   "dependencies": {
     "@ant-design/icons": "^6.3.2",
@@ -43,5 +37,11 @@
     "prettier-plugin-packagejson": "^3.0.2",
     "typescript": "^7.0.2",
     "vite": "^8.1.5"
+  },
+  "engines": {
+    "node": ">=24"
+  },
+  "volta": {
+    "node": "24.18.0"
   }
 }

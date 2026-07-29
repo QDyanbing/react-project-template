@@ -1,8 +1,8 @@
-import { App } from "antd";
-import { useRequest } from "ahooks";
+import { App } from 'antd';
+import { useRequest } from 'ahooks';
 
-import { setDelete } from "@/services/home";
-import useData from "../models/useData";
+import { setDelete } from '@/services/home';
+import useData from '../models/useData';
 
 export default () => {
   const { message } = App.useApp();
@@ -12,7 +12,7 @@ export default () => {
     const result = await runAsync(uuid);
     if (!result) return;
 
-    message.success("项目删除成功");
+    message.success('项目删除成功');
     useData.getState().onRefresh();
   };
 

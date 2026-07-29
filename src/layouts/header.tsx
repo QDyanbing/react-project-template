@@ -1,23 +1,18 @@
-import { LogoutOutlined, UserOutlined } from "@ant-design/icons";
-import { useNavigate } from "@tanstack/react-router";
-import { Button, Dropdown, Flex } from "antd";
-import styles from "./header.module.less";
+import { LogoutOutlined, UserOutlined } from '@ant-design/icons';
+import { useNavigate } from '@tanstack/react-router';
+import { Button, Dropdown, Flex } from 'antd';
+import styles from './header.module.less';
 
 export default () => {
   const navigate = useNavigate();
 
   const handleLogout = () => {
-    localStorage.removeItem("token");
-    navigate({ to: "/login", replace: true });
+    localStorage.removeItem('token');
+    navigate({ to: '/login', replace: true });
   };
 
   return (
-    <Flex
-      align="center"
-      component="header"
-      justify="space-between"
-      className={styles.header}
-    >
+    <Flex align="center" component="header" justify="space-between" className={styles.header}>
       <Flex align="center" className={styles.left}>
         <img
           src="https://gw.alipayobjects.com/zos/rmsportal/KDpgvguMpGfqaHPjicRK.svg"
@@ -25,12 +20,10 @@ export default () => {
         />
       </Flex>
       <Dropdown
-        trigger={["click"]}
+        trigger={['click']}
         placement="bottomRight"
         menu={{
-          items: [
-            { key: "logout", icon: <LogoutOutlined />, label: "退出登录" },
-          ],
+          items: [{ key: 'logout', icon: <LogoutOutlined />, label: '退出登录' }],
           onClick: handleLogout,
         }}
       >

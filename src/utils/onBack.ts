@@ -1,4 +1,4 @@
-import { router } from "@config/router";
+import { router } from '@config/router';
 
 export default (defaultPath: string) => {
   if (router.history.canGoBack()) {

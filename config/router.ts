@@ -7,19 +7,14 @@ import {
   lazyRouteComponent,
   Outlet,
   redirect,
-} from "@tanstack/react-router";
-import { router as routeConfigs } from "@config/routes";
+} from '@tanstack/react-router';
+import { router as routeConfigs } from '@config/routes';
 
-function createRoutes(
-  parentRoute: AnyRoute,
-  routeConfigs: readonly RouteConfig[]
-): AnyRoute[] {
+function createRoutes(parentRoute: AnyRoute, routeConfigs: readonly RouteConfig[]): AnyRoute[] {
   return routeConfigs.map((routeConfig, index) => {
     const options = {
       getParentRoute: () => parentRoute,
-      component: routeConfig.component
-        ? lazyRouteComponent(routeConfig.component)
-        : undefined,
+      component: routeConfig.component ? lazyRouteComponent(routeConfig.component) : undefined,
       beforeLoad: routeConfig.redirect
         ? () => {
             throw redirect({ to: routeConfig.redirect });

@@ -5,11 +5,7 @@ import { defineConfig } from 'vite';
 import mockServer from './plugins/mock';
 
 export default defineConfig(({ mode }) => ({
-  plugins: [
-    react(),
-    babel({ presets: [reactCompilerPreset()] }),
-    mode === 'mock' && mockServer(),
-  ],
+  plugins: [react(), babel({ presets: [reactCompilerPreset()] }), mode === 'mock' && mockServer()],
   resolve: {
     alias: {
       '@': fileURLToPath(new URL('./src', import.meta.url)),

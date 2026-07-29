@@ -1,9 +1,9 @@
-import { App } from "antd";
-import { useRequest } from "ahooks";
+import { App } from 'antd';
+import { useRequest } from 'ahooks';
 
-import { setModify } from "@/services/home";
-import onBack from "@/utils/onBack";
-import usePage from "../models/usePage";
+import { setModify } from '@/services/home';
+import onBack from '@/utils/onBack';
+import usePage from '../models/usePage';
 
 export default () => {
   const { message } = App.useApp();
@@ -16,8 +16,8 @@ export default () => {
     const result = await runAsync(uuid, data);
     if (!result) return;
 
-    message.success("项目修改成功");
-    onBack("/home");
+    message.success('项目修改成功');
+    onBack('/home');
   };
 
   return { loading, onModify };

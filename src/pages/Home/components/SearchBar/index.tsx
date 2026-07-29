@@ -1,8 +1,8 @@
-import { PlusOutlined } from "@ant-design/icons";
-import { useNavigate } from "@tanstack/react-router";
-import { Button, Flex, Input } from "antd";
-import styles from "./index.module.less";
-import usePage from "../../models/usePage";
+import { PlusOutlined } from '@ant-design/icons';
+import { useNavigate } from '@tanstack/react-router';
+import { Button, Flex, Input } from 'antd';
+import styles from './index.module.less';
+import usePage from '../../models/usePage';
 
 export default () => {
   const { params, onSearch } = usePage();
@@ -25,7 +25,7 @@ export default () => {
         <Button
           type="primary"
           icon={<PlusOutlined />}
-          onClick={() => navigate({ to: "/home/create" })}
+          onClick={() => navigate({ to: '/home/create' })}
         >
           新增项目
         </Button>

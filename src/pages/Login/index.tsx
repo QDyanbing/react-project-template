@@ -1,8 +1,4 @@
-import {
-  CodeOutlined,
-  LockOutlined,
-  UserOutlined,
-} from "@ant-design/icons";
+import { CodeOutlined, LockOutlined, UserOutlined } from '@ant-design/icons';
 import {
   Alert,
   Avatar,
@@ -17,17 +13,17 @@ import {
   Tag,
   theme,
   Typography,
-} from "antd";
+} from 'antd';
 
-import loginHero from "@/assets/login-hero-v2.png";
-import styles from "./index.module.less";
-import useLogin from "./hooks/useLogin";
+import loginHero from '@/assets/login-hero-v2.png';
+import styles from './index.module.less';
+import useLogin from './hooks/useLogin';
 
 const technologies = [
-  { color: "blue", label: "React 19" },
-  { color: "geekblue", label: "TypeScript" },
-  { color: "cyan", label: "Vite" },
-  { color: "purple", label: "Ant Design" },
+  { color: 'blue', label: 'React 19' },
+  { color: 'geekblue', label: 'TypeScript' },
+  { color: 'cyan', label: 'Vite' },
+  { color: 'purple', label: 'Ant Design' },
 ];
 
 export default () => {
@@ -44,9 +40,7 @@ export default () => {
           </Typography.Text>
         </Flex>
         <div className={styles.introductionContent}>
-          <Typography.Title className={styles.title}>
-            从清晰的工程结构开始
-          </Typography.Title>
+          <Typography.Title className={styles.title}>从清晰的工程结构开始</Typography.Title>
           <Typography.Paragraph className={styles.description}>
             提供路由、状态管理、请求封装、模拟接口和常用页面的基础实现。
           </Typography.Paragraph>
@@ -87,15 +81,13 @@ export default () => {
                 <Typography.Title level={2} className={styles.heading}>
                   欢迎登录
                 </Typography.Title>
-                <Typography.Text type="secondary">
-                  请输入账号和密码进入项目。
-                </Typography.Text>
+                <Typography.Text type="secondary">请输入账号和密码进入项目。</Typography.Text>
               </Flex>
 
               <Form<API.LoginParams>
                 layout="vertical"
                 requiredMark={false}
-                initialValues={{ account: "admin", password: "123456" }}
+                initialValues={{ account: 'admin', password: '123456' }}
                 onFinish={onLogin}
               >
                 <Form.Item
@@ -105,7 +97,7 @@ export default () => {
                     {
                       required: true,
                       whitespace: true,
-                      message: "请输入账号",
+                      message: '请输入账号',
                     },
                   ]}
                 >
@@ -119,7 +111,7 @@ export default () => {
                 <Form.Item
                   label="密码"
                   name="password"
-                  rules={[{ required: true, message: "请输入密码" }]}
+                  rules={[{ required: true, message: '请输入密码' }]}
                 >
                   <Input.Password
                     size="large"
@@ -128,21 +120,13 @@ export default () => {
                     placeholder="请输入密码"
                   />
                 </Form.Item>
-                <Button
-                  block
-                  size="large"
-                  type="primary"
-                  htmlType="submit"
-                  loading={loading}
-                >
+                <Button block size="large" type="primary" htmlType="submit" loading={loading}>
                   登录
                 </Button>
               </Form>
 
               <Flex justify="center">
-                <Typography.Text type="secondary">
-                  演示账号：admin / 123456
-                </Typography.Text>
+                <Typography.Text type="secondary">演示账号：admin / 123456</Typography.Text>
               </Flex>
             </Flex>
           </Card>

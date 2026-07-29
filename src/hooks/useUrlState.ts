@@ -1,6 +1,6 @@
-import { useMemoizedFn } from "ahooks";
-import { useNavigate, useSearch } from "@tanstack/react-router";
-import { type SetStateAction, useMemo, useState } from "react";
+import { useMemoizedFn } from 'ahooks';
+import { useNavigate, useSearch } from '@tanstack/react-router';
+import { type SetStateAction, useMemo, useState } from 'react';
 
 type UrlState = Record<string, string | string[]>;
 
@@ -11,13 +11,13 @@ type State<S extends object> = Partial<{
 }>;
 
 interface Options {
-  navigateMode?: "push" | "replace";
+  navigateMode?: 'push' | 'replace';
 }
 
 const normalizeValue = (value: unknown) => {
-  if (typeof value === "string") return value;
-  if (value === null) return "";
-  if (typeof value === "object") return JSON.stringify(value) ?? String(value);
+  if (typeof value === 'string') return value;
+  if (value === null) return '';
+  if (typeof value === 'object') return JSON.stringify(value) ?? String(value);
 
   return String(value);
 };
@@ -28,9 +28,7 @@ const normalizeSearch = (search: Record<string, unknown>) =>
       .filter(([, value]) => value !== undefined)
       .map(([key, value]) => [
         key,
-        Array.isArray(value)
-          ? value.map((item) => normalizeValue(item))
-          : normalizeValue(value),
+        Array.isArray(value) ? value.map((item) => normalizeValue(item)) : normalizeValue(value),
       ]),
   ) as UrlState;
 
@@ -40,9 +38,9 @@ export default <S extends object = UrlState>(
 ) => {
   const navigate = useNavigate();
   const search = useSearch({ strict: false });
-  const { navigateMode = "push" } = options;
+  const { navigateMode = 'push' } = options;
   const [defaultState] = useState<State<S>>(() => {
-    if (typeof initialState === "function") return initialState();
+    if (typeof initialState === 'function') return initialState();
     return initialState ?? {};
   });
   const state = useMemo<State<S>>(
@@ -52,15 +50,14 @@ export default <S extends object = UrlState>(
 
   const setState = useMemoizedFn((action: SetStateAction<State<S>>) => {
     navigate({
-      to: ".",
-      replace: navigateMode === "replace",
+      to: '.',
+      replace: navigateMode === 'replace',
       search: (currentState: Record<string, unknown>) => {
         const currentQuery = {
           ...defaultState,
           ...normalizeSearch(currentState),
         } as State<S>;
-        const nextState =
-          typeof action === "function" ? action(currentQuery) : action;
+        const nextState = typeof action === 'function' ? action(currentQuery) : action;
 
         return {
           ...currentState,

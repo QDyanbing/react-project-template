@@ -1,16 +1,16 @@
-import { Outlet } from "@tanstack/react-router";
-import { Flex, Menu } from "antd";
-import Header from "./header";
-import styles from "./root.module.less";
-import { ProjectOutlined } from "@ant-design/icons";
-import { useLocation, useNavigate } from "@tanstack/react-router";
+import { Outlet } from '@tanstack/react-router';
+import { Flex, Menu } from 'antd';
+import Header from './header';
+import styles from './root.module.less';
+import { ProjectOutlined } from '@ant-design/icons';
+import { useLocation, useNavigate } from '@tanstack/react-router';
 
-const items = [{ key: "/home", icon: <ProjectOutlined />, label: "项目管理" }];
+const items = [{ key: '/home', icon: <ProjectOutlined />, label: '项目管理' }];
 
 export default () => {
   const navigate = useNavigate();
   const pathname = useLocation({ select: (location) => location.pathname });
-  const selectedKeys = pathname.startsWith("/home") ? ["/home"] : [];
+  const selectedKeys = pathname.startsWith('/home') ? ['/home'] : [];
 
   return (
     <Flex vertical className={styles.layout}>

@@ -1,12 +1,12 @@
-import { Button, Flex, Form, Input, Spin } from "antd";
-import { useEffect } from "react";
-import useUrlState from "@/hooks/useUrlState";
-import onBack from "@/utils/onBack";
-import styles from "./index.module.less";
-import useCreate from "./hooks/useCreate";
-import useModify from "./hooks/useModify";
-import useDetail from "./models/useDetail";
-import usePage from "./models/usePage";
+import { Button, Flex, Form, Input, Spin } from 'antd';
+import { useEffect } from 'react';
+import useUrlState from '@/hooks/useUrlState';
+import onBack from '@/utils/onBack';
+import styles from './index.module.less';
+import useCreate from './hooks/useCreate';
+import useModify from './hooks/useModify';
+import useDetail from './models/useDetail';
+import usePage from './models/usePage';
 
 export default () => {
   const { mount, unmount } = usePage();
@@ -47,12 +47,7 @@ export default () => {
       classNames={{ root: styles.homeSet, container: styles.container }}
     >
       <Flex vertical flex={1} className={styles.body}>
-        <Form
-          layout="vertical"
-          form={form}
-          className={styles.content}
-          onFinish={onFinish}
-        >
+        <Form layout="vertical" form={form} className={styles.content} onFinish={onFinish}>
           <Form.Item
             name="name"
             label="项目名称"
@@ -60,9 +55,9 @@ export default () => {
               {
                 required: true,
                 whitespace: true,
-                message: "请输入项目名称",
+                message: '请输入项目名称',
               },
-              { max: 100, message: "项目名称不能超过 100 个字符" },
+              { max: 100, message: '项目名称不能超过 100 个字符' },
             ]}
           >
             <Input placeholder="请输入项目名称" />
@@ -70,7 +65,7 @@ export default () => {
           <Form.Item
             name="description"
             label="项目描述"
-            rules={[{ max: 500, message: "项目描述不能超过 500 个字符" }]}
+            rules={[{ max: 500, message: '项目描述不能超过 500 个字符' }]}
           >
             <Input.TextArea
               showCount
@@ -81,7 +76,7 @@ export default () => {
         </Form>
       </Flex>
       <Flex gap="medium" justify="flex-end" className={styles.footer}>
-        <Button onClick={() => onBack("/home")}>取消</Button>
+        <Button onClick={() => onBack('/home')}>取消</Button>
         <Button type="primary" onClick={() => form.submit()}>
           保存
         </Button>

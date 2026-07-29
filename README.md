@@ -17,6 +17,8 @@
 ut install
 ut run dev
 ut run dev:mock
+ut run format
+ut run format:check
 ut run typecheck
 ut run build
 ut run preview
@@ -34,6 +36,9 @@ ut run preview
 - [状态管理选型](docs/07_state-management.md)
 - [请求方案选型](docs/08_request.md)
 - [接口 Mock 方案选型](docs/09_api-mock.md)
+- [代码格式化选型](docs/10_formatter.md)
+- [JavaScript 与 TypeScript 代码检查选型](docs/11_eslint.md)
+- [样式检查选型](docs/12_stylelint.md)
 
 ## License
 

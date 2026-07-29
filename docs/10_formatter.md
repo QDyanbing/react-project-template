@@ -62,14 +62,27 @@
 
 当前仓库同时包含 TypeScript、TSX、JSON、Less 和 Markdown，Prettier 可以使用一套稳定方案覆盖全部文件。Oxfmt 已具备较完整的语言支持和更高性能，但仍处于 Beta；Biome 无法覆盖 Less 和 Markdown，不适合作为唯一格式化工具。
 
-格式配置尽量沿用 Prettier 默认值，只保留项目明确需要的差异。Prettier 使用精确版本，不使用版本范围。仓库不提交依赖锁文件，固定格式化工具版本可以避免不同时间安装依赖后产生无意义的全量格式变化；升级由独立提交完成。
+格式配置只声明与 Prettier 3 默认值不同的规则：
 
-代码格式化只统一代码外观，不承担代码检查、import 排序或样式检查。
+- `printWidth` 设置为 `100`，减少业务代码中过早换行。
+- `singleQuote` 设置为 `true`，JavaScript 和 TypeScript 字符串优先使用单引号。
+- `proseWrap` 设置为 `never`，Markdown 段落保持单行，由编辑器负责软换行。
+
+`trailingComma` 的 `all` 已经是 Prettier 3 默认值，不重复配置。`.prettierrc` 没有文件扩展名，通过 `overrides` 指定使用 JSON 解析器。
+
+使用 `prettier-plugin-organize-imports` 调用 TypeScript 的 `organizeImports`，统一整理、合并 import，并删除未使用的 import。使用 `prettier-plugin-packagejson` 按固定顺序排列 `package.json` 字段。
+
+Prettier 和两个格式化插件的版本范围使用 `^`，重新安装依赖时自动获取当前 Major 版本内的兼容更新。Major 版本升级需要显式调整依赖范围；升级导致格式结果变化时，通过独立提交更新格式化结果。
+
+代码格式化不承担代码正确性和样式检查，这些能力分别由 ESLint 和 Stylelint 处理。
 
 ## 参考
 
 - [Prettier 支持的语言](https://prettier.io/docs/)
 - [Prettier 3 发布记录](https://prettier.io/blog/)
+- [Prettier 配置](https://prettier.io/docs/configuration)
+- [prettier-plugin-organize-imports](https://github.com/simonhaenisch/prettier-plugin-organize-imports)
+- [prettier-plugin-packagejson](https://github.com/matzkoh/prettier-plugin-packagejson)
 - [Oxfmt](https://oxc.rs/docs/guide/usage/formatter)
 - [Oxfmt 语言支持](https://oxc.rs/docs/guide/usage/formatter/language-support)
 - [Oxfmt 暂不支持的能力](https://oxc.rs/docs/guide/usage/formatter/unsupported-features)

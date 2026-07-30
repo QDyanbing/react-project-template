@@ -19,6 +19,7 @@ ut run dev
 ut run dev:mock
 ut run format
 ut run format:check
+ut run lint
 ut run typecheck
 ut run build
 ut run preview

@@ -63,6 +63,8 @@
 
 当前项目启用了 React Compiler，需要接入 React 官方维护的 Hooks 和 Compiler 检查规则；同时项目使用 TypeScript，需要稳定的 TypeScript 规则和类型感知扩展能力。ESLint 在这两项能力上的官方支持和生态完整度更适合作为模板默认方案。
 
+默认组合 `@eslint/js`、typescript-eslint 和 `eslint-plugin-react-hooks` 的推荐规则。React Hooks 使用包含 React Compiler 诊断的 `recommended-latest` 配置。TypeScript 的完整类型检查继续由 `tsc` 负责，不默认启用会改变 Promise 使用方式的整套类型感知规则。
+
 ESLint 只负责代码正确性和框架约束，不启用与 Prettier 重叠的格式规则。Oxlint 保留为后续大型仓库的性能优化选项，不与 ESLint 同时作为模板默认依赖。
 
 ## 参考

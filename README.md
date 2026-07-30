@@ -42,6 +42,7 @@ ut run preview
 - [代码格式化选型](docs/10_formatter.md)
 - [JavaScript 与 TypeScript 代码检查选型](docs/11_eslint.md)
 - [样式检查选型](docs/12_stylelint.md)
+- [Git Hooks 管理选型](docs/13_git-hooks.md)
 
 ## License
 

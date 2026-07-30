@@ -20,6 +20,7 @@ ut run dev:mock
 ut run format
 ut run format:check
 ut run lint
+ut run lint:eslint
 ut run lint:style
 ut run typecheck
 ut run build

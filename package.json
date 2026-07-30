@@ -9,7 +9,8 @@
     "dev:mock": "vite --mode mock",
     "format": "prettier --write .",
     "format:check": "prettier --check .",
-    "lint": "eslint .",
+    "lint": "ut run lint:eslint && ut run lint:style",
+    "lint:eslint": "eslint .",
     "lint:style": "stylelint \"**/*.{css,less}\"",
     "preview": "vite preview",
     "typecheck": "tsc --noEmit"

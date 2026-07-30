@@ -23,7 +23,9 @@
 
 结论：选择 TypeScript。项目模板需要承载公共组件、请求封装、状态和业务模块，静态类型可以为这些模块建立明确的接口边界，并提高重构和复用的可靠性。
 
-TypeScript 使用 7 稳定版本线，版本范围使用 `^`，允许自动获取兼容的 Minor 和 Patch 更新。具体安装版本以 `package.json` 为准。
+TypeScript 使用 6 稳定版本线，版本范围使用 `^`，允许自动获取兼容的 Minor 和 Patch 更新。具体安装版本以 `package.json` 为准。
+
+TypeScript 6 与项目选定的 ESLint 10、typescript-eslint 及 React 工具链具有明确的兼容范围。TypeScript Major 版本在代码检查、构建工具和主要依赖完成适配后再升级，不强制使用尚未被工程工具完整支持的新版本。
 
 React 类型依赖使用 `^`，并与 React 保持相同的 Major 版本。TypeScript 和类型依赖均不使用 Beta、RC 或 Nightly。
 
@@ -73,7 +75,7 @@ React Compiler 的接入方式跟随构建工具确定，不在 React 基础方�
 | React | React 19 稳定版本 |
 | React 版本范围 | 使用 `^`；Minor 和 Patch 自动进入依赖范围，Major 单独升级 |
 | 开发语言 | TypeScript |
-| TypeScript | TypeScript 7 稳定版本线，使用 `^` 接收 Minor 和 Patch 更新 |
+| TypeScript | TypeScript 6 稳定版本线，使用 `^` 接收 Minor 和 Patch 更新 |
 | React 类型 | `@types/react` 和 `@types/react-dom` 使用 `^`，与 React 保持相同 Major 版本 |
 | TypeScript 严格程度 | `strict` + `noUncheckedIndexedAccess` |
 | React Compiler | 启用，具体接入方式跟随构建工具 |

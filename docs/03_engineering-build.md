@@ -63,7 +63,7 @@
 - Vite 同时提供 CLI、JavaScript API 和 Plugin API，既能直接构建应用，也能由模板封装统一入口。
 - Vite 官方 React 插件提供 React Fast Refresh，并支持接入 React Compiler。
 
-Vite 8 满足已经确定的 Node.js 24、React 19、TypeScript 7 和 React Compiler 方案。依赖使用稳定版本和 `^` 版本范围，具体安装版本以 `package.json` 为准，不使用 Alpha、Beta、RC 或 Nightly。
+Vite 8 满足已经确定的 Node.js 24、React 19、TypeScript 6 和 React Compiler 方案。依赖使用稳定版本和 `^` 版本范围，具体安装版本以 `package.json` 为准，不使用 Alpha、Beta、RC 或 Nightly。
 
 ## 参考
 

@@ -1,3 +1,4 @@
+import i18n from '@/i18n';
 import { emitMessage } from '@/utils/message';
 
 type RequestOptions = Omit<RequestInit, 'body' | 'method'> & {
@@ -81,12 +82,12 @@ function isAbortError(error: unknown): error is DOMException {
 }
 
 function getStatusMessage(status: number) {
-  if (status === 401) return '登录状态已失效，请重新登录';
-  if (status === 403) return '暂无访问权限';
-  if (status === 404) return '请求的资源不存在';
-  if (status >= 500) return '服务异常，请稍后重试';
+  if (status === 401) return i18n.t('request.unauthorized', { ns: 'common' });
+  if (status === 403) return i18n.t('request.forbidden', { ns: 'common' });
+  if (status === 404) return i18n.t('request.notFound', { ns: 'common' });
+  if (status >= 500) return i18n.t('request.serverError', { ns: 'common' });
 
-  return `请求失败（${status}）`;
+  return i18n.t('request.failed', { ns: 'common', status });
 }
 
 function createHttpError(response: Response, data: unknown, cause?: unknown) {
@@ -137,8 +138,10 @@ function createBusinessError(data: unknown) {
   if (!content && !Number.isNaN(errorCode)) {
     content = getStatusMessage(errorCode);
   }
-  if (!content && level === 'warning') content = '请求未完成';
-  if (!content) content = '系统异常，请稍后重试';
+  if (!content && level === 'warning') {
+    content = i18n.t('request.unfinished', { ns: 'common' });
+  }
+  if (!content) content = i18n.t('request.systemError', { ns: 'common' });
 
   let status: number | undefined;
   if (!Number.isNaN(errorCode)) status = errorCode;
@@ -253,7 +256,7 @@ async function send<TData, TResult>(
     if (businessError) throw businessError;
 
     if (!isSuccessResult(result)) {
-      throw new RequestError('响应数据格式错误', { data: result });
+      throw new RequestError(i18n.t('request.invalidResponse', { ns: 'common' }), { data: result });
     }
 
     return result as API.SuccessResult<TResult>;
@@ -267,8 +270,10 @@ async function send<TData, TResult>(
     if (error instanceof RequestError) {
       requestError = error;
     } else {
-      let content = '网络异常，请稍后重试';
-      if (error instanceof SyntaxError) content = '响应数据格式错误';
+      let content = i18n.t('request.networkError', { ns: 'common' });
+      if (error instanceof SyntaxError) {
+        content = i18n.t('request.invalidResponse', { ns: 'common' });
+      }
 
       requestError = new RequestError(content, { cause: error });
     }

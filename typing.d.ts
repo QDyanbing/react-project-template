@@ -1,7 +1,17 @@
-import type { RouteComponent } from '@tanstack/react-router';
+import type { Language } from '@/i18n/languages';
 import type { router } from '@config/router';
+import type { RouteComponent } from '@tanstack/react-router';
+import type { ResourceKey } from 'i18next';
 
 declare global {
+  namespace I18n {
+    interface Locale {
+      language: Language;
+      namespace: string;
+      resources: ResourceKey;
+    }
+  }
+
   type RouteConfig =
     | {
         children?: RouteConfig[];

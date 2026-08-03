@@ -14,10 +14,12 @@ import {
   theme,
   Typography,
 } from 'antd';
+import { useTranslation } from 'react-i18next';
 
 import loginHero from '@/assets/login-hero-v2.png';
-import styles from './index.module.less';
+import LocaleSwitch from '@/components/LocaleSwitch';
 import useLogin from './hooks/useLogin';
+import styles from './index.module.less';
 
 const technologies = [
   { color: 'blue', label: 'React 19' },
@@ -27,6 +29,7 @@ const technologies = [
 ];
 
 export default () => {
+  const { t } = useTranslation('login');
   const { token } = theme.useToken();
   const { loading, onLogin } = useLogin();
 
@@ -36,20 +39,20 @@ export default () => {
         <Flex align="center" gap={12} className={styles.brand}>
           <Avatar size="large" shape="square" icon={<CodeOutlined />} />
           <Typography.Text strong className={styles.brandText}>
-            React 项目模板
+            {t('brand')}
           </Typography.Text>
         </Flex>
         <div className={styles.introductionContent}>
-          <Typography.Title className={styles.title}>从清晰的工程结构开始</Typography.Title>
+          <Typography.Title className={styles.title}>{t('introduction.title')}</Typography.Title>
           <Typography.Paragraph className={styles.description}>
-            提供路由、状态管理、请求封装、模拟接口和常用页面的基础实现。
+            {t('introduction.description')}
           </Typography.Paragraph>
 
           <Alert
             showIcon
             type="info"
             variant="filled"
-            title="登录成功后自动保存访问令牌，并由请求层统一携带。"
+            title={t('introduction.feature')}
             className={styles.feature}
           />
 
@@ -77,11 +80,14 @@ export default () => {
           <Card className={styles.card}>
             <Flex vertical gap={24}>
               <Flex vertical gap={4} component="header">
-                <Badge text="安全访问" status="processing" />
+                <Flex align="center" justify="space-between">
+                  <Badge text={t('form.security')} status="processing" />
+                  <LocaleSwitch />
+                </Flex>
                 <Typography.Title level={2} className={styles.heading}>
-                  欢迎登录
+                  {t('form.title')}
                 </Typography.Title>
-                <Typography.Text type="secondary">请输入账号和密码进入项目。</Typography.Text>
+                <Typography.Text type="secondary">{t('form.description')}</Typography.Text>
               </Flex>
 
               <Form<API.LoginParams>
@@ -91,13 +97,13 @@ export default () => {
                 onFinish={onLogin}
               >
                 <Form.Item
-                  label="账号"
+                  label={t('form.account.label')}
                   name="account"
                   rules={[
                     {
                       required: true,
                       whitespace: true,
-                      message: '请输入账号',
+                      message: t('form.account.required'),
                     },
                   ]}
                 >
@@ -105,28 +111,28 @@ export default () => {
                     size="large"
                     autoComplete="username"
                     prefix={<UserOutlined />}
-                    placeholder="请输入账号"
+                    placeholder={t('form.account.placeholder')}
                   />
                 </Form.Item>
                 <Form.Item
-                  label="密码"
+                  label={t('form.password.label')}
                   name="password"
-                  rules={[{ required: true, message: '请输入密码' }]}
+                  rules={[{ required: true, message: t('form.password.required') }]}
                 >
                   <Input.Password
                     size="large"
                     autoComplete="current-password"
                     prefix={<LockOutlined />}
-                    placeholder="请输入密码"
+                    placeholder={t('form.password.placeholder')}
                   />
                 </Form.Item>
                 <Button block size="large" type="primary" htmlType="submit" loading={loading}>
-                  登录
+                  {t('form.submit')}
                 </Button>
               </Form>
 
               <Flex justify="center">
-                <Typography.Text type="secondary">演示账号：admin / 123456</Typography.Text>
+                <Typography.Text type="secondary">{t('form.demo')}</Typography.Text>
               </Flex>
             </Flex>
           </Card>

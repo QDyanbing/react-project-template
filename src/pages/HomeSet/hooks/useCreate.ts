@@ -1,10 +1,12 @@
-import { App } from 'antd';
 import { useRequest } from 'ahooks';
+import { App } from 'antd';
+import { useTranslation } from 'react-i18next';
 
 import { setCreate } from '@/services/home';
 import onBack from '@/utils/onBack';
 
 export default () => {
+  const { t } = useTranslation('homeSet');
   const { message } = App.useApp();
   const { loading, runAsync } = useRequest(setCreate, { manual: true });
 
@@ -12,7 +14,7 @@ export default () => {
     const result = await runAsync(data);
     if (!result) return;
 
-    message.success('项目创建成功');
+    message.success(t('createSuccess'));
     onBack('/home');
   };
 

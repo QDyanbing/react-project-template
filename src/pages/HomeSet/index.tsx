@@ -1,14 +1,16 @@
-import { Button, Flex, Form, Input, Spin } from 'antd';
-import { useEffect } from 'react';
 import useUrlState from '@/hooks/useUrlState';
 import onBack from '@/utils/onBack';
-import styles from './index.module.less';
+import { Button, Flex, Form, Input, Spin } from 'antd';
+import { useEffect } from 'react';
+import { useTranslation } from 'react-i18next';
 import useCreate from './hooks/useCreate';
 import useModify from './hooks/useModify';
+import styles from './index.module.less';
 import useDetail from './models/useDetail';
 import usePage from './models/usePage';
 
 export default () => {
+  const { t } = useTranslation('homeSet');
   const { mount, unmount } = usePage();
   const { loading, data } = useDetail();
 
@@ -50,35 +52,35 @@ export default () => {
         <Form layout="vertical" form={form} className={styles.content} onFinish={onFinish}>
           <Form.Item
             name="name"
-            label="项目名称"
+            label={t('name.label')}
             rules={[
               {
                 required: true,
                 whitespace: true,
-                message: '请输入项目名称',
+                message: t('name.required'),
               },
-              { max: 100, message: '项目名称不能超过 100 个字符' },
+              { max: 100, message: t('name.max', { count: 100 }) },
             ]}
           >
-            <Input placeholder="请输入项目名称" />
+            <Input placeholder={t('name.placeholder')} />
           </Form.Item>
           <Form.Item
             name="description"
-            label="项目描述"
-            rules={[{ max: 500, message: '项目描述不能超过 500 个字符' }]}
+            label={t('description.label')}
+            rules={[{ max: 500, message: t('description.max', { count: 500 }) }]}
           >
             <Input.TextArea
               showCount
-              placeholder="请输入项目描述"
+              placeholder={t('description.placeholder')}
               autoSize={{ minRows: 4, maxRows: 8 }}
             />
           </Form.Item>
         </Form>
       </Flex>
       <Flex gap="medium" justify="flex-end" className={styles.footer}>
-        <Button onClick={() => onBack('/home')}>取消</Button>
+        <Button onClick={() => onBack('/home')}>{t('cancel')}</Button>
         <Button type="primary" onClick={() => form.submit()}>
-          保存
+          {t('save')}
         </Button>
       </Flex>
     </Spin>

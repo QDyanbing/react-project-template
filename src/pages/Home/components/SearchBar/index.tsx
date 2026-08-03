@@ -1,10 +1,12 @@
 import { PlusOutlined } from '@ant-design/icons';
 import { useNavigate } from '@tanstack/react-router';
 import { Button, Flex, Input } from 'antd';
-import styles from './index.module.less';
+import { useTranslation } from 'react-i18next';
 import usePage from '../../models/usePage';
+import styles from './index.module.less';
 
 export default () => {
+  const { t } = useTranslation('home');
   const { params, onSearch } = usePage();
 
   const navigate = useNavigate();
@@ -14,8 +16,8 @@ export default () => {
       <Flex gap="medium">
         <Input.Search
           allowClear
-          enterButton="查询"
-          placeholder="请输入项目名称或描述"
+          enterButton={t('search.submit')}
+          placeholder={t('search.placeholder')}
           className={styles.search}
           defaultValue={params.keyword}
           onSearch={onSearch}
@@ -27,7 +29,7 @@ export default () => {
           icon={<PlusOutlined />}
           onClick={() => navigate({ to: '/home/create' })}
         >
-          新增项目
+          {t('search.create')}
         </Button>
       </Flex>
     </Flex>

@@ -1,13 +1,15 @@
 import { useNavigate } from '@tanstack/react-router';
-import { Button, Pagination, Popconfirm, Space, Spin, Table } from 'antd';
+import { Button, Pagination, Popconfirm, Space, Spin, Table, Typography } from 'antd';
 import { useEffect } from 'react';
-import styles from './index.module.less';
+import { Trans, useTranslation } from 'react-i18next';
 import SearchBar from './components/SearchBar';
 import useDelete from './hooks/useDelete';
+import styles from './index.module.less';
 import useData from './models/useData';
 import usePage from './models/usePage';
 
 export default () => {
+  const { t } = useTranslation('home');
   const { mount, unmount, params, onPaginationChange } = usePage();
   const { loading, total, data } = useData();
 
@@ -17,16 +19,16 @@ export default () => {
 
   const columns = [
     {
-      title: '项目名称',
+      title: t('columns.name'),
       dataIndex: 'name',
     },
     {
-      title: '项目描述',
+      title: t('columns.description'),
       dataIndex: 'description',
     },
     {
       width: 180,
-      title: '操作',
+      title: t('columns.action'),
       dataIndex: 'uuid',
       render: (uuid: string) => (
         <Space size="medium">
@@ -35,18 +37,18 @@ export default () => {
             className={styles.btn}
             onClick={() => navigate({ to: '/home/detail', search: { uuid } })}
           >
-            详情
+            {t('actions.detail')}
           </Button>
           <Button
             type="link"
             className={styles.btn}
             onClick={() => navigate({ to: '/home/modify', search: { uuid } })}
           >
-            编辑
+            {t('actions.modify')}
           </Button>
-          <Popconfirm title="确认删除该项目？" onConfirm={() => onDelete(uuid)}>
+          <Popconfirm title={t('actions.deleteConfirm')} onConfirm={() => onDelete(uuid)}>
             <Button danger type="link" className={styles.btn}>
-              删除
+              {t('actions.delete')}
             </Button>
           </Popconfirm>
         </Space>
@@ -82,7 +84,14 @@ export default () => {
         pageSize={params.pageSize}
         total={total}
         className={styles.footer}
-        showTotal={(value) => `共 ${value} 条`}
+        showTotal={(value) => (
+          <Trans
+            t={t}
+            i18nKey="pagination.total"
+            values={{ count: value }}
+            components={{ count: <Typography.Text strong type="success" /> }}
+          />
+        )}
         onChange={onPaginationChange}
       />
     </Spin>

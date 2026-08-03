@@ -1,17 +1,19 @@
 import { useNavigate } from '@tanstack/react-router';
 import { Button, Result } from 'antd';
+import { useTranslation } from 'react-i18next';
 
 export default () => {
+  const { t } = useTranslation('forbidden');
   const navigate = useNavigate();
 
   return (
     <Result
       status="403"
-      title="暂无访问权限"
-      subTitle="当前账号无权访问该页面，请联系管理员开通权限。"
+      title={t('title')}
+      subTitle={t('description')}
       extra={
         <Button type="primary" onClick={() => navigate({ to: '/' })}>
-          返回首页
+          {t('backHome')}
         </Button>
       }
     />

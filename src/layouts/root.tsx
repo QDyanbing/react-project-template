@@ -1,16 +1,16 @@
-import { Outlet } from '@tanstack/react-router';
+import { ProjectOutlined } from '@ant-design/icons';
+import { Outlet, useLocation, useNavigate } from '@tanstack/react-router';
 import { Flex, Menu } from 'antd';
+import { useTranslation } from 'react-i18next';
 import Header from './header';
 import styles from './root.module.less';
-import { ProjectOutlined } from '@ant-design/icons';
-import { useLocation, useNavigate } from '@tanstack/react-router';
-
-const items = [{ key: '/home', icon: <ProjectOutlined />, label: '项目管理' }];
 
 export default () => {
+  const { t } = useTranslation('layout');
   const navigate = useNavigate();
   const pathname = useLocation({ select: (location) => location.pathname });
   const selectedKeys = pathname.startsWith('/home') ? ['/home'] : [];
+  const items = [{ key: '/home', icon: <ProjectOutlined />, label: t('projectManagement') }];
 
   return (
     <Flex vertical className={styles.layout}>

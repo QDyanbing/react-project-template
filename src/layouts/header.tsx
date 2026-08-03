@@ -1,9 +1,12 @@
+import LocaleSwitch from '@/components/LocaleSwitch';
 import { LogoutOutlined, UserOutlined } from '@ant-design/icons';
 import { useNavigate } from '@tanstack/react-router';
 import { Button, Dropdown, Flex } from 'antd';
+import { useTranslation } from 'react-i18next';
 import styles from './header.module.less';
 
 export default () => {
+  const { t } = useTranslation('layout');
   const navigate = useNavigate();
 
   const handleLogout = () => {
@@ -19,18 +22,21 @@ export default () => {
           className={styles.logo}
         />
       </Flex>
-      <Dropdown
-        trigger={['click']}
-        placement="bottomRight"
-        menu={{
-          items: [{ key: 'logout', icon: <LogoutOutlined />, label: '退出登录' }],
-          onClick: handleLogout,
-        }}
-      >
-        <Button variant="text" color="primary" icon={<UserOutlined />} className={styles.user}>
-          管理员
-        </Button>
-      </Dropdown>
+      <Flex align="center" gap="middle">
+        <LocaleSwitch />
+        <Dropdown
+          trigger={['click']}
+          placement="bottomRight"
+          menu={{
+            items: [{ key: 'logout', icon: <LogoutOutlined />, label: t('logout') }],
+            onClick: handleLogout,
+          }}
+        >
+          <Button variant="text" color="primary" icon={<UserOutlined />} className={styles.user}>
+            {t('administrator')}
+          </Button>
+        </Dropdown>
+      </Flex>
     </Flex>
   );
 };

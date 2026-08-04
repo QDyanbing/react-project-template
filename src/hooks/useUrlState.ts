@@ -1,5 +1,6 @@
+import { onHistoryChange, onHistoryReplace } from '@/utils/history';
+import { useSearch } from '@tanstack/react-router';
 import { useMemoizedFn } from 'ahooks';
-import { useNavigate, useSearch } from '@tanstack/react-router';
 import { type SetStateAction, useMemo, useState } from 'react';
 
 type UrlState = Record<string, string | string[]>;
@@ -36,7 +37,6 @@ export default <S extends object = UrlState>(
   initialState?: State<S> | (() => State<S>),
   options: Options = {},
 ) => {
-  const navigate = useNavigate();
   const search = useSearch({ strict: false });
   const { navigateMode = 'push' } = options;
   const [defaultState] = useState<State<S>>(() => {
@@ -49,22 +49,24 @@ export default <S extends object = UrlState>(
   );
 
   const setState = useMemoizedFn((action: SetStateAction<State<S>>) => {
-    navigate({
-      to: '.',
-      replace: navigateMode === 'replace',
-      search: (currentState: Record<string, unknown>) => {
-        const currentQuery = {
-          ...defaultState,
-          ...normalizeSearch(currentState),
-        } as State<S>;
-        const nextState = typeof action === 'function' ? action(currentQuery) : action;
+    const updateSearch = (currentState: Record<string, unknown>) => {
+      const currentQuery = {
+        ...defaultState,
+        ...normalizeSearch(currentState),
+      } as State<S>;
+      const nextState = typeof action === 'function' ? action(currentQuery) : action;
 
-        return {
-          ...currentState,
-          ...nextState,
-        };
-      },
-    });
+      return {
+        ...currentState,
+        ...nextState,
+      };
+    };
+
+    if (navigateMode === 'replace') {
+      onHistoryReplace('.', updateSearch);
+    } else {
+      onHistoryChange('.', updateSearch);
+    }
   });
 
   return [state, setState] as const;

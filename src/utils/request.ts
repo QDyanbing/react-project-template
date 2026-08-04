@@ -1,4 +1,5 @@
 import i18n from '@/i18n';
+import { onHistoryReplace } from '@/utils/history';
 import { emitMessage } from '@/utils/message';
 
 type RequestOptions = Omit<RequestInit, 'body' | 'method'> & {
@@ -169,7 +170,7 @@ function handleGlobalError(error: RequestError) {
     const currentPath = `${location.pathname}${location.search}`;
 
     if (currentPath !== error.redirect) {
-      location.replace(error.redirect);
+      onHistoryReplace(error.redirect);
       return;
     }
   }

@@ -1,4 +1,4 @@
-import { useNavigate } from '@tanstack/react-router';
+import { onHistoryChange } from '@/utils/history';
 import { Button, Pagination, Popconfirm, Space, Spin, Table, Typography } from 'antd';
 import { useEffect } from 'react';
 import { Trans, useTranslation } from 'react-i18next';
@@ -14,8 +14,6 @@ export default () => {
   const { loading, total, data } = useData();
 
   const { loading: deleteLoading, onDelete } = useDelete();
-
-  const navigate = useNavigate();
 
   const columns = [
     {
@@ -35,14 +33,14 @@ export default () => {
           <Button
             type="link"
             className={styles.btn}
-            onClick={() => navigate({ to: '/home/detail', search: { uuid } })}
+            onClick={() => onHistoryChange('/home/detail', { uuid })}
           >
             {t('actions.detail')}
           </Button>
           <Button
             type="link"
             className={styles.btn}
-            onClick={() => navigate({ to: '/home/modify', search: { uuid } })}
+            onClick={() => onHistoryChange('/home/modify', { uuid })}
           >
             {t('actions.modify')}
           </Button>

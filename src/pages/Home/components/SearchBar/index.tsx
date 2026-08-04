@@ -1,5 +1,5 @@
+import { onHistoryChange } from '@/utils/history';
 import { PlusOutlined } from '@ant-design/icons';
-import { useNavigate } from '@tanstack/react-router';
 import { Button, Flex, Input } from 'antd';
 import { useTranslation } from 'react-i18next';
 import usePage from '../../models/usePage';
@@ -8,8 +8,6 @@ import styles from './index.module.less';
 export default () => {
   const { t } = useTranslation('home');
   const { params, onSearch } = usePage();
-
-  const navigate = useNavigate();
 
   return (
     <Flex gap="medium" justify="space-between" className={styles.searchBar}>
@@ -27,7 +25,7 @@ export default () => {
         <Button
           type="primary"
           icon={<PlusOutlined />}
-          onClick={() => navigate({ to: '/home/create' })}
+          onClick={() => onHistoryChange('/home/create')}
         >
           {t('search.create')}
         </Button>

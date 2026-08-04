@@ -1,17 +1,16 @@
 import LocaleSwitch from '@/components/LocaleSwitch';
+import { onHistoryReplace } from '@/utils/history';
 import { LogoutOutlined, UserOutlined } from '@ant-design/icons';
-import { useNavigate } from '@tanstack/react-router';
 import { Button, Dropdown, Flex } from 'antd';
 import { useTranslation } from 'react-i18next';
 import styles from './header.module.less';
 
 export default () => {
   const { t } = useTranslation('layout');
-  const navigate = useNavigate();
 
   const handleLogout = () => {
     localStorage.removeItem('token');
-    navigate({ to: '/login', replace: true });
+    onHistoryReplace('/login');
   };
 
   return (

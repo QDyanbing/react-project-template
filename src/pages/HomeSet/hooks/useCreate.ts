@@ -3,7 +3,7 @@ import { App } from 'antd';
 import { useTranslation } from 'react-i18next';
 
 import { setCreate } from '@/services/home';
-import onBack from '@/utils/onBack';
+import { onHistoryBack } from '@/utils/history';
 
 export default () => {
   const { t } = useTranslation('homeSet');
@@ -15,7 +15,7 @@ export default () => {
     if (!result) return;
 
     message.success(t('createSuccess'));
-    onBack('/home');
+    onHistoryBack('/home');
   };
 
   return { loading, onCreate };

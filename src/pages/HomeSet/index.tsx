@@ -1,5 +1,5 @@
 import useUrlState from '@/hooks/useUrlState';
-import onBack from '@/utils/onBack';
+import { onHistoryBack } from '@/utils/history';
 import { Button, Flex, Form, Input, Spin } from 'antd';
 import { useEffect } from 'react';
 import { useTranslation } from 'react-i18next';
@@ -78,7 +78,7 @@ export default () => {
         </Form>
       </Flex>
       <Flex gap="medium" justify="flex-end" className={styles.footer}>
-        <Button onClick={() => onBack('/home')}>{t('cancel')}</Button>
+        <Button onClick={() => onHistoryBack('/home')}>{t('cancel')}</Button>
         <Button type="primary" onClick={() => form.submit()}>
           {t('save')}
         </Button>

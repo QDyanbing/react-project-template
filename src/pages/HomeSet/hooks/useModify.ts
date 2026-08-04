@@ -3,7 +3,7 @@ import { App } from 'antd';
 import { useTranslation } from 'react-i18next';
 
 import { setModify } from '@/services/home';
-import onBack from '@/utils/onBack';
+import { onHistoryBack } from '@/utils/history';
 import usePage from '../models/usePage';
 
 export default () => {
@@ -19,7 +19,7 @@ export default () => {
     if (!result) return;
 
     message.success(t('modifySuccess'));
-    onBack('/home');
+    onHistoryBack('/home');
   };
 
   return { loading, onModify };

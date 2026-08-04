@@ -2,9 +2,10 @@ import { useRequest } from 'ahooks';
 
 import useUrlState from '@/hooks/useUrlState';
 import { setLogin } from '@/services/account';
+import { onHistoryReplace } from '@/utils/history';
 
 export default () => {
-  const [{ redirect }] = useUrlState<{ redirect?: string }>();
+  const [{ redirect: redirectPath }] = useUrlState<{ redirect?: string }>();
   const { loading, runAsync } = useRequest(setLogin, { manual: true });
 
   const onLogin = async (params: API.LoginParams) => {
@@ -12,7 +13,7 @@ export default () => {
     if (!result) return;
 
     localStorage.setItem('token', result.data.token);
-    location.replace(redirect || '/');
+    onHistoryReplace(redirectPath || '/');
   };
 
   return {

@@ -1,7 +1,6 @@
 import useUrlState from '@/hooks/useUrlState';
-import onBack from '@/utils/onBack';
+import { onHistoryBack, onHistoryChange } from '@/utils/history';
 import { ArrowLeftOutlined } from '@ant-design/icons';
-import { useNavigate } from '@tanstack/react-router';
 import type { DescriptionsProps } from 'antd';
 import { Button, Descriptions, Empty, Flex, Spin } from 'antd';
 import { useEffect } from 'react';
@@ -15,7 +14,6 @@ export default () => {
   const { mount, unmount } = usePage();
   const { data, loading } = useDetail();
 
-  const navigate = useNavigate();
   const [{ uuid }] = useUrlState<{ uuid?: string }>();
 
   useEffect(() => {
@@ -38,10 +36,10 @@ export default () => {
   return (
     <Spin spinning={loading} classNames={{ root: styles.homeDetail, container: styles.container }}>
       <Flex justify="space-between" className={styles.header}>
-        <Button icon={<ArrowLeftOutlined />} onClick={() => onBack('/home')}>
+        <Button icon={<ArrowLeftOutlined />} onClick={() => onHistoryBack('/home')}>
           {t('back')}
         </Button>
-        <Button type="primary" onClick={() => navigate({ to: '/home/modify', search: { uuid } })}>
+        <Button type="primary" onClick={() => onHistoryChange('/home/modify', { uuid })}>
           {t('modify')}
         </Button>
       </Flex>

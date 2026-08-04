@@ -1,10 +1,9 @@
-import { useNavigate } from '@tanstack/react-router';
+import { onHistoryChange } from '@/utils/history';
 import { Button, Result } from 'antd';
 import { useTranslation } from 'react-i18next';
 
 export default () => {
   const { t } = useTranslation('forbidden');
-  const navigate = useNavigate();
 
   return (
     <Result
@@ -12,7 +11,7 @@ export default () => {
       title={t('title')}
       subTitle={t('description')}
       extra={
-        <Button type="primary" onClick={() => navigate({ to: '/' })}>
+        <Button type="primary" onClick={() => onHistoryChange('/')}>
           {t('backHome')}
         </Button>
       }

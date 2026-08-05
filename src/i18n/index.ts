@@ -1,3 +1,4 @@
+import { getStorage, setStorage } from '@/utils/storage';
 import dayjs from 'dayjs';
 import type { Resource } from 'i18next';
 import i18n from 'i18next';
@@ -20,7 +21,7 @@ Object.values(localeModules).forEach((locale) => {
 });
 
 const getInitialLanguage = (): Language => {
-  const locale = localStorage.getItem(STORAGE_KEY);
+  const locale = getStorage<Language>(STORAGE_KEY);
   const language = languages.find((item) => item.locale === locale);
   if (language) return language.locale;
 
@@ -30,7 +31,7 @@ const getInitialLanguage = (): Language => {
 i18n.on('languageChanged', (language) => {
   const { locale, dayjs: dayjsLocale } = getLanguage(language);
 
-  localStorage.setItem(STORAGE_KEY, locale);
+  setStorage(STORAGE_KEY, locale);
   document.documentElement.lang = locale;
   dayjs.locale(dayjsLocale);
 });

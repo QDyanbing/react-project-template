@@ -1,5 +1,6 @@
 import LocaleSwitch from '@/components/LocaleSwitch';
 import { onHistoryReplace } from '@/utils/history';
+import { deleteStorage } from '@/utils/storage';
 import { LogoutOutlined, UserOutlined } from '@ant-design/icons';
 import { Button, Dropdown, Flex } from 'antd';
 import { useTranslation } from 'react-i18next';
@@ -9,7 +10,7 @@ export default () => {
   const { t } = useTranslation('layout');
 
   const handleLogout = () => {
-    localStorage.removeItem('token');
+    deleteStorage('token');
     onHistoryReplace('/login');
   };
 

@@ -3,6 +3,7 @@ import { useRequest } from 'ahooks';
 import useUrlState from '@/hooks/useUrlState';
 import { setLogin } from '@/services/account';
 import { onHistoryReplace } from '@/utils/history';
+import { setStorage } from '@/utils/storage';
 
 export default () => {
   const [{ redirect: redirectPath }] = useUrlState<{ redirect?: string }>();
@@ -12,7 +13,7 @@ export default () => {
     const result = await runAsync(params);
     if (!result) return;
 
-    localStorage.setItem('token', result.data.token);
+    setStorage('token', result.data.token);
     onHistoryReplace(redirectPath || '/');
   };
 

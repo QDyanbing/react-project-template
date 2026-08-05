@@ -1,6 +1,7 @@
 import i18n from '@/i18n';
 import { onHistoryReplace } from '@/utils/history';
 import { emitMessage } from '@/utils/message';
+import { getStorage } from '@/utils/storage';
 
 type RequestOptions = Omit<RequestInit, 'body' | 'method'> & {
   skipErrorHandler?: boolean;
@@ -212,7 +213,7 @@ async function send<TData, TResult>(
 ): Promise<API.SuccessResult<TResult> | undefined> {
   const { skipErrorHandler = false, ...init } = options;
   const headers = new Headers(init.headers);
-  const token = localStorage.getItem('token');
+  const token = getStorage('token');
   let requestUrl = url;
 
   if (method === 'GET') requestUrl = appendSearchParams(url, data);

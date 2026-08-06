@@ -691,3 +691,56 @@ JSX Props 固定按以下优先级排列：
 - 路由声明只能放在 `config/routes.ts`。
 - Router 创建和 History 模式只能放在 `config/router.ts`。
 - 路由使用手动配置，不引入文件式路由。
+- 所有页面路由默认懒加载。
+- Login 位于公共 Layout 外；业务页和 403、404 等状态页位于公共 Layout 下。
+- 未匹配地址必须重定向 404。
+- 业务层禁止直接使用 TanStack Router Navigate、`router.navigate`、`location`、`history`、`window.open`。
+- 普通跳转使用 `onHistoryChange`。
+- 替换当前记录使用 `onHistoryReplace`。
+- 返回来源页并提供兜底地址使用 `onHistoryBack`。
+- 新标签页使用 `onOpenTab`。
+- 取消和提交成功优先返回来源页，不能无条件跳转到固定列表页。
+
+## 19. Request、Token 与 Storage
+
+- 业务接口只能通过 `src/utils/request.ts`。
+- Request 统一处理 Headers、Authorization、Query、JSON、HTTP 错误和业务错误。
+- 页面、组件、Hook 和 Model 禁止直接调用原生 `fetch`。
+- 调用方显式传入 Authorization 时 Request 不得覆盖。
+- Token 只能通过 `getToken`、`setToken`、`deleteToken` 访问。
+- 业务代码不得知道 Token 的 Storage Key。
+- 普通前端存储只能通过 `getStorage`、`setStorage`、`deleteStorage`。
+- 业务代码不得直接调用 `localStorage`、`sessionStorage` 或操作 Cookie。
+- Storage 底层错误必须在工具层消化，不向业务层抛出浏览器存储异常。
+- 全局已处理的请求错误，页面和行为 Hook 不重复 Catch 和提示。
+- 只有明确关闭全局错误处理的局部表单错误才允许调用方捕获。
+
+## 20. 国际化
+
+- 所有用户可见文案必须进入 Locale 文件。
+- 页面 Namespace 使用页面目录对应的小驼峰，例如 `HomeSet -> homeSet`。
+- 公共组件拥有自己的 Namespace，不复用某个页面 Namespace。
+- `zh-CN.ts` 和 `en-US.ts` 的 Key 结构必须完全一致。
+- 页面和组件只加载自己的 Namespace。
+- 动态数值使用 i18next 插值。
+- 文案中包含 DOM 或 Ant Design 组件时使用 `Trans`，不得拆成多个字符串手工拼接。
+- Ant Design Locale、Day.js Locale 和业务语言必须由同一次语言切换驱动。
+- 禁止在 JSX、Message、Placeholder、Form Rules、Popconfirm 中新增硬编码用户文案。
+
+## 21. 公共能力
+
+- 页面跳转统一使用 `src/utils/history.ts`。
+- 日期和时间格式统一使用 `src/utils/format.ts` 以及导出的格式常量。
+- 默认分页数量统一使用 `src/utils/pageSize.ts`。
+- URL 查询状态统一使用 `src/hooks/useUrlState.ts`。
+- 全局请求错误提示通过 `src/utils/message` 注册。
+- 普通业务成功提示通过 `App.useApp()` 获取，不使用静态 Message API。
+- 新增公共工具前必须至少满足一项：消除跨模块真实重复、隔离可替换底层、统一全局行为。
+- 当前页面私有逻辑不得因为“以后可能复用”提前移入公共目录。
+
+## 22. Mock
+
+- Mock 文件位于根目录 `mock`，文件名与 Service 领域一致。
+- Mock 路径和 HTTP 方法必须与 Service 完全一致。
+- Mock 返回结构必须符合 `API.SuccessResult` 或错误响应结构。
+- Mock 是 Vite 服务端行为，不得依赖浏览器刷新保存状态。

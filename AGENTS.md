@@ -489,3 +489,122 @@ pages/HomeSet/
 ## 12. Ant Design 组件优先级
 
 ### 12.1 禁止原生节点替代现有组件
+
+存在 Ant Design 对应组件时必须使用 Ant Design：
+
+- 布局：`Flex`，不得使用 `div` 实现 Flex/Grid 页面布局。
+- 间距：优先 `Flex gap`；`Space` 仅用于小范围行内操作集合。
+- 文本和标题：`Typography.Text`、`Typography.Title`、`Typography.Paragraph`，不得直接使用 `span`、`p`、`h1` 至 `h6`。
+- 图片：`Image`，不得直接使用 `img`，除非必须绕过预览和加载行为且有明确原因。
+- 操作：`Button`，不得使用原生 `button`、可点击 `div` 或可点击 `span`。
+- 链接式操作：`Button type="link"`，不得用无路由语义的原生 `a`。
+- 输入：`Input`、`Input.Search`、`Input.TextArea`，不得使用原生 `input`、`textarea`。
+- 选择：`Select`、`TreeSelect`、`Cascader`，不得自行实现下拉层。
+- 表单：`Form`、`Form.Item`，不得自行拼 Label、错误文案和校验状态。
+- 加载：`Spin`、`Skeleton`，不得手写 Loading DOM。
+- 空状态：`Empty`，不得手写空状态图标和文案布局。
+- 结果页：`Result`，不得为 403、404、500 单独重写结构和样式。
+- 提示：`App.useApp()` 提供的 Message、Notification、Modal。
+- 危险确认：`Popconfirm` 或 Modal，不得使用 `window.confirm`。
+- 分页：`Pagination`，不得自行计算和渲染页码。
+- 数据展示：优先 `Table`、`Descriptions`、`List`、`Statistic`。
+- 标签和状态：`Tag`、`Badge`，不得用带背景色的 `span` 模拟。
+- 图标：优先 `@ant-design/icons`，不得使用 Emoji 或手写 SVG 代替已有图标。
+
+### 12.2 允许原生节点的条件
+
+只有以下情况允许原生节点：
+
+- React 挂载点和浏览器必须的基础节点。
+- Ant Design 没有对应语义组件。
+- 第三方库明确要求传入原生节点。
+- 使用原生语义元素能带来不可替代的可访问性，并且 Ant Design 组件无法通过 `component` 等 Props 实现。
+
+使用前必须先查询当前 Ant Design 版本的组件 API，不得仅凭记忆认定“没有组件”。
+
+### 12.3 Props 优先于样式
+
+- 先使用组件自身 Props。
+- 再使用 Component Token 和全局 Token。
+- 再使用组件提供的 `className`、`classNames` 语义插槽。
+- 最后才允许新增 CSS Module。
+- 不得通过覆盖 `.ant-*` 内部类名修改组件。
+- 不得使用 `!important` 对抗 Ant Design 样式。
+
+## 13. 禁止内联样式
+
+- TSX 中禁止使用 `style` Prop。
+- TSX 中禁止使用 Ant Design 的 `styles` Prop。
+- 禁止创建 `CSSProperties` 对象后传给组件。
+- 禁止使用对象展开动态拼接内联样式。
+- 禁止为了少写一个 Class 而写内联尺寸、颜色、间距和定位。
+- 动态视觉状态优先使用组件 Props、`className` 条件切换、`classNames` 或 Token。
+- 确实无法由 Class 和 Token 表达的动态值必须先调整组件设计，不得直接突破该规则。
+
+## 14. Less 与主题变量
+
+### 14.1 是否允许创建 Less
+
+只有以下情况允许新增或修改 Less：
+
+- 页面整体区域需要 Flex 占位、滚动或固定尺寸。
+- Ant Design Props 和 Token 无法表达必要布局。
+- 需要页面级背景、定位或复杂视觉设计。
+- 需要使用组件 `classNames` 语义插槽调整必要样式。
+
+以下情况不得创建 Less：
+
+- 只为了给组件增加 Ant Design 已有的 Margin、Padding、Gap。
+- 只为了修改 Button、Result、Empty、Form 等已有组件默认样式。
+- 只为了增加一个无业务意义的 Wrapper。
+- 403、404 等 Result 页面可以由公共 Layout 定位时，不得增加页面样式文件。
+
+### 14.2 变量来源
+
+CSS 属性值优先级固定为：
+
+1. Ant Design CSS Variables，例如 `var(--ant-padding)`、`var(--ant-color-bg-container)`。
+2. `src/theme/variables.ts` 中的项目级语义变量，例如 `--layout-header-height`。
+3. CSS 语法控制值，例如 `0`、`auto`、`none`、`inherit`、`transparent`、`100%`、`1fr`。
+4. 前三项无法覆盖的视觉值必须先加入 `src/theme/variables.ts`，再通过 CSS Variable 使用。
+
+- 项目级变量必须按领域命名，例如 `--layout-*`、`--table-*`、`--login-*`。
+- 不新增 `--size1`、`--space2`、`--value` 等无语义变量。
+- Less 中禁止直接写入表达视觉规格的硬编码尺寸、间距、字号、圆角、颜色、阴影和定位偏移。
+- 颜色优先使用 Ant Design Color Token。
+- 项目级变量确需声明颜色值时使用八位完整十六进制格式，遵守 Stylelint `color-hex-length: long`。
+
+### 14.3 Less 结构
+
+- 页面和组件的 `*.module.less` 必须使用嵌套结构，只能存在一个顶级根类。
+- CSS Module 根类使用页面或组件名，例如 `.home`、`.homeSet`、`.searchBar`。
+- 其他元素类、状态类、伪类和媒体查询必须按照实际 DOM 层级嵌套在根类中，不得写成与根类并列的顶级选择器。
+- `Spin` 容器类固定命名为 `.container`，并嵌套在对应页面根类中。
+- 页面内部类使用 `header`、`searchBar`、`body`、`footer`、`action`、`table` 等语义名。
+- 禁止 `box1`、`content1`、`leftBox`、`wrapper2` 等弱语义命名。
+- 禁止把 `.home`、`.container`、`.header`、`.body` 等同一页面选择器平铺为多个顶级规则块。
+- 嵌套深度不超过三层；超过时优先拆组件。
+- `src/global.less` 只允许为 `html`、`body`、`#root`、全局 Reset 和全局基础样式保留必要的顶级选择器，不得承载页面或组件样式。
+- 禁止使用 `:global` 修改 Ant Design 内部结构，除非当前组件没有语义 `classNames` API，且修改范围被页面根类严格限制。
+
+### 14.4 CSS 属性顺序
+
+同一规则块属性按以下顺序书写：
+
+1. 定位和层级：`position`、`inset`、`z-index`
+2. 布局：`display`、`flex`、`grid`、`align-*`、`justify-*`
+3. 尺寸：`width`、`height`、`min-*`、`max-*`
+4. 间距：`margin`、`padding`、`gap`
+5. 溢出：`overflow`
+6. 字体：`font-*`、`line-height`、`text-*`
+7. 边框和圆角：`border`、`border-radius`
+8. 背景和颜色：`background`、`color`
+9. 阴影、透明和变换：`box-shadow`、`opacity`、`transform`、`filter`
+
+属性之间不插空行；嵌套子块前空一行。
+
+## 15. Imports、空行和代码顺序
+
+### 15.1 Import 分组
+
+Imports 固定分为三组：

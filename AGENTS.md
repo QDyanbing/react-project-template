@@ -451,3 +451,41 @@ pages/HomeSet/
 ## 10. 命名规则
 
 ### 10.1 文件和目录
+
+- 页面目录：`Home`、`HomeDetail`、`HomeSet`。
+- 组件目录：`SearchBar`、`LocaleSwitch`。
+- Hook 文件：`useCreate.ts`、`useModify.ts`、`useDelete.ts`。
+- Store 文件：`usePage.ts`、`useData.ts`、`useDetail.ts`。
+- Service 文件：业务领域小驼峰，例如 `home.ts`、`account.ts`。
+- Service 类型文件：`typing.<domain>.d.ts`，例如 `typing.home.d.ts`。
+- Locale 文件：固定为 `zh-CN.ts`、`en-US.ts`。
+- CSS Module：页面入口使用 `index.module.less`，单文件组件使用与组件一致的 `*.module.less`。
+
+### 10.2 标识符
+
+- React 组件、TypeScript 类型和接口：大驼峰。
+- 普通变量、方法、对象字段：小驼峰。
+- React Hook：必须以 `use` 开头。
+- 事件方法：必须以 `on` 开头，例如 `onSearch`、`onCreate`、`onDelete`。
+- 页面生命周期 Action：固定使用 `mount`、`unmount`，不得新增 `init`、`destroy`、`onLoad` 等平行命名。
+- 常量：全大写下划线，例如 `DATE_FORMAT`、`DEFAULT_PAGE_SIZE`。
+- Zustand Store 类型：统一命名为 `Store`，不得使用 `IStore`、`PageStore` 等同义命名。
+- 布尔值使用 `is`、`has`、`can`、`should` 前缀；不得使用含义不明的 `flag`。
+- 数组使用复数名；不得使用 `listData`、`dataList` 等重复语义。
+
+## 11. 导出与函数写法
+
+- 页面、组件、Hook、Zustand Store 必须默认导出。
+- 页面、组件和 Hook 优先使用匿名箭头函数：`export default () => {}`。
+- Service 和公共工具使用具名箭头函数：`export const getSearch = (...) => {}`。
+- 禁止在新业务代码中使用 `export default function Xxx()` 或 `export function getSearch()`。
+- 只有函数重载、递归或确实依赖 Hoisting 时才允许函数声明，并必须能够说明原因。
+- 一个文件只能有一个主要职责。
+- 一个行为 Hook 只能处理一个动作。
+- 不得为单个文件创建仅用于转发导出的 `index.ts`。
+- 不得新增无意义的参数类型、返回类型或中间接口。
+- TypeScript 可以可靠推导时不得手写重复类型。
+
+## 12. Ant Design 组件优先级
+
+### 12.1 禁止原生节点替代现有组件

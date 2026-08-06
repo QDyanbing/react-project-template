@@ -299,3 +299,70 @@ Store 文件固定按以下顺序书写：
 同组声明之间不空行，不同组之间空一行。
 
 ## 8. 视图层规范
+
+### 8.1 页面职责
+
+页面只能负责：
+
+- 消费数据 Store 和行为 Hook。
+- 定义 Table Columns、Descriptions Items 等视图配置。
+- 组织 Header、SearchBar、Body、Footer。
+- 绑定事件。
+- Form 创建、字段校验和 `onFinish` 编排。
+- 在 `useEffect` 中调用 `mount`，Cleanup 返回 `unmount`。
+
+页面禁止：
+
+- 导入 Service、Request 或直接调用 `fetch`。
+- 在 JSX 文件中写列表和详情请求。
+- 在视图层解包复杂接口响应。
+- 重复维护 Store 已有的 `uuid`、`params`、`data`、`total`、`open`。
+- 在页面中处理全局请求错误。
+
+### 8.2 页面根节点
+
+- 有页面级 Loading 的业务页面根节点必须是 Ant Design `Spin`。
+- `spinning` 统一合并查询 Loading 和页面级行为 Loading。
+- 删除等行级动作如果会影响整个列表，Loading 放到页面 `Spin`，不得让每一行删除按钮同时显示 Loading。
+- `Spin.classNames.root` 使用页面模块语义，例如 `styles.home`、`styles.homeDetail`、`styles.homeSet`。
+- `Spin.classNames.container` 固定使用 `styles.container`。
+- Spin 内不得再增加只用于承载页面 Class 的无意义根节点。
+
+### 8.3 页面结构
+
+页面结构固定使用以下语义区域，按需存在：
+
+1. `header`
+2. `searchBar`
+3. `body`
+4. `footer`
+
+- 没有实际内容的 Header 不得创建。
+- 搜索区和操作区必须在 SearchBar 内分别使用一层 `Flex`，即使当前各只有一个控件，也要为后续扩展保留稳定结构。
+- 列表主体使用 Table，Pagination 独立放在 Footer。
+- Table 必须设置 `pagination={false}`，不得使用 Table 内置分页。
+- 需要固定表头时由 Table 的 Sticky/Scroll 能力实现，不得复制两份 Table。
+- 操作列的 `dataIndex` 使用实体主键，例如 `uuid`。
+- 操作列设置够用的固定宽度，不得用超宽页面或横向溢出掩盖列宽问题。
+- 危险操作必须使用 `Popconfirm` 或更明确的确认组件，不得点击后立即执行。
+
+### 8.4 页面私有组件
+
+- 强业务耦合的页面私有组件可以直接读取当前页面 Store 和行为 Hook，避免层层传递 Props。
+- 公共组件和纯展示组件必须使用 Props，不得依赖具体页面 Store。
+- SearchBar、DataSet、Detail 等组件只负责单一区域，不得复制页面级请求和状态。
+- 不得为了“组件化”拆出只有一行 JSX、没有独立语义的组件。
+
+### 8.5 Form
+
+- 使用 Ant Design Form 管理字段、校验和提交。
+- Form 类型能够从 `Form.useForm<T>()` 推导时，不在 `<Form<T>>` 上重复标注。
+- 字段校验只能放在 `Form.Item.rules` 或明确的表单校验函数中。
+- `onFinish` 只根据当前模式调用对应行为 Hook，不直接调用 Service。
+- 修改态详情返回后使用 `form.setFieldsValue`；无详情时使用 `form.resetFields`。
+- 取消按钮调用 `onHistoryBack(defaultPath)`，不得固定跳回某个与来源无关的页面。
+- 提交按钮通过 `form.submit()` 触发表单流程，不绕过 Form 校验。
+
+## 9. 页面目录契约
+
+页面目录使用大驼峰命名，页面入口固定为 `index.tsx`。

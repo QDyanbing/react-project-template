@@ -365,4 +365,89 @@ Store 文件固定按以下顺序书写：
 
 ## 9. 页面目录契约
 
-页面目录使用大驼峰命名，页面入口固定为 `index.tsx`。
+### 9.1 列表页
+
+一个带查询、分页和操作的列表页按以下结构组织：
+
+```text
+pages/Home/
+  components/
+    SearchBar/
+      index.tsx
+      index.module.less       仅存在必要样式时创建
+  hooks/
+    useDelete.ts              每个提交动作一个 Hook
+  locale/
+    en-US.ts
+    zh-CN.ts
+  models/
+    usePage.ts                ready、查询条件、分页条件
+    useData.ts                列表数据和列表查询
+  index.tsx                   页面组合、Table、Pagination、生命周期
+  index.module.less           仅存在必要样式时创建
+```
+
+固定职责：
+
+- `usePage` 管理 `ready`、搜索条件、分页条件、`mount`、`unmount`。
+- `useData` 只负责一个列表查询，暴露 `loading`、`data`、`total`、`onRefresh`。
+- `SearchBar` 管理搜索区和操作区，不直接发请求。
+- `useDelete` 只负责删除动作。
+- `index.tsx` 负责 Columns、页面结构、分页和挂载卸载。
+
+### 9.2 详情页
+
+```text
+pages/HomeDetail/
+  locale/
+    en-US.ts
+    zh-CN.ts
+  models/
+    usePage.ts                uuid 等页面初始化参数
+    useDetail.ts              详情数据和详情查询
+  index.tsx
+  index.module.less           仅存在必要样式时创建
+```
+
+固定职责：
+
+- `usePage` 保存当前页面的 `uuid`，提供 `mount`、`unmount`。
+- `useDetail` 只负责详情接口和详情数据。
+- 页面不得直接调用 `getDetail`。
+
+### 9.3 新增与修改页
+
+新增和修改共用一个页面时按以下结构组织：
+
+```text
+pages/HomeSet/
+  hooks/
+    useCreate.ts
+    useModify.ts
+  locale/
+    en-US.ts
+    zh-CN.ts
+  models/
+    usePage.ts                ready、uuid
+    useDetail.ts              修改态详情数据
+  index.tsx                   Form、校验、模式编排
+  index.module.less           仅存在必要样式时创建
+```
+
+固定职责：
+
+- 是否为修改态直接通过 `uuid` 判断，不新增 `isModify` 等重复状态。
+- `uuid` 由 `usePage` 保存；`useModify` 从 Store 读取，不要求页面再次传入。
+- `useDetail` 只在存在 `uuid` 时查询详情。
+- Form 校验和 `onFinish` 在视图层。
+- 新增和修改分别使用 `useCreate`、`useModify`，不得合并成 `useSubmit`。
+
+### 9.4 简单页面
+
+- 403、404 等无共享状态、无请求页面可以只有 `index.tsx` 和 `locale`。
+- Login 等有单一动作但无查询状态的页面可以只有 `hooks`、`locale`、`index.tsx` 和必要样式。
+- 不得为了满足目录外观创建空的 `components`、`hooks` 或 `models`。
+
+## 10. 命名规则
+
+### 10.1 文件和目录

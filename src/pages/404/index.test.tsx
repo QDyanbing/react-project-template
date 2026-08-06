@@ -3,7 +3,7 @@ import i18n from '@/i18n';
 import { beforeEach, expect, test, vi } from 'vitest';
 import { render } from 'vitest-browser-react';
 
-import ForbiddenPage from '.';
+import NotFoundPage from '.';
 
 const onHistoryChange = vi.hoisted(() => vi.fn());
 
@@ -13,11 +13,11 @@ beforeEach(() => {
   onHistoryChange.mockReset();
 });
 
-test('展示无权限提示和返回入口', async () => {
+test('展示页面不存在提示并提供返回入口', async () => {
   await i18n.changeLanguage('zh-CN');
-  const screen = await render(<ForbiddenPage />);
+  const screen = await render(<NotFoundPage />);
 
-  await expect.element(screen.getByText('暂无访问权限')).toBeVisible();
+  await expect.element(screen.getByText('页面不存在')).toBeVisible();
   const back = screen.getByRole('button', { name: '返回首页' });
   await expect.element(back).toBeVisible();
 

@@ -5,6 +5,7 @@ export default defineConfig({
   test: {
     coverage: {
       provider: 'v8',
+      include: ['src/**/*.{ts,tsx}'],
       exclude: [
         '**/*.d.ts',
         'src/**/locale/**',

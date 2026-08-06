@@ -9,6 +9,7 @@ build/
 coverage/
 playwright-report/
 test-results/
+.vitest-attachments/
 
 # Cache
 .cache/

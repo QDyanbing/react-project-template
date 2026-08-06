@@ -607,4 +607,87 @@ CSS 属性值优先级固定为：
 
 ### 15.1 Import 分组
 
-Imports 固定分为三组：
+1. 第三方依赖。
+2. 项目绝对路径：`@/`、`@config/`。
+3. 当前目录相对路径。
+
+- 不同组之间空一行。
+- 同一组内部不空行。
+- 类型 Import 使用 `import type`。
+- Import 排序最终以 Prettier Organize Imports 结果为准，不手工制造与格式化器冲突的顺序。
+
+### 15.2 页面内部顺序
+
+页面和组件函数内部固定按以下顺序：
+
+1. 数据 Store：`usePage`、`useData`、`useDetail`
+2. 行为 Hook：`useCreate`、`useModify`、`useDelete`
+3. 路由、URL、Form 等框架 Hook
+4. 国际化、Ant Design App 上下文
+5. 页面局部 State
+6. 派生值：`columns`、`items`、`spinning` 等
+7. 事件方法：`onFinish`、`onSubmit` 等
+8. `useEffect`
+9. Return JSX
+
+- 同一组声明之间不得空行。
+- 不同组之间必须空一行。
+- 多个事件方法之间空一行。
+- 多个 `useEffect` 之间空一行。
+- `useEffect` 必须位于事件方法之后、Return 之前。
+- 不得在 `useEffect` 之后继续声明 Columns、事件方法或派生值。
+- 函数体开始后不空行；Return 前只保留一个空行。
+- 不得出现连续两个以上空行。
+
+### 15.3 对象与返回值顺序
+
+- Interface、初始 State、Return Object 的字段顺序必须一致。
+- State 字段在前，Action 字段在后。
+- Loading 在数据之前，例如 `loading`、`data`、`total`。
+- Props 类型中必填字段在前，可选字段在后；同类字段按 JSX 使用顺序排列。
+- 不得为了“看起来完整”返回内部方法和中间状态。
+
+## 16. JSX Props 顺序
+
+JSX Props 固定按以下优先级排列：
+
+1. 无值布尔 Props，例如 `vertical`、`allowClear`、`sticky`
+2. 静态短 Props，例如 `type="primary"`、`size="small"`、`mode="inline"`
+3. 静态长 Props
+4. 标识和数据 Props，例如 `rowKey`、`name`、`items`、`columns`、`dataSource`
+5. 受控状态 Props，例如 `value`、`open`、`loading`、`disabled`
+6. 展示配置 Props，例如 `icon`、`placeholder`、`rules`
+7. `className`、`classNames`
+8. Render Props 和复杂函数 Props
+9. `onXxx` 事件 Props
+
+同一优先级内：
+
+- 静态值在动态值前。
+- 短的在前，长的在后。
+- 语义主属性在辅助属性前。
+
+禁止：
+
+- 动态 Props 全部放在静态 Props 前。
+- `onClick` 穿插在数据 Props 中间。
+- 为了消除 Promise 类型提示给事件增加无意义的 `void`。
+- 在 JSX 中写多层业务判断或嵌套三目运算。
+
+## 17. 条件、函数与抽象
+
+- 禁止嵌套三目运算；简单二选一可以使用单层三目。
+- 多状态处理使用 `if / else if / else` 或 `switch`。
+- 能使用匿名箭头函数时优先使用匿名箭头函数。
+- 不添加只被调用一次、且没有独立语义的包装函数。
+- 不为了去掉三行重复代码创建几十行泛型或条件类型。
+- 不使用 `continue use`、`first phase` 等依赖历史上下文的命名和注释。
+- 不添加无意义的 `void`、`Boolean()`、双重取反、中间变量或类型断言。
+- 异步 Action 没有业务返回值时不得返回 `true`、`false`。
+- 空值行为必须明确区分 `undefined`、空字符串、`null`，不得擅自互相转换。
+
+## 18. 路由与跳转
+
+- 路由声明只能放在 `config/routes.ts`。
+- Router 创建和 History 模式只能放在 `config/router.ts`。
+- 路由使用手动配置，不引入文件式路由。

@@ -185,4 +185,70 @@ src/
 - 不得创建 `HomeResult extends Result<...>` 这类只包一层的接口。
 - Service 的参数和返回类型必须使用业务真实类型，不得使用 `any`、`object`、`Record<string, unknown>` 逃避建模。
 
-## 6. 数据层规范
+### 6.1 Zustand 固定写法
+
+- 页面共享状态必须使用 Zustand `create<Store>`。
+- 不增加 Provider，不在页面根节点包裹页面 Store。
+- Store 内不得调用 React Hook。
+- Store 之间协作使用 `getState()` 和 `subscribe()`，不得在 Store 创建函数中调用另一个 Store Hook。
+- 组件读取同一 Store 时一次调用并解构所需字段，不得连续写多次同一 Store Selector。
+- 只有依赖旧 State 计算新 State 时使用函数式 `set`；只修改单个字段时直接 `set({ field: value })`。
+- Zustand 的局部更新不会覆盖未传入字段，不得为了“保留其他字段”手动展开完整 State。
+
+### 6.2 usePage
+
+列表页 `usePage` 的 State 顺序固定为：
+
+1. `ready`
+2. `params`
+3. 查询条件 Action
+4. 分页 Action
+5. `mount`
+6. `unmount`
+
+详情页和设置页 `usePage` 的 State 顺序固定为：
+
+1. `ready`，仅确实需要区分挂载状态时存在
+2. `uuid` 或其他页面初始化参数
+3. `mount`
+4. `unmount`
+
+- `uuid` 已经能表达是否可查询时，不得额外保存 `ready`。
+- 搜索条件发生变化时必须把 `pageNum` 重置为 1。
+- 分页变化只更新 `pageNum`、`pageSize`。
+- 列表页离开时默认只把 `ready` 改为 `false`，保留查询条件和分页，以便再次进入恢复上次条件。
+- 详情页离开时清空 `uuid`。
+- 默认分页数量必须来自 `src/utils/pageSize.ts`。
+
+### 6.3 useData 与 useDetail
+
+- `useData` 只能负责列表请求。
+- `useDetail` 只能负责详情请求。
+- 一个查询 Store 默认只能有一个主接口。
+- 查询 Store 直接调用 Service，不使用 `useRequest`。
+- 查询由 `usePage` 的 `ready`、`params` 或 `uuid` 变化驱动，不在页面中手动重复触发。
+- 查询 Store 必须暴露 `loading`；列表额外暴露 `data`、`total`、`onRefresh`。
+- `loading` 必须排在 `data`、`total` 之前。
+- 列表初始值固定为 `data: []`、`total: 0`。
+- 详情无数据使用 `undefined`，不得伪造空实体。
+- 请求返回前页面参数可能变化时，写入前必须检查当前 `uuid` 或请求条件，避免旧响应覆盖新页面。
+- `finally` 只负责与当前请求对应的 Loading 收尾，不得清空有效数据。
+- 页面卸载时应重置当前查询 Store 的 Loading；是否清空数据根据页面语义决定。
+- 私有请求方法使用 `getData`，对外刷新方法使用 `onRefresh`。
+
+### 6.4 Store 内部顺序
+
+Store 文件固定按以下顺序书写：
+
+1. Imports
+2. `Store` 接口
+3. `create<Store>`
+4. 初始 State 常量，顺序与 `Store` 接口一致
+5. 私有查询方法
+6. 对外 Action
+7. 其他 Store 的订阅
+8. Return，字段顺序与 `Store` 接口一致
+
+不得在 State 常量之间穿插 Action，不得在订阅之后继续声明主要方法。
+
+## 7. 行为层规范

@@ -100,3 +100,89 @@ src/
 - 不得新增笼统的 `common`、`shared`、`helpers`、`misc`、`styles` 目录。
 - 公共能力必须按真实职责进入 `components`、`hooks`、`services` 或 `utils`。
 - `config`、`mock`、`plugins` 不得移动到 `src`。
+
+## 5. 服务层规范
+
+### 5.1 文件职责
+
+`src/services/<domain>.ts` 只能包含：
+
+- Request 引入。
+- 同一业务领域的接口方法。
+- URL、Path 参数、Query 参数、Body 参数的组装。
+- Request 入参和返回值泛型。
+
+禁止包含：
+
+- React Hook、Zustand、`useRequest`。
+- Ant Design、`message`、`notification`、Modal。
+- 页面跳转、成功提示、分页组件状态。
+- Form 数据转换和视图展示逻辑。
+- 接口响应的页面级二次缓存。
+
+### 5.2 方法命名与顺序
+
+- 向服务端提交数据或改变服务端数据时，方法名必须以 `set` 开头，包括新增、修改、删除和其他写操作。
+- 从服务端获取数据且不改变服务端数据时，方法名必须以 `get` 开头，包括列表、详情、选项和其他读操作。
+- Service 文件名已经表达业务模块，`set`、`get` 后只能追加当前接口要执行的动作，不得重复模块名称。
+- 正确命名：`setCreate`、`setModify`、`setDelete`、`getSearch`、`getDetail`、`getOptions`。
+- 禁止命名：`setHomeCreate`、`getHomeSearch`、`createHome`、`getHomeList`、`fetchData`、`loadData`、`submit`、`handleSave`。
+
+一个 Service 文件的接口顺序固定为：
+
+1. `setCreate`
+2. `setModify`
+3. `setDelete`
+4. 其他 `setXxx`
+5. `getSearch`
+6. `getDetail`
+7. `getOptions`
+8. 其他 `getXxx`
+
+同一组内按业务操作顺序排列，不得把 `get` 和 `set` 交错。
+
+### 5.3 RESTful 与 URL
+
+- 创建资源使用 `POST /resource`。
+- 修改资源使用 `PUT /resource/${uuid}`。
+- 删除资源使用 `DELETE /resource/${uuid}`。
+- 列表查询使用 `GET /resource`。
+- 详情查询使用 `GET /resource/${uuid}`。
+- 接口需要通过主键、父级主键或其他标识定位具体数据时，定位参数必须作为独立参数传递，不得合并到 Query 或 Body 数据对象中。
+- 定位参数必须排在业务数据参数之前；存在多个定位参数时，参数顺序必须与 URL Path 中的出现顺序一致。
+- Query 或 Body 数据统一放在 `data` 参数中，只包含查询条件或需要提交的业务字段。
+- 正确写法：`setModify(uuid: string, data: API.HomeSetParams)`、`getChild(uuid: string, data: API.HomeChildParams)`、`getDetail(uuid: string)`。
+- 禁止把 `uuid` 合并进 `HomeSetParams`、`HomeChildParams`，也不得为了传递单个标识创建 `<Domain>UuidParams`。
+- 所有接口地址必须使用模板字符串，包括没有变量的地址： `` `/api/home` ``。
+- 页面和 Model 不得拼接接口 URL。
+- HTTP 方法语义必须与资源操作一致，不得把所有接口统一写成 POST。
+
+### 5.4 Service 类型
+
+类型固定放在 `src/services/typing.<domain>.d.ts` 的 `API` Namespace 中。
+
+- 类型名必须以大驼峰模块名开头，再追加具体用途，避免 `API` Namespace 中出现重名。
+- 方法名中省略的模块名必须在类型名中补全，例如 `setCreate` 使用 `HomeSetParams`，`getSearch` 使用 `HomeParams`。
+- 禁止使用 `SetParams`、`Params`、`Data`、`Detail` 等缺少模块名的短类型名。
+
+同一领域类型顺序固定为：
+
+1. 新增和修改参数：`<Domain>SetParams`
+2. 列表查询参数：`<Domain>Params`
+3. 实体类型：`<Domain>`，不追加含义空泛的 `Data`
+4. 其他选项或详情专用类型
+
+字段顺序固定为：
+
+1. 主键和标识字段
+2. 核心必填业务字段
+3. 可选业务字段
+4. 状态字段
+5. 创建和修改信息
+
+- 可选字段必须使用 `?` 表达，不得用必填的 `string | undefined` 代替。
+- 不得重复定义 `SuccessResult`、`PageResult` 等全局响应结构。
+- 不得创建 `HomeResult extends Result<...>` 这类只包一层的接口。
+- Service 的参数和返回类型必须使用业务真实类型，不得使用 `any`、`object`、`Record<string, unknown>` 逃避建模。
+
+## 6. 数据层规范

@@ -252,3 +252,50 @@ Store 文件固定按以下顺序书写：
 不得在 State 常量之间穿插 Action，不得在订阅之后继续声明主要方法。
 
 ## 7. 行为层规范
+
+### 7.1 职责
+
+行为层位于页面 `hooks`，负责手动动作：
+
+- 登录、退出。
+- 新增、修改、删除。
+- 保存、导入、导出、冻结、解绑等用户触发操作。
+- 成功提示。
+- 成功后的刷新、关闭或页面返回。
+
+行为层不得：
+
+- 管理搜索条件和分页。
+- 查询列表或详情。
+- 保存与动作无关的共享 State。
+- 渲染 JSX。
+- 执行 Form 校验。
+
+### 7.2 固定规则
+
+- 一个 Hook 只处理一个动作，文件名和触发方法一一对应。
+- `useCreate` 只暴露 `loading`、`onCreate`。
+- `useModify` 只暴露 `loading`、`onModify`。
+- `useDelete` 只暴露 `loading`、`onDelete`。
+- 行为 Hook 使用 `useRequest(serviceMethod, { manual: true })`。
+- Hook 返回值依赖类型推导，不额外声明 `Store` 或返回接口。
+- 修改动作需要的 `uuid` 从页面 Store 获取，不由视图层重复传递。
+- 请求失败默认由 Request 全局处理，行为 Hook 不写空 `catch`，不重复 `message.error`。
+- 请求成功后由行为 Hook完成成功提示和后续动作。
+- 行为方法成功或失败都不得返回无业务含义的 `true`、`false`。
+- 新增、修改成功以及取消操作优先使用 `onHistoryBack(defaultPath)` 返回来源页。
+
+### 7.3 Hook 内部顺序
+
+行为 Hook 固定按以下顺序书写：
+
+1. 页面 Store 或 Store 静态访问准备
+2. 国际化 Hook
+3. Ant Design `App.useApp()` 上下文
+4. `useRequest`
+5. 对外 Action
+6. Return
+
+同组声明之间不空行，不同组之间空一行。
+
+## 8. 视图层规范

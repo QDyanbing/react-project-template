@@ -1,5 +1,6 @@
 import { setTimeout as delay } from 'node:timers/promises';
-import type { MockContext, MockResponse, MockRoute } from '../plugins/mock';
+import type { MockContext, MockRoute } from '../plugins/mock';
+import { authorize, createError, createSuccess } from './utils';
 
 const homeListSeeds = [
   ['用户中心', '管理用户基础信息和账号状态'],
@@ -16,51 +17,33 @@ const homeListSeeds = [
   ['配置中心', '管理系统级配置'],
 ] as const;
 
-let homeList: API.HomeData[] = homeListSeeds.map(([name, description], index) => ({
+let homeList: API.Home[] = homeListSeeds.map(([name, description], index) => ({
   uuid: `00000000-0000-4000-8000-${String(index + 1).padStart(12, '0')}`,
   name,
   description,
 }));
 
-function createSuccess<T>(data: T, status = 200): MockResponse<API.SuccessResult<T>> {
-  return { body: { success: true, data }, status };
-}
+const createNotFound = () => createError('项目不存在', 404);
 
-function createNotFound(): MockResponse<API.ErrorResult> {
-  return {
-    body: {
-      success: false,
-      errorCode: '404',
-      errorMessage: '项目不存在',
-    },
-    status: 404,
-  };
-}
+const createDuplicate = () => createError('项目名称已存在');
 
-function createDuplicate(): MockResponse<API.ErrorResult> {
-  return {
-    body: {
-      success: false,
-      errorType: 'WARNING',
-      errorMessage: '项目名称已存在',
-    },
-  };
-}
-
-function hasDuplicateName(name: string, uuid?: string) {
+const hasDuplicateName = (name: string, uuid?: string) => {
   const normalizedName = name.trim().toLowerCase();
 
   return homeList.some(
     (item) => item.uuid !== uuid && item.name.trim().toLowerCase() === normalizedName,
   );
-}
+};
 
 export default [
   {
     method: 'POST',
     path: `/api/home`,
-    handler: async ({ body }: MockContext<API.HomeSetParams>) => {
+    handler: async ({ body, request }: MockContext<API.HomeSetParams>) => {
+      const authorization = authorize(request);
+      if (!authorization.authorized) return authorization.response;
       await delay(300);
+
       if (hasDuplicateName(body.name)) return createDuplicate();
 
       homeList = [{ uuid: crypto.randomUUID(), ...body }, ...homeList];
@@ -71,7 +54,9 @@ export default [
   {
     method: 'PUT',
     path: `/api/home/:uuid`,
-    handler: async ({ body, params }: MockContext<API.HomeSetParams>) => {
+    handler: async ({ body, params, request }: MockContext<API.HomeSetParams>) => {
+      const authorization = authorize(request);
+      if (!authorization.authorized) return authorization.response;
       const { uuid } = params;
       const current = homeList.find((item) => item.uuid === uuid);
       await delay(300);
@@ -87,7 +72,9 @@ export default [
   {
     method: 'DELETE',
     path: `/api/home/:uuid`,
-    handler: async ({ params }: MockContext) => {
+    handler: async ({ params, request }: MockContext) => {
+      const authorization = authorize(request);
+      if (!authorization.authorized) return authorization.response;
       const { uuid } = params;
       const current = homeList.find((item) => item.uuid === uuid);
       await delay(300);
@@ -102,7 +89,9 @@ export default [
   {
     method: 'GET',
     path: `/api/home`,
-    handler: async ({ url }: MockContext) => {
+    handler: async ({ request, url }: MockContext) => {
+      const authorization = authorize(request);
+      if (!authorization.authorized) return authorization.response;
       const keyword = url.searchParams.get('keyword')?.trim().toLowerCase();
       const pageNum = Number(url.searchParams.get('pageNum'));
       const pageSize = Number(url.searchParams.get('pageSize'));
@@ -123,7 +112,9 @@ export default [
   {
     method: 'GET',
     path: `/api/home/:uuid`,
-    handler: async ({ params }: MockContext) => {
+    handler: async ({ params, request }: MockContext) => {
+      const authorization = authorize(request);
+      if (!authorization.authorized) return authorization.response;
       const detail = homeList.find((item) => item.uuid === params.uuid);
       await delay(300);
 

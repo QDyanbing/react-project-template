@@ -1,18 +1,22 @@
 declare namespace API {
-  interface HomeSetParams {
+  interface RoleSetParams {
     name: string;
     description?: string;
+    permissionCodes: string[];
   }
 
-  interface HomeParams {
+  interface RoleParams {
     keyword?: string;
     pageNum: number;
     pageSize: number;
   }
 
-  interface Home {
+  interface Role {
     uuid: string;
     name: string;
     description?: string;
+    permissions: Permission[];
+    userCount: number;
+    gmtCreate: string;
   }
 }

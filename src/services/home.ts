@@ -1,21 +1,39 @@
 import Request from '@/utils/request';
 
-export function setCreate(data: API.HomeSetParams) {
-  return Request.post<API.HomeSetParams, boolean>(`/api/home`, data);
-}
+/**
+ * 创建项目。
+ *
+ * 权限：无需权限。
+ */
+export const setCreate = (data: API.HomeSetParams) =>
+  Request.post<API.HomeSetParams, boolean>(`/api/home`, data);
 
-export function setModify(uuid: string, data: API.HomeSetParams) {
-  return Request.put<API.HomeSetParams, boolean>(`/api/home/${uuid}`, data);
-}
+/**
+ * 修改指定项目。
+ *
+ * 权限：无需权限。
+ */
+export const setModify = (uuid: string, data: API.HomeSetParams) =>
+  Request.put<API.HomeSetParams, boolean>(`/api/home/${uuid}`, data);
 
-export function setDelete(uuid: string) {
-  return Request.delete<undefined, boolean>(`/api/home/${uuid}`);
-}
+/**
+ * 删除指定项目。
+ *
+ * 权限：无需权限。
+ */
+export const setDelete = (uuid: string) => Request.delete<undefined, boolean>(`/api/home/${uuid}`);
 
-export function getSearch(data: API.HomeParams) {
-  return Request.get<API.HomeParams, API.PageResult<API.HomeData>>(`/api/home`, data);
-}
+/**
+ * 分页查询项目列表。
+ *
+ * 权限：无需权限。
+ */
+export const getSearch = (data: API.HomeParams) =>
+  Request.get<API.HomeParams, API.PageResult<API.Home>>(`/api/home`, data);
 
-export function getDetail(uuid: string) {
-  return Request.get<undefined, API.HomeData>(`/api/home/${uuid}`);
-}
+/**
+ * 获取指定项目的详情。
+ *
+ * 权限：无需权限。
+ */
+export const getDetail = (uuid: string) => Request.get<undefined, API.Home>(`/api/home/${uuid}`);

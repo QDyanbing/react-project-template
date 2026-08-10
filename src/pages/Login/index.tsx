@@ -90,7 +90,7 @@ export default () => {
                 <Typography.Text type="secondary">{t('form.description')}</Typography.Text>
               </Flex>
 
-              <Form<API.LoginParams>
+              <Form<API.AccountLoginParams>
                 layout="vertical"
                 requiredMark={false}
                 initialValues={{ account: 'admin', password: '123456' }}

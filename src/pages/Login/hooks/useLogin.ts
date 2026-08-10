@@ -9,7 +9,7 @@ export default () => {
   const [{ redirect: redirectPath }] = useUrlState<{ redirect?: string }>();
   const { loading, runAsync } = useRequest(setLogin, { manual: true });
 
-  const onLogin = async (params: API.LoginParams) => {
+  const onLogin = async (params: API.AccountLoginParams) => {
     const result = await runAsync(params);
     if (!result) return;
 

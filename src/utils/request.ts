@@ -1,7 +1,7 @@
 import i18n from '@/i18n';
 import { onHistoryReplace } from '@/utils/history';
 import { emitMessage } from '@/utils/message';
-import { getToken } from '@/utils/token';
+import { deleteToken, getToken } from '@/utils/token';
 
 type RequestOptions = Omit<RequestInit, 'body' | 'method'> & {
   skipErrorHandler?: boolean;
@@ -167,11 +167,21 @@ function isSuccessResult(data: unknown): data is API.SuccessResult<unknown> {
 }
 
 function handleGlobalError(error: RequestError) {
-  if (error.redirect) {
-    const currentPath = `${location.pathname}${location.search}`;
+  const currentPath = `${location.pathname}${location.search}`;
+  let redirect = error.redirect;
 
-    if (currentPath !== error.redirect) {
-      onHistoryReplace(error.redirect);
+  if (error.status === 401) {
+    deleteToken();
+    if (location.pathname === '/login') {
+      redirect = undefined;
+    } else if (!redirect) {
+      redirect = `/login?redirect=${encodeURIComponent(currentPath)}`;
+    }
+  }
+
+  if (redirect) {
+    if (currentPath !== redirect) {
+      onHistoryReplace(redirect);
       return;
     }
   }

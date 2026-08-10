@@ -17,18 +17,21 @@ declare global {
         children?: RouteConfig[];
         component: () => Promise<{ default: RouteComponent }>;
         path: string;
+        permissions?: string[];
         redirect?: never;
       }
     | {
         children?: RouteConfig[];
         component?: never;
         path: string;
+        permissions?: never;
         redirect: string;
       }
     | {
         children: RouteConfig[];
         component: () => Promise<{ default: RouteComponent }>;
         path?: never;
+        permissions?: string[];
         redirect?: never;
       };
 }

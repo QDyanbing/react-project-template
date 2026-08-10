@@ -58,7 +58,7 @@
 - 视图层不得直接调用 Service、Request 或 `fetch`。
 - 公共目录不得反向依赖任意具体页面。
 - 一个页面不得导入另一个页面的 `models`、`hooks`、`components` 或样式。
-- 两个页面确实需要共享的能力必须提升到 `src/components`、`src/hooks`、`src/utils` 或独立业务模块后再使用。
+- 两个页面确实需要共享的能力必须提升到 `src/components`、`src/hooks`、`src/models`、`src/utils` 或独立业务模块后再使用。
 
 ### 3.2 四层职责
 
@@ -87,6 +87,7 @@ src/
   hooks/             公共 React Hook
   i18n/              国际化接入层和全局语言资源
   layouts/           公共布局
+  models/            跨页面共享的全局数据层
   pages/             页面模块
   services/          服务层
   theme/             Ant Design Token 和项目级 CSS Variables
@@ -98,7 +99,7 @@ src/
 ```
 
 - 不得新增笼统的 `common`、`shared`、`helpers`、`misc`、`styles` 目录。
-- 公共能力必须按真实职责进入 `components`、`hooks`、`services` 或 `utils`。
+- 公共能力必须按真实职责进入 `components`、`hooks`、`models`、`services` 或 `utils`。
 - `config`、`mock`、`plugins` 不得移动到 `src`。
 
 ## 5. 服务层规范
@@ -198,8 +199,13 @@ src/
 - 后端接口文档只返回关联主键、要求前端提交完整关联对象，或重复定义关联实体结构时，必须先明确指出接口契约问题及其影响，停止按该契约直接实现。
 - 接口契约问题未经确认前，不得通过照抄接口文档、放宽前端类型或在页面临时转换的方式掩盖问题。
 
+## 6. 数据层规范
+
 ### 6.1 Zustand 固定写法
 
+- 页面私有查询 Store 必须放在对应页面的 `models` 目录；跨页面共享的全局查询 Store 必须放在 `src/models`。
+- `src/hooks` 只存放公共 React Hook，不得存放 Zustand Store。
+- 没有独立 `usePage` 的全局查询 Store 必须自行暴露 `mount`、`unmount`；`mount` 负责触发初始化查询，`unmount` 负责终止当前生命周期并清理对应状态。
 - 页面共享状态必须使用 Zustand `create<Store>`。
 - 不增加 Provider，不在页面根节点包裹页面 Store。
 - Store 内不得调用 React Hook。
@@ -825,7 +831,3 @@ JSX Props 固定按以下优先级排列：
 - 路由跳转、Token、Storage、Format 是否使用统一公共能力。
 - 是否只修改了当前任务范围。
 - 是否没有擅自 Stage、Commit、Push、启动服务或运行测试。
-
-## 6. 数据层规范
-
-页面目录使用大驼峰命名，页面入口固定为 `index.tsx`。Imports 固定分为三组：

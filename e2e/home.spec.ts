@@ -1,4 +1,5 @@
 import type { APIRequestContext, Page } from '@playwright/test';
+import getAuthorization from './auth';
 import { type CleanupRegistry, expect, test } from './fixtures';
 
 const getProjectName = (action: string) => `E2E ${action} ${crypto.randomUUID()}`;
@@ -10,18 +11,21 @@ async function openHome(page: Page) {
 }
 
 async function findProjectUuid(request: APIRequestContext, name: string) {
+  const headers = await getAuthorization(request);
   const response = await request.get('/api/home', {
+    headers,
     params: { keyword: name, pageNum: 1, pageSize: 10 },
   });
   expect(response.ok()).toBeTruthy();
 
-  const result = (await response.json()) as API.SuccessResult<API.PageResult<API.HomeData>>;
+  const result = (await response.json()) as API.SuccessResult<API.PageResult<API.Home>>;
 
   return result.data.list.find((item) => item.name === name)?.uuid;
 }
 
 async function deleteProject(request: APIRequestContext, uuid: string) {
-  const response = await request.delete(`/api/home/${uuid}`);
+  const headers = await getAuthorization(request);
+  const response = await request.delete(`/api/home/${uuid}`, { headers });
   if (response.ok() || response.status() === 404) return;
 
   throw new Error(`删除项目失败：${response.status()}`);
@@ -34,7 +38,8 @@ async function deleteProjectByName(request: APIRequestContext, name: string) {
 
 async function createProject(page: Page, cleanup: CleanupRegistry, data: API.HomeSetParams) {
   cleanup.add(`项目 ${data.name}`, (request) => deleteProjectByName(request, data.name));
-  const response = await page.request.post('/api/home', { data });
+  const headers = await getAuthorization(page.request);
+  const response = await page.request.post('/api/home', { data, headers });
   expect(response.ok()).toBeTruthy();
   const uuid = await findProjectUuid(page.request, data.name);
   expect(uuid).toBeTruthy();

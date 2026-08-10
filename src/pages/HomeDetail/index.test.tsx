@@ -70,7 +70,7 @@ test('详情请求没有返回业务结果时展示空状态', async () => {
 });
 
 test('uuid 变化时忽略上一个项目的迟到响应', async () => {
-  let resolveFirst: ((value: API.SuccessResult<API.HomeData>) => void) | undefined;
+  let resolveFirst: ((value: API.SuccessResult<API.Home>) => void) | undefined;
   mockGetDetail
     .mockReturnValueOnce(
       new Promise((resolve) => {

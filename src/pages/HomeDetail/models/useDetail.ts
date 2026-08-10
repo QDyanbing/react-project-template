@@ -5,12 +5,12 @@ import usePage from './usePage';
 
 interface Store {
   loading: boolean;
-  data?: API.HomeData;
+  data?: API.Home;
 }
 
 export default create<Store>((set) => {
   const loading = false;
-  const data: API.HomeData | undefined = undefined;
+  const data: API.Home | undefined = undefined;
 
   const getData = async () => {
     const { uuid } = usePage.getState();

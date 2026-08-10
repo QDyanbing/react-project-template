@@ -4,14 +4,14 @@ import usePage from './usePage';
 
 interface Store {
   loading: boolean;
-  data: API.HomeData[];
+  data: API.Home[];
   total: number;
   onRefresh: () => void;
 }
 
 export default create<Store>((set) => {
   const loading: boolean = false;
-  const data: API.HomeData[] = [];
+  const data: API.Home[] = [];
   const total: number = 0;
 
   const getData = async () => {

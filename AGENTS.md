@@ -717,6 +717,7 @@ JSX Props 固定按以下优先级排列：
 - 所有页面路由默认懒加载。
 - Login 位于公共 Layout 外；业务页和 403、404 等状态页位于公共 Layout 下。
 - 未匹配地址必须重定向 404。
+- 需要权限的页面必须在 `config/routes.ts` 通过 `permissions` 声明，Router 运行时必须执行校验；不得只禁用按钮而允许直接访问受限路由。
 - 业务层禁止直接使用 TanStack Router Navigate、`router.navigate`、`location`、`history`、`window.open`。
 - 普通跳转使用 `onHistoryChange`。
 - 替换当前记录使用 `onHistoryReplace`。
@@ -799,6 +800,25 @@ JSX Props 固定按以下优先级排列：
 - 未明确要求时不得执行全项目自动格式化。
 - 使用 `rg` 搜索文件和文本，不优先使用 `grep`、`find`。
 - 验证失败时先说明失败属于代码问题、环境问题还是已有问题，不擅自扩大修复范围。
+
+### 25.1 浏览器功能测试
+
+- 页面和业务模块的 UI 测试同时承担功能测试职责，必须统一放在 `e2e/**/*.spec.ts`，使用 Playwright 启动完整应用并通过真实路由访问。
+- 页面功能必须通过浏览器执行 `goto`、点击、输入、选择、键盘操作等真实交互，并通过可见内容、控件状态、URL 和最终业务结果断言。
+- 禁止直接 `render` 页面或业务组件，禁止直接调用页面 Model、行为 Hook、Service、Request 或业务方法代替浏览器操作。
+- 禁止通过 `vi.mock`、`vi.spyOn`、模块替换、Fetch Stub、路由替身或 History 替身隔离页面运行边界；页面功能测试不得存在任何 Mock 行为。
+- 禁止通过 Zustand `setState`、Hook 返回值或组件 Props 向被测页面直接注入业务状态。
+- 禁止在测试文件中手写 `API.User`、`API.Role` 等业务实体作为 Table 行、详情或表单回显数据，也不得通过 `mockResolvedValue`、`mockImplementation` 注入接口结果。
+- 固定基础数据必须来自项目正常 Mock 服务的真实数据存储或真实后端；测试专属数据必须通过 Playwright `APIRequestContext` 调用真实 HTTP 接口创建，并在全部浏览器测试完成后通过真实 HTTP 接口清理。
+- Setup 和 Cleanup 只能准备、查询和回收测试数据，不得替代当前 Case 要验证的页面操作；被测功能的请求必须由浏览器交互触发。
+- 每个 Case 必须使用 Playwright 提供的独立 `page` Fixture，不得在 `beforeAll` 中创建并跨 Case 共享 Page 或 BrowserContext；复用浏览器进程不得以牺牲 Case 隔离为代价。
+- Setup 和 Cleanup 调用真实 HTTP 接口时，必须同时校验 HTTP 状态与统一响应结构中的业务成功状态，不得把 HTTP 200 直接视为业务成功。
+- 断言必须覆盖最终业务结果，不得只验证中间跳转或成功提示；例如退出登录必须验证服务端会话已经失效，不能只断言进入登录页。
+- 路由权限必须通过浏览器直接访问受限 URL 验证，不能只断言入口按钮的禁用状态。
+- 多个 Spec 重复使用的真实浏览器登录等基础流程必须提取为 E2E Helper，但 Helper 不得隐藏当前 Case 要验证的业务操作。
+- `src/**/*.test.tsx` 只允许测试完全不依赖路由、Store、Service 和业务接口的纯展示组件，且同样禁止 Mock；页面和业务组件不得使用该测试形式。
+- `.test.ts` 只用于与页面无关的纯工具和底层单元测试，可以按单元边界隔离外部依赖，但不得把这种方式复制到浏览器功能测试。
+- CR 发现页面功能测试存在 Mock、直接渲染页面、直接修改 Store 或手写业务行数据时，必须作为阻断问题提出。
 
 ## 26. Git
 

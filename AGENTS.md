@@ -252,8 +252,10 @@ src/
 - `loading` 必须排在 `data`、`total` 之前。
 - 列表初始值固定为 `data: []`、`total: 0`。
 - 详情无数据使用 `undefined`，不得伪造空实体。
-- 请求返回前页面参数可能变化时，写入前必须检查当前 `uuid` 或请求条件，避免旧响应覆盖新页面。
-- `finally` 只负责与当前请求对应的 Loading 收尾，不得清空有效数据。
+- 列表 `useData` 请求返回后只能检查 `usePage` 当前的 `ready`；`ready` 为 `true` 时直接写入 `data`、`total`，不得重新读取并比较 `params` 引用。
+- 列表 `useData` 禁止增加 `requestId`、`revision` 或其他旧请求淘汰逻辑，除非用户明确要求处理并发请求。
+- 详情 `useDetail` 请求返回后仍需检查当前 `uuid` 与发起请求时的 `uuid` 是否一致，避免旧详情写入新页面。
+- 列表 `useData` 的 `finally` 只检查当前 `ready`；`ready` 为 `true` 时结束 Loading，不得比较 `params` 或清空有效数据。
 - 页面卸载时应重置当前查询 Store 的 Loading；是否清空数据根据页面语义决定。
 - 私有请求方法使用 `getData`，对外刷新方法使用 `onRefresh`。
 

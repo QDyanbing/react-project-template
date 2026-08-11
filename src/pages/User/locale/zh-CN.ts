@@ -19,7 +19,6 @@ export default {
       disabled: '禁用',
     },
     action: {
-      search: '查询',
       create: '新增用户',
       detail: '详情',
       modify: '编辑',

@@ -19,7 +19,6 @@ export default {
       disabled: 'Disabled',
     },
     action: {
-      search: 'Search',
       create: 'Create user',
       detail: 'Details',
       modify: 'Edit',

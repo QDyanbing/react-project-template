@@ -233,7 +233,9 @@ src/
 4. `unmount`
 
 - `uuid` 已经能表达是否可查询时，不得额外保存 `ready`。
-- 搜索条件发生变化时必须把 `pageNum` 重置为 1。
+- 查询条件 Action 必须与单个筛选语义一一对应；`onSearch` 只能接受并更新关键词，状态筛选必须使用 `onStatusChange`，其他筛选条件使用对应的 `on<Xxx>Change`。
+- 禁止让一个查询条件 Action 接受或更新多个独立筛选条件，例如不得使用 `onSearch(keyword, status)` 合并关键词和状态筛选。
+- 任一查询条件发生变化时必须把 `pageNum` 重置为 1。
 - 分页变化只更新 `pageNum`、`pageSize`。
 - 列表页离开时默认只把 `ready` 改为 `false`，保留查询条件和分页，以便再次进入恢复上次条件。
 - 详情页离开时清空 `uuid`。

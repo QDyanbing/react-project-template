@@ -31,6 +31,10 @@ export const router = [
         component: () => import('@/pages/HomeSet'),
       },
       {
+        path: '/profile',
+        component: () => import('@/pages/Profile'),
+      },
+      {
         path: '$',
         redirect: '/404',
       },

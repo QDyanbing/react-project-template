@@ -9,6 +9,7 @@ build/
 coverage/
 playwright-report/
 test-results/
+playwright/.auth/
 .vitest-attachments/
 **/__screenshots__/
 

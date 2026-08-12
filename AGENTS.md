@@ -628,16 +628,11 @@ CSS 属性值优先级固定为：
 
 ## 15. Imports、空行和代码顺序
 
-### 15.1 Import 分组
+### 15.1 Import 顺序
 
-1. 第三方依赖。
-2. 项目绝对路径：`@/`、`@config/`。
-3. 当前目录相对路径。
-
-- 不同组之间空一行。
-- 同一组内部不空行。
+- 所有 Import 连续书写，中间不得按第三方依赖、项目绝对路径或当前目录相对路径手动分组空行。
+- Import 顺序统一由 Prettier Organize Imports 处理，不手工调整或维护排序。
 - 类型 Import 使用 `import type`。
-- Import 排序最终以 Prettier Organize Imports 结果为准，不手工制造与格式化器冲突的顺序。
 
 ### 15.2 页面内部顺序
 

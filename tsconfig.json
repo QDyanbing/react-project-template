@@ -25,6 +25,7 @@
     "plugins",
     "src",
     "playwright.config.ts",
+    "playwright.headed.config.ts",
     "typing.d.ts",
     "vite.config.ts",
     "vitest.config.ts"

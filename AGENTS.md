@@ -812,6 +812,8 @@ JSX Props 固定按以下优先级排列：
 - 固定基础数据必须来自项目正常 Mock 服务的真实数据存储或真实后端；测试专属数据必须通过 Playwright `APIRequestContext` 调用真实 HTTP 接口创建，并在全部浏览器测试完成后通过真实 HTTP 接口清理。
 - Setup 和 Cleanup 只能准备、查询和回收测试数据，不得替代当前 Case 要验证的页面操作；被测功能的请求必须由浏览器交互触发。
 - 每个 Case 必须使用 Playwright 提供的独立 `page` Fixture，不得在 `beforeAll` 中创建并跨 Case 共享 Page 或 BrowserContext；复用浏览器进程不得以牺牲 Case 隔离为代价。
+- 所有 `e2e/**/*.spec.ts` 必须从 `e2e/fixtures.ts` 引入 `test` 和 `expect`，不得直接从 `@playwright/test` 引入；正式测试仍由该 Fixture 为每个 Case 提供独立 Page。
+- `test:e2e:headed` 仅用于本地连续观察浏览器操作，允许由 `e2e/fixtures.ts` 在整个 Chromium Worker 内复用一个可见 BrowserContext 和 Page；每个 Case 前必须根据自身 `storageState` 重置浏览器状态，该模式不得用于正式验证、CI 或代替 `test:e2e` 的独立 Context 结果。
 - Setup 和 Cleanup 调用真实 HTTP 接口时，必须同时校验 HTTP 状态与统一响应结构中的业务成功状态，不得把 HTTP 200 直接视为业务成功。
 - 断言必须覆盖最终业务结果，不得只验证中间跳转或成功提示；例如退出登录必须验证服务端会话已经失效，不能只断言进入登录页。
 - 路由权限必须通过浏览器直接访问受限 URL 验证，不能只断言入口按钮的禁用状态。

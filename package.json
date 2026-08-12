@@ -18,7 +18,7 @@
     "test": "ut run test:unit && ut run test:e2e",
     "test:coverage": "vitest run --coverage",
     "test:e2e": "playwright test",
-    "test:e2e:headed": "playwright test --headed",
+    "test:e2e:headed": "playwright test --config playwright.headed.config.ts",
     "test:unit": "vitest run",
     "typecheck": "tsc --noEmit"
   },

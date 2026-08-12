@@ -1,10 +1,12 @@
 import { defineConfig } from '@playwright/test';
 
+const BASE_URL = 'http://localhost:8000';
+
 export default defineConfig({
   testDir: './e2e',
   workers: 1,
   use: {
-    baseURL: 'http://localhost:8000',
+    baseURL: BASE_URL,
     locale: 'zh-CN',
     trace: 'retain-on-failure',
     viewport: null,
@@ -14,7 +16,7 @@ export default defineConfig({
   },
   webServer: {
     command: 'ut run dev:mock',
-    url: 'http://localhost:8000',
+    url: BASE_URL,
     reuseExistingServer: !process.env.CI,
   },
   projects: [

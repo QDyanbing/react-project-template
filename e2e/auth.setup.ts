@@ -1,0 +1,17 @@
+import { expect, test as setup } from '@playwright/test';
+import { AUTH_FILE, login, registerSession, resetSessions } from './helpers/session';
+
+setup('保存管理员认证状态', async ({ page }) => {
+  await resetSessions();
+  await page.goto('/login');
+
+  const { response, result } = await login(page);
+
+  expect(response.ok()).toBeTruthy();
+  expect(result.success).toBeTruthy();
+  expect(result.data.token).not.toBe('');
+  await registerSession(result.data.token);
+  await page.waitForURL('/home');
+
+  await page.context().storageState({ path: AUTH_FILE });
+});

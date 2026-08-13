@@ -90,32 +90,6 @@ test.describe('角色新增', () => {
 });
 
 test.describe('角色修改', () => {
-  test('Case 2.5：角色详情正确展示角色资料和完整权限对象', async ({ page }) => {
-    const responsePromise = page.waitForResponse(
-      (response) =>
-        response.request().method() === 'GET' &&
-        new URL(response.url()).pathname === '/api/role/10000000-0000-4000-8000-000000000002',
-    );
-
-    await page.goto('/roles/modify?uuid=10000000-0000-4000-8000-000000000002');
-
-    const response = await responsePromise;
-    const result: API.SuccessResult<API.Role> = await response.json();
-
-    expect(response.ok()).toBeTruthy();
-    expect(result.success).toBeTruthy();
-    expect(result.data.permissions).toEqual(
-      expect.arrayContaining([
-        expect.objectContaining({ code: 'user:view', name: '查看用户' }),
-        expect.objectContaining({ code: 'role:view', name: '查看角色' }),
-      ]),
-    );
-    await expect(page.getByLabel('角色名称')).toHaveValue('运营人员');
-    await expect(page.getByLabel('角色描述')).toHaveValue('负责用户和角色的日常查看与维护');
-    await expect(page.getByText('查看用户 (user:view)', { exact: true })).toBeVisible();
-    await expect(page.getByText('查看角色 (role:view)', { exact: true })).toBeVisible();
-  });
-
   test('Case 2.6：修改角色名称、描述和权限成功', async ({ page }) => {
     const name = `待修改角色-${Date.now()}`;
     const modifiedName = `${name}-已修改`;

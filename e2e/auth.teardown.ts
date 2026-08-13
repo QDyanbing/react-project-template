@@ -1,17 +1,27 @@
-import { expect, test as teardown } from '@playwright/test';
-import { getSessions } from './helpers/session';
+import { test as teardown } from '@playwright/test';
+import { clearRoles } from './helpers/data';
+import { clearSessions, getSessions } from './helpers/session';
 
-teardown('清理认证会话', async ({ request }) => {
+teardown('清理测试数据和认证会话', async ({ request }) => {
   const tokens = await getSessions();
+  const [token] = tokens;
+  const errors: unknown[] = [];
 
-  for (const token of tokens) {
-    const response = await request.post('/api/logout', {
-      headers: { Authorization: `Bearer ${token}` },
-    });
-    const result: API.SuccessResult<boolean> = await response.json();
-
-    expect(response.ok()).toBeTruthy();
-    expect(result.success).toBeTruthy();
-    expect(result.data).toBeTruthy();
+  if (token) {
+    try {
+      await clearRoles(request, token);
+    } catch (error) {
+      errors.push(error);
+    }
+  } else {
+    errors.push(new Error('未找到用于清理测试数据的管理员会话'));
   }
+
+  try {
+    await clearSessions(request);
+  } catch (error) {
+    errors.push(error);
+  }
+
+  if (errors.length > 0) throw new AggregateError(errors, '测试数据或认证会话清理失败');
 });

@@ -1,14 +1,9 @@
-import type { Page } from '@playwright/test';
+import type { APIRequestContext, Page } from '@playwright/test';
 import { appendFile, mkdir, readFile, rm } from 'node:fs/promises';
 
 export const AUTH_DIRECTORY = 'playwright/.auth';
 export const AUTH_FILE = `${AUTH_DIRECTORY}/admin.json`;
 const SESSION_FILE = `${AUTH_DIRECTORY}/sessions`;
-
-export const resetSessions = async () => {
-  await mkdir(AUTH_DIRECTORY, { recursive: true });
-  await rm(SESSION_FILE, { force: true });
-};
 
 export const registerSession = async (token: string) => {
   await appendFile(SESSION_FILE, `${token}\n`);
@@ -24,6 +19,31 @@ export const getSessions = async () => {
 
     throw error;
   }
+};
+
+export const clearSessions = async (request: APIRequestContext) => {
+  const tokens = await getSessions();
+  const errors: unknown[] = [];
+
+  for (const token of tokens) {
+    try {
+      const response = await request.post('/api/logout', {
+        headers: { Authorization: `Bearer ${token}` },
+      });
+      const result: API.SuccessResult<boolean> = await response.json();
+
+      if (!response.ok() || !result.success || !result.data) {
+        throw new Error('认证会话清理失败');
+      }
+    } catch (error) {
+      errors.push(error);
+    }
+  }
+
+  if (errors.length > 0) throw new AggregateError(errors, '认证会话清理失败');
+
+  await mkdir(AUTH_DIRECTORY, { recursive: true });
+  await rm(SESSION_FILE, { force: true });
 };
 
 export const login = async (page: Page) => {

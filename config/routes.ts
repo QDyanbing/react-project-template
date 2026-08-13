@@ -39,6 +39,11 @@ export const router = [
         component: () => import('@/pages/Role'),
       },
       {
+        path: '/roles/detail',
+        component: () => import('@/pages/RoleDetail'),
+        permissions: ['role:view'],
+      },
+      {
         path: '/roles/create',
         component: () => import('@/pages/RoleSet'),
       },

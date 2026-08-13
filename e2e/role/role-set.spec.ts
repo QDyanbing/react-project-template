@@ -1,50 +1,6 @@
-import { errors, type Page } from '@playwright/test';
-import { expect, test } from './fixtures';
-import { registerRole } from './helpers/data';
-
-const getAuthorization = async (page: Page) => {
-  const storageState = await page.context().storageState();
-  const tokenValue = storageState.origins
-    .flatMap((origin) => origin.localStorage)
-    .find(({ name }) => name === 'token')?.value;
-  const token = JSON.parse(tokenValue ?? 'null');
-
-  expect(token).toBeTruthy();
-
-  return { Authorization: `Bearer ${token}` };
-};
-
-const getRole = async (page: Page, name: string) => {
-  const headers = await getAuthorization(page);
-  const searchResponse = await page.request.get('/api/role', {
-    headers,
-    params: { keyword: name, pageNum: 1, pageSize: 10 },
-  });
-  const searchResult: API.SuccessResult<API.PageResult<API.Role>> = await searchResponse.json();
-
-  expect(searchResponse.ok()).toBeTruthy();
-  expect(searchResult.success).toBeTruthy();
-
-  const role = searchResult.data.list.find((item) => item.name === name);
-
-  if (!role) throw new Error(`未找到测试角色：${name}`);
-
-  return role;
-};
-
-const createRole = async (page: Page, data: API.RoleSetParams) => {
-  await registerRole(data.name);
-
-  const headers = await getAuthorization(page);
-  const createResponse = await page.request.post('/api/role', { headers, data });
-  const createResult: API.SuccessResult<boolean> = await createResponse.json();
-
-  expect(createResponse.ok()).toBeTruthy();
-  expect(createResult.success).toBeTruthy();
-  expect(createResult.data).toBeTruthy();
-
-  return getRole(page, data.name);
-};
+import { errors } from '@playwright/test';
+import { expect, test } from '../fixtures';
+import { createRole, registerRole } from './data';
 
 test.describe('角色新增', () => {
   test('Case 2.1：角色名称为空时阻止提交', async ({ page }) => {
@@ -129,7 +85,7 @@ test.describe('角色新增', () => {
       permissionCodes: ['user:view', 'role:view'],
     });
     await expect(page.getByText('角色创建成功')).toBeVisible();
-    await expect(page).toHaveURL('/home');
+    await expect(page).toHaveURL('/roles');
   });
 });
 
@@ -194,7 +150,7 @@ test.describe('角色修改', () => {
     expect(result.success).toBeTruthy();
     expect(result.data).toBeTruthy();
     await expect(page.getByText('角色修改成功')).toBeVisible();
-    await expect(page).toHaveURL('/home');
+    await expect(page).toHaveURL('/roles');
 
     await page.goto(`/roles/modify?uuid=${role.uuid}`);
     await expect(page.getByLabel('角色名称')).toHaveValue(modifiedName);

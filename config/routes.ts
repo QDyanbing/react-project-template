@@ -36,7 +36,7 @@ export const router = [
       },
       {
         path: '/roles',
-        redirect: '/home',
+        component: () => import('@/pages/Role'),
       },
       {
         path: '/roles/create',

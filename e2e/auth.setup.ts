@@ -1,6 +1,6 @@
 import { expect, test as setup } from '@playwright/test';
-import { clearRoles } from './helpers/data';
 import { AUTH_FILE, clearSessions, login, registerSession } from './helpers/session';
+import { clearRoles } from './role/data';
 
 setup('保存管理员认证状态', async ({ page }) => {
   await clearSessions(page.request);

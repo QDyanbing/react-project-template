@@ -1,6 +1,6 @@
 import { test as teardown } from '@playwright/test';
-import { clearRoles } from './helpers/data';
 import { clearSessions, getSessions } from './helpers/session';
+import { clearRoles } from './role/data';
 
 teardown('清理测试数据和认证会话', async ({ request }) => {
   const tokens = await getSessions();

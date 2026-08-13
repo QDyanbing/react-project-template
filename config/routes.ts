@@ -35,6 +35,18 @@ export const router = [
         component: () => import('@/pages/Profile'),
       },
       {
+        path: '/roles',
+        redirect: '/home',
+      },
+      {
+        path: '/roles/create',
+        component: () => import('@/pages/RoleSet'),
+      },
+      {
+        path: '/roles/modify',
+        component: () => import('@/pages/RoleSet'),
+      },
+      {
         path: '$',
         redirect: '/404',
       },

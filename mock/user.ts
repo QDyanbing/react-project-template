@@ -5,6 +5,16 @@ import { authorize, createError, createSuccess } from './utils';
 
 const createNotFound = () => createError('用户不存在', 404);
 
+const createPassword = (currentPassword?: string) => {
+  let password = crypto.randomUUID().replaceAll('-', '').slice(0, 12);
+
+  while (password === currentPassword) {
+    password = crypto.randomUUID().replaceAll('-', '').slice(0, 12);
+  }
+
+  return password;
+};
+
 const hasInvalidRole = (roleUuids: string[]) =>
   roleUuids.some((uuid) => !roles.some((role) => role.uuid === uuid));
 
@@ -20,7 +30,7 @@ export default [
       if (hasInvalidRole(body.roleUuids)) return createError('选择的角色不存在');
 
       const uuid = crypto.randomUUID();
-      const password = '123456';
+      const password = createPassword();
       users.unshift({
         ...body,
         uuid,
@@ -99,7 +109,7 @@ export default [
 
       if (!user) return createNotFound();
 
-      const password = '123456';
+      const password = createPassword(user.password);
       user.password = password;
 
       return createSuccess({ password });

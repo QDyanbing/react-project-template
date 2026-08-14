@@ -1,0 +1,141 @@
+import { expect, test } from '../fixtures';
+import { createRole } from '../role/data';
+import { getUser, registerUser } from './data';
+
+test.describe('用户新增', () => {
+  test('Case 3.1：用户姓名为空时阻止提交', async ({ page }) => {
+    const roleName = `姓名校验角色-${Date.now()}`;
+    await createRole(page, { name: roleName, permissionCodes: [] });
+
+    const roleResponsePromise = page.waitForResponse(
+      (response) =>
+        response.request().method() === 'GET' &&
+        new URL(response.url()).pathname === '/api/role/options',
+    );
+
+    await page.goto('/users/create');
+    await roleResponsePromise;
+    await page.getByLabel('角色').click();
+    await page.getByText(roleName, { exact: true }).click();
+
+    const createRequestResultPromise = page
+      .waitForRequest(
+        (request) => request.method() === 'POST' && new URL(request.url()).pathname === '/api/user',
+        { timeout: 500 },
+      )
+      .catch((error: unknown) => error);
+
+    await page.getByRole('button', { name: /保\s*存/ }).click();
+
+    await expect(page.getByText('此项为必填项')).toBeVisible();
+    await expect(page).toHaveURL('/users/create');
+
+    const createRequestResult = await createRequestResultPromise;
+
+    expect(createRequestResult).toHaveProperty('name', 'TimeoutError');
+  });
+
+  test('Case 3.2：通过真实角色接口加载角色选项', async ({ page }) => {
+    const roleName = `用户选项角色-${Date.now()}`;
+    const role = await createRole(page, { name: roleName, permissionCodes: ['user:view'] });
+    const responsePromise = page.waitForResponse(
+      (response) =>
+        response.request().method() === 'GET' &&
+        new URL(response.url()).pathname === '/api/role/options',
+    );
+
+    await page.goto('/users/create');
+
+    const response = await responsePromise;
+    const result: API.SuccessResult<API.Role[]> = await response.json();
+
+    expect(response.ok()).toBeTruthy();
+    expect(result.success).toBeTruthy();
+    expect(result.data).toEqual(
+      expect.arrayContaining([
+        expect.objectContaining({
+          uuid: role.uuid,
+          name: roleName,
+          permissions: expect.arrayContaining([
+            expect.objectContaining({ code: 'user:view', name: '查看用户' }),
+          ]),
+        }),
+      ]),
+    );
+
+    await page.getByLabel('角色').click();
+
+    await expect(page.getByText(roleName, { exact: true })).toBeVisible();
+  });
+
+  test('Case 3.3：新增用户并选择角色成功', async ({ page }) => {
+    const roleName = `用户新增角色-${Date.now()}`;
+    const name = `新增用户-${Date.now()}`;
+    const email = 'create-user@example.com';
+    const phone = '13800000001';
+    const role = await createRole(page, { name: roleName, permissionCodes: ['user:view'] });
+
+    await registerUser(name);
+    await page.goto('/users/create');
+    await page.getByLabel('用户姓名').fill(name);
+    await page.getByLabel('邮箱').fill(email);
+    await page.getByLabel('手机号').fill(phone);
+    await page.getByLabel('角色').click();
+    await page.getByText(roleName, { exact: true }).click();
+
+    const responsePromise = page.waitForResponse(
+      (response) =>
+        response.request().method() === 'POST' && new URL(response.url()).pathname === '/api/user',
+    );
+
+    await page.getByRole('button', { name: /保\s*存/ }).click();
+
+    const response = await responsePromise;
+    const result: API.SuccessResult<{ password: string }> = await response.json();
+
+    expect(response.ok()).toBeTruthy();
+    expect(result.success).toBeTruthy();
+    expect(result.data.password).not.toBe('');
+    expect(response.request().postDataJSON()).toEqual({
+      name,
+      email,
+      phone,
+      roleUuids: [role.uuid],
+    });
+    await expect(page).toHaveURL('/users');
+
+    const user = await getUser(page, name);
+
+    expect(user.roles).toEqual(
+      expect.arrayContaining([expect.objectContaining({ uuid: role.uuid })]),
+    );
+  });
+
+  test('Case 3.4：新增成功后展示后端生成的初始密码', async ({ page }) => {
+    const roleName = `初始密码角色-${Date.now()}`;
+    const name = `初始密码用户-${Date.now()}`;
+    await createRole(page, { name: roleName, permissionCodes: [] });
+
+    await registerUser(name);
+    await page.goto('/users/create');
+    await page.getByLabel('用户姓名').fill(name);
+    await page.getByLabel('角色').click();
+    await page.getByText(roleName, { exact: true }).click();
+
+    const responsePromise = page.waitForResponse(
+      (response) =>
+        response.request().method() === 'POST' && new URL(response.url()).pathname === '/api/user',
+    );
+
+    await page.getByRole('button', { name: /保\s*存/ }).click();
+
+    const response = await responsePromise;
+    const result: API.SuccessResult<{ password: string }> = await response.json();
+
+    expect(response.ok()).toBeTruthy();
+    expect(result.success).toBeTruthy();
+    expect(result.data.password).not.toBe('');
+    await expect(page.getByText(`用户创建成功，初始密码：${result.data.password}`)).toBeVisible();
+    await expect(page).toHaveURL('/users');
+  });
+});

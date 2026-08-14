@@ -8,6 +8,7 @@ export default {
     emailPlaceholder: 'Enter email',
     phone: 'Phone',
     phonePlaceholder: 'Enter phone',
+    phoneInvalid: 'Enter a valid phone number',
     roles: 'Roles',
     rolesPlaceholder: 'Select roles',
     save: 'Save',

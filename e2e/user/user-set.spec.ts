@@ -1,6 +1,7 @@
 import { expect, test } from '../fixtures';
+import { registerSession } from '../helpers/session';
 import { createRole } from '../role/data';
-import { getUser, registerUser } from './data';
+import { createUser, getUser, registerUser } from './data';
 
 test.describe('用户新增', () => {
   test('Case 3.1：用户姓名为空时阻止提交', async ({ page }) => {
@@ -160,5 +161,54 @@ test.describe('用户新增', () => {
       .getByRole('button', { name: '关闭' })
       .click();
     await expect(page).toHaveURL('/users');
+  });
+
+  test('Case 3.9：无修改权限时直接访问用户编辑页进入 403', async ({ page }) => {
+    const roleName = `用户查看角色-${Date.now()}`;
+    const name = `无修改权限用户-${Date.now()}`;
+    const role = await createRole(page, {
+      name: roleName,
+      permissionCodes: ['user:view'],
+    });
+    const { user, password } = await createUser(page, {
+      name,
+      roleUuids: [role.uuid],
+    });
+
+    await page.goto('/login');
+    await page.getByLabel('账号').fill(user.account);
+    await page.getByLabel('密码').fill(password);
+
+    const loginResponsePromise = page.waitForResponse(
+      (response) =>
+        response.request().method() === 'POST' && new URL(response.url()).pathname === '/api/login',
+    );
+
+    await page.getByRole('button', { name: /登\s*录/ }).click();
+
+    const loginResponse = await loginResponsePromise;
+    const loginResult: API.SuccessResult<{ token: string }> = await loginResponse.json();
+
+    expect(loginResponse.ok()).toBeTruthy();
+    expect(loginResult.success).toBeTruthy();
+    await registerSession(loginResult.data.token);
+    await expect(page).toHaveURL('/home');
+
+    const accountResponsePromise = page.waitForResponse(
+      (response) =>
+        response.request().method() === 'GET' &&
+        new URL(response.url()).pathname === '/api/account/current',
+    );
+
+    await page.goto(`/users/modify?userId=${user.userId}`);
+
+    const accountResponse = await accountResponsePromise;
+    const accountResult: API.SuccessResult<API.Account> = await accountResponse.json();
+
+    expect(accountResponse.ok()).toBeTruthy();
+    expect(accountResult.success).toBeTruthy();
+    expect(accountResult.data.userId).toBe(user.userId);
+    await expect(page).toHaveURL('/403');
+    await expect(page.getByText('暂无访问权限', { exact: true })).toBeVisible();
   });
 });

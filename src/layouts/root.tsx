@@ -1,6 +1,7 @@
 import useCurrentUser from '@/models/useCurrentUser';
+import { hasPermission } from '@/utils/access';
 import { onHistoryChange } from '@/utils/history';
-import { ProjectOutlined } from '@ant-design/icons';
+import { ProjectOutlined, SafetyCertificateOutlined, TeamOutlined } from '@ant-design/icons';
 import { Outlet, useLocation } from '@tanstack/react-router';
 import { Flex, Menu } from 'antd';
 import { useEffect } from 'react';
@@ -9,14 +10,22 @@ import Header from './header';
 import styles from './root.module.less';
 
 export default () => {
-  const { mount, unmount } = useCurrentUser();
+  const { data, mount, unmount } = useCurrentUser();
 
   const pathname = useLocation({ select: (location) => location.pathname });
 
   const { t } = useTranslation('layout');
 
-  const selectedKeys = pathname.startsWith('/home') ? ['/home'] : [];
-  const items = [{ key: '/home', icon: <ProjectOutlined />, label: t('projectManagement') }];
+  const items = [
+    { key: '/home', icon: <ProjectOutlined />, label: t('projectManagement') },
+    ...(hasPermission(data?.permissions ?? [], ['user:view'])
+      ? [{ key: '/users', icon: <TeamOutlined />, label: t('userManagement') }]
+      : []),
+    ...(hasPermission(data?.permissions ?? [], ['role:view'])
+      ? [{ key: '/roles', icon: <SafetyCertificateOutlined />, label: t('roleManagement') }]
+      : []),
+  ];
+  const selectedKeys = items.filter(({ key }) => pathname.startsWith(key)).map(({ key }) => key);
 
   useEffect(() => {
     mount();

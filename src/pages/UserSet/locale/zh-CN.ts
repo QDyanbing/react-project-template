@@ -8,6 +8,7 @@ export default {
     emailPlaceholder: '请输入邮箱',
     phone: '手机号',
     phonePlaceholder: '请输入手机号',
+    phoneInvalid: '请输入有效的手机号',
     roles: '角色',
     rolesPlaceholder: '请选择角色',
     save: '保存',

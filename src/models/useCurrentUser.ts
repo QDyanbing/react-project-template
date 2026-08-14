@@ -1,16 +1,15 @@
-import { create } from 'zustand';
-
 import { getCurrent } from '@/services/account';
+import { create } from 'zustand';
 
 interface Store {
   loading: boolean;
   data?: API.Account;
   onRefresh: () => Promise<API.Account | undefined>;
-  mount: () => void;
+  mount: () => Promise<API.Account | undefined>;
   unmount: () => void;
 }
 
-export default create<Store>((set) => {
+export default create<Store>((set, get) => {
   let ready = false;
   const loading = false;
   const data: API.Account | undefined = undefined;
@@ -35,7 +34,9 @@ export default create<Store>((set) => {
 
   const mount = () => {
     ready = true;
-    void getData();
+    const { data } = get();
+
+    return data ? Promise.resolve(data) : getData();
   };
 
   const unmount = () => {

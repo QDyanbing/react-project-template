@@ -85,7 +85,11 @@ export default () => {
         >
           <Input placeholder={t('emailPlaceholder')} />
         </Form.Item>
-        <Form.Item name="phone" label={t('phone')}>
+        <Form.Item
+          name="phone"
+          label={t('phone')}
+          rules={[{ pattern: /^1[3-9]\d{9}$/, message: t('phoneInvalid') }]}
+        >
           <Input placeholder={t('phonePlaceholder')} />
         </Form.Item>
         <Form.Item

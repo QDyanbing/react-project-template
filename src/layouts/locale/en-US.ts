@@ -3,6 +3,8 @@ export default {
   namespace: 'layout',
   resources: {
     projectManagement: 'Projects',
+    userManagement: 'Users',
+    roleManagement: 'Roles',
     administrator: 'Administrator',
     logout: 'Sign out',
   },

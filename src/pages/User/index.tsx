@@ -57,7 +57,7 @@ export default () => {
       render: formatTime,
     },
     {
-      width: 380,
+      width: 320,
       title: t('column.action'),
       dataIndex: 'userId',
       render: (userId: string, user: API.User) => (

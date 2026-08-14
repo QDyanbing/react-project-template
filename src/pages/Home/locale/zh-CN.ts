@@ -19,8 +19,5 @@ export default {
       placeholder: '请输入项目名称或描述',
       create: '新增项目',
     },
-    pagination: {
-      total: '共 <count>{{count}}</count> 条',
-    },
   },
 } satisfies I18n.Locale;

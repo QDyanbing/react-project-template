@@ -39,8 +39,5 @@ export default {
     passwordView: {
       description: 'The password has been updated. Share the new password with the user securely.',
     },
-    pagination: {
-      total: '{{count}} users',
-    },
   },
 } satisfies I18n.Locale;

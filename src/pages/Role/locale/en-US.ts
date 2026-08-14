@@ -21,8 +21,5 @@ export default {
     message: {
       deleteSuccess: 'Role deleted',
     },
-    pagination: {
-      total: '{{count}} roles',
-    },
   },
 } satisfies I18n.Locale;

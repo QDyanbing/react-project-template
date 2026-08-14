@@ -2,9 +2,10 @@ import PasswordView from '@/components/PasswordView';
 import Permission from '@/components/Permission';
 import { formatTime } from '@/utils/format';
 import { onHistoryChange } from '@/utils/history';
-import { Button, Pagination, Popconfirm, Space, Spin, Table, Tag, Typography } from 'antd';
+import { showTotal } from '@/utils/pagination';
+import { Button, Pagination, Popconfirm, Space, Spin, Table, Tag } from 'antd';
 import { useEffect } from 'react';
-import { Trans, useTranslation } from 'react-i18next';
+import { useTranslation } from 'react-i18next';
 import SearchBar from './components/SearchBar';
 import useDelete from './hooks/useDelete';
 import useDisable from './hooks/useDisable';
@@ -147,14 +148,7 @@ export default () => {
         pageSize={params.pageSize}
         total={total}
         className={styles.footer}
-        showTotal={(value) => (
-          <Trans
-            i18nKey="pagination.total"
-            t={t}
-            values={{ count: value }}
-            components={{ count: <Typography.Text strong type="success" /> }}
-          />
-        )}
+        showTotal={showTotal}
         onChange={onPaginationChange}
       />
       <PasswordView

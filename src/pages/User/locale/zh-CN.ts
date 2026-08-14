@@ -39,8 +39,5 @@ export default {
     passwordView: {
       description: '用户密码已更新，请将新密码安全地交给用户。',
     },
-    pagination: {
-      total: '共 {{count}} 名用户',
-    },
   },
 } satisfies I18n.Locale;

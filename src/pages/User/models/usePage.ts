@@ -1,6 +1,6 @@
 import { create } from 'zustand';
 
-import DEFAULT_PAGE_SIZE from '@/utils/pageSize';
+import { DEFAULT_PAGE_SIZE } from '@/utils/pagination';
 
 interface Store {
   ready: boolean;

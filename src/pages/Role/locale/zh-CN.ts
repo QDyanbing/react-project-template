@@ -21,8 +21,5 @@ export default {
     message: {
       deleteSuccess: '角色删除成功',
     },
-    pagination: {
-      total: '共 {{count}} 个角色',
-    },
   },
 } satisfies I18n.Locale;

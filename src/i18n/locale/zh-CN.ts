@@ -2,6 +2,9 @@ export default {
   language: 'zh-CN',
   namespace: 'common',
   resources: {
+    pagination: {
+      total: '共 {{count}} 条',
+    },
     request: {
       unauthorized: '登录状态已失效，请重新登录',
       forbidden: '暂无访问权限',

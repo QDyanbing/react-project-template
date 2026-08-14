@@ -1,7 +1,8 @@
 import { onHistoryChange } from '@/utils/history';
-import { Button, Pagination, Popconfirm, Space, Spin, Table, Typography } from 'antd';
+import { showTotal } from '@/utils/pagination';
+import { Button, Pagination, Popconfirm, Space, Spin, Table } from 'antd';
 import { useEffect } from 'react';
-import { Trans, useTranslation } from 'react-i18next';
+import { useTranslation } from 'react-i18next';
 import SearchBar from './components/SearchBar';
 import useDelete from './hooks/useDelete';
 import styles from './index.module.less';
@@ -82,14 +83,7 @@ export default () => {
         pageSize={params.pageSize}
         total={total}
         className={styles.footer}
-        showTotal={(value) => (
-          <Trans
-            t={t}
-            i18nKey="pagination.total"
-            values={{ count: value }}
-            components={{ count: <Typography.Text strong type="success" /> }}
-          />
-        )}
+        showTotal={showTotal}
         onChange={onPaginationChange}
       />
     </Spin>

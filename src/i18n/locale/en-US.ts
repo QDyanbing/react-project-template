@@ -2,6 +2,9 @@ export default {
   language: 'en-US',
   namespace: 'common',
   resources: {
+    pagination: {
+      total: '{{count}} items',
+    },
     request: {
       unauthorized: 'Your session has expired. Please sign in again.',
       forbidden: 'You do not have permission to perform this action.',

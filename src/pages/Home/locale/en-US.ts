@@ -19,8 +19,5 @@ export default {
       placeholder: 'Search by project name or description',
       create: 'Create project',
     },
-    pagination: {
-      total: '<count>{{count}}</count> items',
-    },
   },
 } satisfies I18n.Locale;

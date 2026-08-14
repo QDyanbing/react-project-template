@@ -1,6 +1,6 @@
 import type { APIRequestContext, Page } from '@playwright/test';
 import { appendFile, readFile, rm } from 'node:fs/promises';
-import { AUTH_DIRECTORY } from '../helpers/session';
+import { AUTH_DIRECTORY, getAuthorization } from '../helpers/session';
 
 const ROLE_FILE = `${AUTH_DIRECTORY}/roles`;
 
@@ -18,18 +18,6 @@ export const getRoleNames = async () => {
 
     throw error;
   }
-};
-
-export const getAuthorization = async (page: Page) => {
-  const storageState = await page.context().storageState();
-  const tokenValue = storageState.origins
-    .flatMap((origin) => origin.localStorage)
-    .find(({ name }) => name === 'token')?.value;
-  const token = JSON.parse(tokenValue ?? 'null');
-
-  if (!token) throw new Error('未找到测试认证信息');
-
-  return { Authorization: `Bearer ${token}` };
 };
 
 export const getRoles = async (page: Page, data: API.RoleParams) => {

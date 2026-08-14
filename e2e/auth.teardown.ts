@@ -1,6 +1,7 @@
 import { test as teardown } from '@playwright/test';
 import { clearSessions, getSessions } from './helpers/session';
 import { clearRoles } from './role/data';
+import { clearUsers } from './user/data';
 
 teardown('清理测试数据和认证会话', async ({ request }) => {
   const tokens = await getSessions();
@@ -8,6 +9,12 @@ teardown('清理测试数据和认证会话', async ({ request }) => {
   const errors: unknown[] = [];
 
   if (token) {
+    try {
+      await clearUsers(request, token);
+    } catch (error) {
+      errors.push(error);
+    }
+
     try {
       await clearRoles(request, token);
     } catch (error) {

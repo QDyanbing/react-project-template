@@ -21,6 +21,18 @@ export const getSessions = async () => {
   }
 };
 
+export const getAuthorization = async (page: Page) => {
+  const storageState = await page.context().storageState();
+  const tokenValue = storageState.origins
+    .flatMap((origin) => origin.localStorage)
+    .find(({ name }) => name === 'token')?.value;
+  const token = JSON.parse(tokenValue ?? 'null');
+
+  if (!token) throw new Error('未找到测试认证信息');
+
+  return { Authorization: `Bearer ${token}` };
+};
+
 export const clearSessions = async (request: APIRequestContext) => {
   const tokens = await getSessions();
   const errors: unknown[] = [];

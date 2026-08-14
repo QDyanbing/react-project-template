@@ -35,7 +35,9 @@ export default {
       deleteSuccess: 'User deleted',
       enableSuccess: 'User enabled',
       disableSuccess: 'User disabled',
-      resetPasswordSuccess: 'User password reset. New password: {{password}}',
+    },
+    passwordView: {
+      description: 'The password has been updated. Share the new password with the user securely.',
     },
     pagination: {
       total: '{{count}} users',

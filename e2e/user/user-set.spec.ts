@@ -76,7 +76,9 @@ test.describe('用户新增', () => {
     const role = await createRole(page, { name: roleName, permissionCodes: ['user:view'] });
 
     await registerUser(name);
-    await page.goto('/users/create');
+    await page.goto('/users');
+    await page.getByRole('button', { name: '新增用户' }).click();
+    await expect(page).toHaveURL('/users/create');
     await page.getByLabel('用户姓名').fill(name);
     await page.getByLabel('邮箱').fill(email);
     await page.getByLabel('手机号').fill(phone);
@@ -102,7 +104,14 @@ test.describe('用户新增', () => {
       phone,
       roleUuids: [role.uuid],
     });
+    await expect(page.getByText('密码信息', { exact: true })).toBeVisible();
+
+    await page.goBack();
     await expect(page).toHaveURL('/users');
+    await page.goForward();
+    await expect(page).toHaveURL('/users/create');
+
+    await expect(page.getByText('密码信息', { exact: true })).not.toBeVisible();
 
     const user = await getUser(page, name);
 
@@ -135,7 +144,21 @@ test.describe('用户新增', () => {
     expect(response.ok()).toBeTruthy();
     expect(result.success).toBeTruthy();
     expect(result.data.password).not.toBe('');
-    await expect(page.getByText(`用户创建成功，初始密码：${result.data.password}`)).toBeVisible();
+
+    await expect(page.getByText('密码信息', { exact: true })).toBeVisible();
+    await expect(page.getByText(result.data.password, { exact: true })).toBeVisible();
+
+    await page.context().grantPermissions(['clipboard-read', 'clipboard-write']);
+    await page.getByRole('button', { name: '复制密码' }).click();
+
+    await expect
+      .poll(() => page.evaluate(() => navigator.clipboard.readText()))
+      .toBe(result.data.password);
+
+    await page
+      .getByRole('dialog', { name: '密码信息' })
+      .getByRole('button', { name: '关闭' })
+      .click();
     await expect(page).toHaveURL('/users');
   });
 });

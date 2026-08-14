@@ -1,13 +1,9 @@
 import { setCreate } from '@/services/user';
-import { onHistoryBack } from '@/utils/history';
 import { useRequest } from 'ahooks';
-import { App } from 'antd';
-import { useTranslation } from 'react-i18next';
+import usePassword from '../models/usePassword';
 
 export default () => {
-  const { t } = useTranslation('userSet');
-
-  const { message } = App.useApp();
+  const onOpenPassword = usePassword.getState().onOpen;
 
   const { loading, runAsync } = useRequest(setCreate, { manual: true });
 
@@ -15,8 +11,7 @@ export default () => {
     const result = await runAsync(data);
     if (!result) return;
 
-    message.success(t('message.createSuccess', { password: result.data.password }));
-    onHistoryBack('/users');
+    onOpenPassword(result.data.password);
   };
 
   return { loading, onCreate };

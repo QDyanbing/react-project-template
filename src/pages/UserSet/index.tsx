@@ -1,3 +1,4 @@
+import PasswordView from '@/components/PasswordView';
 import useUrlState from '@/hooks/useUrlState';
 import { onHistoryBack } from '@/utils/history';
 import { Button, Flex, Form, Input, Select, Spin } from 'antd';
@@ -8,12 +9,14 @@ import useModify from './hooks/useModify';
 import styles from './index.module.less';
 import useDetail from './models/useDetail';
 import usePage from './models/usePage';
+import usePassword from './models/usePassword';
 import useRoleOptions from './models/useRoleOptions';
 
 export default () => {
   const { mount, unmount } = usePage();
   const { loading: detailLoading, data } = useDetail();
   const { loading: roleLoading, data: roles } = useRoleOptions();
+  const { password, onClose: onPasswordClose } = usePassword();
 
   const { loading: createLoading, onCreate } = useCreate();
   const { loading: modifyLoading, onModify } = useModify();
@@ -31,11 +34,19 @@ export default () => {
     }
   };
 
+  const onPasswordViewClose = () => {
+    onPasswordClose();
+    onHistoryBack('/users');
+  };
+
   useEffect(() => {
     mount(userId);
 
-    return unmount;
-  }, [mount, unmount, userId]);
+    return () => {
+      unmount();
+      onPasswordClose();
+    };
+  }, [mount, onPasswordClose, unmount, userId]);
 
   useEffect(() => {
     if (data) {
@@ -96,6 +107,12 @@ export default () => {
           {t('save')}
         </Button>
       </Flex>
+      <PasswordView
+        description={t('passwordView.description')}
+        password={password}
+        open={Boolean(password)}
+        onClose={onPasswordViewClose}
+      />
     </Spin>
   );
 };

@@ -1,10 +1,10 @@
-import { Button, Pagination, Popconfirm, Space, Spin, Table, Tag, Typography } from 'antd';
-import { useEffect } from 'react';
-import { Trans, useTranslation } from 'react-i18next';
-
+import PasswordView from '@/components/PasswordView';
 import Permission from '@/components/Permission';
 import { formatTime } from '@/utils/format';
 import { onHistoryChange } from '@/utils/history';
+import { Button, Pagination, Popconfirm, Space, Spin, Table, Tag, Typography } from 'antd';
+import { useEffect } from 'react';
+import { Trans, useTranslation } from 'react-i18next';
 import SearchBar from './components/SearchBar';
 import useDelete from './hooks/useDelete';
 import useDisable from './hooks/useDisable';
@@ -13,10 +13,12 @@ import useResetPassword from './hooks/useResetPassword';
 import styles from './index.module.less';
 import useData from './models/useData';
 import usePage from './models/usePage';
+import usePassword from './models/usePassword';
 
 export default () => {
   const { mount, unmount, params, onPaginationChange } = usePage();
   const { loading, data, total } = useData();
+  const { password, onClose: onPasswordClose } = usePassword();
 
   const { loading: deleteLoading, onDelete } = useDelete();
   const { loading: disableLoading, onDisable } = useDisable();
@@ -117,8 +119,11 @@ export default () => {
   useEffect(() => {
     mount();
 
-    return unmount;
-  }, [mount, unmount]);
+    return () => {
+      unmount();
+      onPasswordClose();
+    };
+  }, [mount, onPasswordClose, unmount]);
 
   return (
     <Spin
@@ -151,6 +156,12 @@ export default () => {
           />
         )}
         onChange={onPaginationChange}
+      />
+      <PasswordView
+        description={t('passwordView.description')}
+        password={password}
+        open={Boolean(password)}
+        onClose={onPasswordClose}
       />
     </Spin>
   );

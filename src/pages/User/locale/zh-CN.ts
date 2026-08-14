@@ -35,7 +35,9 @@ export default {
       deleteSuccess: '用户删除成功',
       enableSuccess: '用户启用成功',
       disableSuccess: '用户禁用成功',
-      resetPasswordSuccess: '用户密码已重置，新密码：{{password}}',
+    },
+    passwordView: {
+      description: '用户密码已更新，请将新密码安全地交给用户。',
     },
     pagination: {
       total: '共 {{count}} 名用户',

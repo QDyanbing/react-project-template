@@ -15,8 +15,10 @@ export default {
     required: '此项为必填项',
     emailInvalid: '请输入有效的邮箱地址',
     message: {
-      createSuccess: '用户创建成功，初始密码：{{password}}',
       modifySuccess: '用户修改成功',
+    },
+    passwordView: {
+      description: '用户已创建，请将初始密码安全地交给用户。',
     },
   },
 } satisfies I18n.Locale;

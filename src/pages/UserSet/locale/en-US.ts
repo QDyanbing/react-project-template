@@ -15,8 +15,10 @@ export default {
     required: 'This field is required',
     emailInvalid: 'Enter a valid email address',
     message: {
-      createSuccess: 'User created. Initial password: {{password}}',
       modifySuccess: 'User updated',
+    },
+    passwordView: {
+      description: 'The user has been created. Share the initial password securely.',
     },
   },
 } satisfies I18n.Locale;

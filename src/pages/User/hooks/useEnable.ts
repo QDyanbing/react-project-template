@@ -14,8 +14,8 @@ export default () => {
 
   const { loading, runAsync } = useRequest(setEnable, { manual: true });
 
-  const onEnable = async (uuid: string) => {
-    const result = await runAsync(uuid);
+  const onEnable = async (userId: string) => {
+    const result = await runAsync(userId);
     if (!result) return;
 
     message.success(t('message.enableSuccess'));

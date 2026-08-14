@@ -2,22 +2,22 @@ import { create } from 'zustand';
 
 interface Store {
   ready: boolean;
-  uuid?: string;
-  mount: (uuid?: string) => void;
+  userId?: string;
+  mount: (userId?: string) => void;
   unmount: () => void;
 }
 
 export default create<Store>((set) => {
   const ready = false;
-  const uuid: string | undefined = undefined;
+  const userId: string | undefined = undefined;
 
-  const mount = (uuid?: string) => {
-    set({ ready: true, uuid });
+  const mount = (userId?: string) => {
+    set({ ready: true, userId });
   };
 
   const unmount = () => {
-    set({ ready: false, uuid: undefined });
+    set({ ready: false, userId: undefined });
   };
 
-  return { ready, uuid, mount, unmount };
+  return { ready, userId, mount, unmount };
 });

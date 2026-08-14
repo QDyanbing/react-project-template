@@ -15,10 +15,10 @@ export default () => {
   const { loading, runAsync } = useRequest(setModify, { manual: true });
 
   const onModify = async (data: API.UserSetParams) => {
-    const { uuid } = getPage();
-    if (!uuid) return;
+    const { userId } = getPage();
+    if (!userId) return;
 
-    const result = await runAsync(uuid, data);
+    const result = await runAsync(userId, data);
     if (!result) return;
 
     message.success(t('message.modifySuccess'));

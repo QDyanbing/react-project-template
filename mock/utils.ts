@@ -33,9 +33,9 @@ const getRequestToken = (request: IncomingMessage) => {
 
 export const getCurrentMockUser = (request: IncomingMessage) => {
   const token = getRequestToken(request);
-  const uuid = token ? tokens.get(token) : undefined;
+  const userId = token ? tokens.get(token) : undefined;
 
-  return users.find((user) => user.uuid === uuid && user.status === 'enabled');
+  return users.find((user) => user.userId === userId && user.status === 'enabled');
 };
 
 export const createUnauthorized = (request: IncomingMessage): MockResponse<API.ErrorResult> => {

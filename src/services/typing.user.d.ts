@@ -14,7 +14,7 @@ declare namespace API {
   }
 
   interface User {
-    uuid: string;
+    userId: string;
     account: string;
     name: string;
     email?: string;

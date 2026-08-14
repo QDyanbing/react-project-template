@@ -17,7 +17,7 @@ export default [
       if (user.status !== 'enabled') return createError('当前账号已被禁用');
 
       const token = crypto.randomUUID();
-      tokens.set(token, user.uuid);
+      tokens.set(token, user.userId);
 
       return createSuccess({ token });
     },
@@ -59,8 +59,8 @@ export default [
       }
 
       authorization.user.password = body.password;
-      for (const [token, uuid] of tokens) {
-        if (uuid === authorization.user.uuid) tokens.delete(token);
+      for (const [token, userId] of tokens) {
+        if (userId === authorization.user.userId) tokens.delete(token);
       }
 
       return createSuccess(true);

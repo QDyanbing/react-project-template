@@ -14,8 +14,8 @@ export default () => {
 
   const { loading, runAsync } = useRequest(setDelete, { manual: true });
 
-  const onDelete = async (uuid: string) => {
-    const result = await runAsync(uuid);
+  const onDelete = async (userId: string) => {
+    const result = await runAsync(userId);
     if (!result) return;
 
     message.success(t('message.deleteSuccess'));

@@ -14,7 +14,7 @@ export default () => {
   const { mount, unmount } = usePage();
   const { loading, data } = useDetail();
 
-  const [{ uuid }] = useUrlState<{ uuid?: string }>();
+  const [{ userId }] = useUrlState<{ userId?: string }>();
 
   const { t } = useTranslation('userDetail');
 
@@ -49,10 +49,10 @@ export default () => {
   ];
 
   useEffect(() => {
-    mount(uuid);
+    mount(userId);
 
     return unmount;
-  }, [mount, unmount, uuid]);
+  }, [mount, unmount, userId]);
 
   return (
     <Spin spinning={loading} classNames={{ root: styles.userDetail, container: styles.container }}>
@@ -64,7 +64,7 @@ export default () => {
           <Button
             type="primary"
             icon={<EditOutlined />}
-            onClick={() => onHistoryChange('/users/modify', { uuid })}
+            onClick={() => onHistoryChange('/users/modify', { userId })}
           >
             {t('modify')}
           </Button>

@@ -1,21 +1,21 @@
 import { create } from 'zustand';
 
 interface Store {
-  uuid?: string;
-  mount: (uuid?: string) => void;
+  userId?: string;
+  mount: (userId?: string) => void;
   unmount: () => void;
 }
 
 export default create<Store>((set) => {
-  const uuid: string | undefined = undefined;
+  const userId: string | undefined = undefined;
 
-  const mount = (uuid?: string) => {
-    set({ uuid });
+  const mount = (userId?: string) => {
+    set({ userId });
   };
 
   const unmount = () => {
-    set({ uuid: undefined });
+    set({ userId: undefined });
   };
 
-  return { uuid, mount, unmount };
+  return { userId, mount, unmount };
 });

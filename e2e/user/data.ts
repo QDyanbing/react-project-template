@@ -77,7 +77,7 @@ export const clearUsers = async (request: APIRequestContext, token: string) => {
     const users = searchResult.data.list.filter((user) => user.name === name);
 
     for (const user of users) {
-      const deleteResponse = await request.delete(`/api/user/${user.uuid}`, {
+      const deleteResponse = await request.delete(`/api/user/${user.userId}`, {
         headers: { Authorization: `Bearer ${token}` },
       });
       const deleteResult: API.Result<boolean> = await deleteResponse.json();

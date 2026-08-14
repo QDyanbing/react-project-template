@@ -49,7 +49,7 @@ export const roles: MockRole[] = [
 
 export const users: MockUser[] = [
   {
-    uuid: '20000000-0000-4000-8000-000000000001',
+    userId: '0101000000000000000130',
     account: 'admin',
     password: '123456',
     name: '管理员',
@@ -60,7 +60,7 @@ export const users: MockUser[] = [
     gmtCreate: '2026-01-01 09:00:00',
   },
   {
-    uuid: '20000000-0000-4000-8000-000000000002',
+    userId: '0101000100000000000271',
     account: 'operator',
     password: '123456',
     name: '运营人员',
@@ -70,7 +70,7 @@ export const users: MockUser[] = [
     gmtCreate: '2026-01-02 09:00:00',
   },
   {
-    uuid: '20000000-0000-4000-8000-000000000003',
+    userId: '0101000100000000000368',
     account: 'viewer',
     password: '123456',
     name: '只读人员',
@@ -92,7 +92,7 @@ export const getRoleData = (role: MockRole): API.Role => ({
 });
 
 export const getUserData = (user: MockUser): API.User => ({
-  uuid: user.uuid,
+  userId: user.userId,
   account: user.account,
   name: user.name,
   email: user.email,
@@ -108,7 +108,7 @@ export const getAccountData = (user: MockUser): API.Account => {
   const permissionCodes = new Set(userRoles.flatMap(({ permissionCodes }) => permissionCodes));
 
   return {
-    uuid: data.uuid,
+    userId: data.userId,
     account: data.account,
     name: data.name,
     email: data.email,

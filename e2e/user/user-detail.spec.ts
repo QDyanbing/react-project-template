@@ -26,7 +26,7 @@ test.describe('用户详情', () => {
     const responsePromise = page.waitForResponse(
       (response) =>
         response.request().method() === 'GET' &&
-        new URL(response.url()).pathname === `/api/user/${user.uuid}`,
+        new URL(response.url()).pathname === `/api/user/${user.userId}`,
     );
 
     await page
@@ -41,7 +41,7 @@ test.describe('用户详情', () => {
     expect(response.ok()).toBeTruthy();
     expect(result.success).toBeTruthy();
     expect(result.data.roles).toEqual([{ ...role, userCount: 1 }]);
-    await expect(page).toHaveURL(`/users/detail?uuid=${user.uuid}`);
+    await expect(page).toHaveURL(`/users/detail?userId=${user.userId}`);
     await expect(page.getByText(user.account, { exact: true })).toBeVisible();
     await expect(page.getByText(name, { exact: true })).toBeVisible();
     await expect(page.getByText(roleName, { exact: true })).toBeVisible();

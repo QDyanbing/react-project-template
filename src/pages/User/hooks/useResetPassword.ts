@@ -11,8 +11,8 @@ export default () => {
 
   const { loading, runAsync } = useRequest(setResetPassword, { manual: true });
 
-  const onResetPassword = async (uuid: string) => {
-    const result = await runAsync(uuid);
+  const onResetPassword = async (userId: string) => {
+    const result = await runAsync(userId);
     if (!result) return;
 
     message.success(t('message.resetPasswordSuccess', { password: result.data.password }));

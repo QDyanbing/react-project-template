@@ -142,18 +142,22 @@ src/
 
 同一组内按业务操作顺序排列，不得把 `get` 和 `set` 交错。
 
-### 5.3 RESTful 与 URL
+### 5.3 主键、RESTful 与 URL
+
+- 主键必须按业务领域建模，不得把所有模块的主键统一命名为 `uuid`。
+- 普通业务模块默认使用 `uuid`；用户模块固定使用 `userId`，不得使用 `uuid`、`userid` 或 `userID`。
+- 权限等由系统内置、以稳定枚举值识别的模块固定使用 `code` 作为主键，不得额外增加 `uuid`。
 
 - 创建资源使用 `POST /resource`。
-- 修改资源使用 `PUT /resource/${uuid}`。
-- 删除资源使用 `DELETE /resource/${uuid}`。
+- 修改资源使用 `PUT /resource/${primaryKey}`。
+- 删除资源使用 `DELETE /resource/${primaryKey}`。
 - 列表查询使用 `GET /resource`。
-- 详情查询使用 `GET /resource/${uuid}`。
+- 详情查询使用 `GET /resource/${primaryKey}`。
 - 接口需要通过主键、父级主键或其他标识定位具体数据时，定位参数必须作为独立参数传递，不得合并到 Query 或 Body 数据对象中。
 - 定位参数必须排在业务数据参数之前；存在多个定位参数时，参数顺序必须与 URL Path 中的出现顺序一致。
 - Query 或 Body 数据统一放在 `data` 参数中，只包含查询条件或需要提交的业务字段。
-- 正确写法：`setModify(uuid: string, data: API.HomeSetParams)`、`getChild(uuid: string, data: API.HomeChildParams)`、`getDetail(uuid: string)`。
-- 禁止把 `uuid` 合并进 `HomeSetParams`、`HomeChildParams`，也不得为了传递单个标识创建 `<Domain>UuidParams`。
+- 正确写法：`setModify(uuid: string, data: API.HomeSetParams)`、`setModify(userId: string, data: API.UserSetParams)`、`getDetail(userId: string)`。
+- 禁止把主键合并进 Set、Query 或 Body 参数类型，也不得为了传递单个标识创建 `<Domain>UuidParams`、`<Domain>UserIdParams` 等只包一层的类型。
 - 所有接口地址必须使用模板字符串，包括没有变量的地址： `` `/api/home` ``。
 - 页面和 Model 不得拼接接口 URL。
 - HTTP 方法语义必须与资源操作一致，不得把所有接口统一写成 POST。
@@ -192,7 +196,8 @@ src/
 ### 5.5 关联数据交互
 
 - 前端向后端提交数据时，引用其他业务模块的数据默认只能提交被关联实体的主键，不得提交完整关联对象。
-- 单个关联主键使用 `<relation>Uuid`，多个关联主键使用 `<relation>Uuids`；例如用户关联角色时，`UserSetParams` 必须提交 `roleUuids: string[]`，不得提交 `roles: Role[]`。
+- 关联主键字段名必须跟随被关联模块的真实主键：关联普通模块使用 `<relation>Uuid`、`<relation>Uuids`，关联用户使用 `userId`、`userIds`，关联权限等内置枚举使用 `permissionCode`、`permissionCodes`。
+- 例如用户关联角色时，`UserSetParams` 必须提交 `roleUuids: string[]`，不得提交 `roles: Role[]`；角色关联权限时必须提交 `permissionCodes: string[]`。
 - 后端向前端返回数据时，必须返回被关联实体的完整对象或完整对象数组，不得只返回关联主键。
 - 返回类型必须直接复用被关联模块的实体类型；例如 `User.roles` 必须使用 `Role[]`，不得返回 `roleUuids`，也不得在用户模块重复定义角色类型。
 - 请求参数与响应实体的关联字段结构不同，必须分别使用 `<Domain>SetParams` 和 `<Domain>` 建模，不得为了复用类型混合主键与完整对象。
@@ -228,17 +233,17 @@ src/
 详情页和设置页 `usePage` 的 State 顺序固定为：
 
 1. `ready`，仅确实需要区分挂载状态时存在
-2. `uuid` 或其他页面初始化参数
+2. 对应领域主键或其他页面初始化参数，例如普通模块的 `uuid`、用户模块的 `userId`
 3. `mount`
 4. `unmount`
 
-- `uuid` 已经能表达是否可查询时，不得额外保存 `ready`。
+- 对应领域主键已经能表达是否可查询时，不得额外保存 `ready`。
 - 查询条件 Action 必须与单个筛选语义一一对应；`onSearch` 只能接受并更新关键词，状态筛选必须使用 `onStatusChange`，其他筛选条件使用对应的 `on<Xxx>Change`。
 - 禁止让一个查询条件 Action 接受或更新多个独立筛选条件，例如不得使用 `onSearch(keyword, status)` 合并关键词和状态筛选。
 - 任一查询条件发生变化时必须把 `pageNum` 重置为 1。
 - 分页变化只更新 `pageNum`、`pageSize`。
 - 列表页离开时默认只把 `ready` 改为 `false`，保留查询条件和分页，以便再次进入恢复上次条件。
-- 详情页离开时清空 `uuid`。
+- 详情页离开时清空对应领域主键。
 - 默认分页数量必须来自 `src/utils/pageSize.ts`。
 
 ### 6.3 useData 与 useDetail
@@ -247,14 +252,14 @@ src/
 - `useDetail` 只能负责详情请求。
 - 一个查询 Store 默认只能有一个主接口。
 - 查询 Store 直接调用 Service，不使用 `useRequest`。
-- 查询由 `usePage` 的 `ready`、`params` 或 `uuid` 变化驱动，不在页面中手动重复触发。
+- 查询由 `usePage` 的 `ready`、`params` 或对应领域主键变化驱动，不在页面中手动重复触发。
 - 查询 Store 必须暴露 `loading`；列表额外暴露 `data`、`total`、`onRefresh`。
 - `loading` 必须排在 `data`、`total` 之前。
 - 列表初始值固定为 `data: []`、`total: 0`。
 - 详情无数据使用 `undefined`，不得伪造空实体。
 - 列表 `useData` 请求返回后只能检查 `usePage` 当前的 `ready`；`ready` 为 `true` 时直接写入 `data`、`total`，不得重新读取并比较 `params` 引用。
 - 列表 `useData` 禁止增加 `requestId`、`revision` 或其他旧请求淘汰逻辑，除非用户明确要求处理并发请求。
-- 详情 `useDetail` 请求返回后仍需检查当前 `uuid` 与发起请求时的 `uuid` 是否一致，避免旧详情写入新页面。
+- 详情 `useDetail` 请求返回后仍需检查当前领域主键与发起请求时的主键是否一致，避免旧详情写入新页面。
 - 列表 `useData` 的 `finally` 只检查当前 `ready`；`ready` 为 `true` 时结束 Loading，不得比较 `params` 或清空有效数据。
 - 页面卸载时应重置当前查询 Store 的 Loading；是否清空数据根据页面语义决定。
 - 私有请求方法使用 `getData`，对外刷新方法使用 `onRefresh`。
@@ -302,7 +307,7 @@ Store 文件固定按以下顺序书写：
 - `useDelete` 只暴露 `loading`、`onDelete`。
 - 行为 Hook 使用 `useRequest(serviceMethod, { manual: true })`。
 - Hook 返回值依赖类型推导，不额外声明 `Store` 或返回接口。
-- 修改动作需要的 `uuid` 从页面 Store 获取，不由视图层重复传递。
+- 修改动作需要的领域主键从页面 Store 获取，不由视图层重复传递。
 - 请求失败默认由 Request 全局处理，行为 Hook 不写空 `catch`，不重复 `message.error`。
 - 请求成功后由行为 Hook完成成功提示和后续动作。
 - 行为方法成功或失败都不得返回无业务含义的 `true`、`false`。
@@ -339,7 +344,7 @@ Store 文件固定按以下顺序书写：
 - 导入 Service、Request 或直接调用 `fetch`。
 - 在 JSX 文件中写列表和详情请求。
 - 在视图层解包复杂接口响应。
-- 重复维护 Store 已有的 `uuid`、`params`、`data`、`total`、`open`。
+- 重复维护 Store 已有的领域主键、`params`、`data`、`total`、`open`。
 - 在页面中处理全局请求错误。
 
 ### 8.2 页面根节点
@@ -365,7 +370,7 @@ Store 文件固定按以下顺序书写：
 - 列表主体使用 Table，Pagination 独立放在 Footer。
 - Table 必须设置 `pagination={false}`，不得使用 Table 内置分页。
 - 需要固定表头时由 Table 的 Sticky/Scroll 能力实现，不得复制两份 Table。
-- 操作列的 `dataIndex` 使用实体主键，例如 `uuid`。
+- 操作列的 `dataIndex` 使用实体真实主键，例如普通模块使用 `uuid`，用户模块使用 `userId`。
 - 操作列设置够用的固定宽度，不得用超宽页面或横向溢出掩盖列宽问题。
 - 危险操作必须使用 `Popconfirm` 或更明确的确认组件，不得点击后立即执行。
 
@@ -426,7 +431,7 @@ pages/HomeDetail/
     en-US.ts
     zh-CN.ts
   models/
-    usePage.ts                uuid 等页面初始化参数
+    usePage.ts                对应领域主键等页面初始化参数
     useDetail.ts              详情数据和详情查询
   index.tsx
   index.module.less           仅存在必要样式时创建
@@ -434,7 +439,7 @@ pages/HomeDetail/
 
 固定职责：
 
-- `usePage` 保存当前页面的 `uuid`，提供 `mount`、`unmount`。
+- `usePage` 保存当前页面对应的领域主键，提供 `mount`、`unmount`。
 - `useDetail` 只负责详情接口和详情数据。
 - 页面不得直接调用 `getDetail`。
 
@@ -451,7 +456,7 @@ pages/HomeSet/
     en-US.ts
     zh-CN.ts
   models/
-    usePage.ts                ready、uuid
+    usePage.ts                ready、对应领域主键
     useDetail.ts              修改态详情数据
   index.tsx                   Form、校验、模式编排
   index.module.less           仅存在必要样式时创建
@@ -459,9 +464,9 @@ pages/HomeSet/
 
 固定职责：
 
-- 是否为修改态直接通过 `uuid` 判断，不新增 `isModify` 等重复状态。
-- `uuid` 由 `usePage` 保存；`useModify` 从 Store 读取，不要求页面再次传入。
-- `useDetail` 只在存在 `uuid` 时查询详情。
+- 是否为修改态直接通过对应领域主键判断，不新增 `isModify` 等重复状态。
+- 对应领域主键由 `usePage` 保存；`useModify` 从 Store 读取，不要求页面再次传入。
+- `useDetail` 只在存在对应领域主键时查询详情。
 - Form 校验和 `onFinish` 在视图层。
 - 新增和修改分别使用 `useCreate`、`useModify`，不得合并成 `useSubmit`。
 

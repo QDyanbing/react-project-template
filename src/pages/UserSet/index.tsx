@@ -18,13 +18,13 @@ export default () => {
   const { loading: createLoading, onCreate } = useCreate();
   const { loading: modifyLoading, onModify } = useModify();
 
-  const [{ uuid }] = useUrlState<{ uuid?: string }>();
+  const [{ userId }] = useUrlState<{ userId?: string }>();
   const [form] = Form.useForm<API.UserSetParams>();
 
   const { t } = useTranslation('userSet');
 
   const onFinish = async (values: API.UserSetParams) => {
-    if (uuid) {
+    if (userId) {
       await onModify(values);
     } else {
       await onCreate(values);
@@ -32,10 +32,10 @@ export default () => {
   };
 
   useEffect(() => {
-    mount(uuid);
+    mount(userId);
 
     return unmount;
-  }, [mount, unmount, uuid]);
+  }, [mount, unmount, userId]);
 
   useEffect(() => {
     if (data) {

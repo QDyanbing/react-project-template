@@ -14,8 +14,8 @@ export default () => {
 
   const { loading, runAsync } = useRequest(setDisable, { manual: true });
 
-  const onDisable = async (uuid: string) => {
-    const result = await runAsync(uuid);
+  const onDisable = async (userId: string) => {
+    const result = await runAsync(userId);
     if (!result) return;
 
     message.success(t('message.disableSuccess'));

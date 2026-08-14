@@ -56,13 +56,13 @@ export default () => {
     {
       width: 380,
       title: t('column.action'),
-      dataIndex: 'uuid',
-      render: (uuid: string, user: API.User) => (
+      dataIndex: 'userId',
+      render: (userId: string, user: API.User) => (
         <Space size="small">
           <Button
             type="link"
             className={styles.action}
-            onClick={() => onHistoryChange('/users/detail', { uuid })}
+            onClick={() => onHistoryChange('/users/detail', { userId })}
           >
             {t('action.detail')}
           </Button>
@@ -70,13 +70,13 @@ export default () => {
             <Button
               type="link"
               className={styles.action}
-              onClick={() => onHistoryChange('/users/modify', { uuid })}
+              onClick={() => onHistoryChange('/users/modify', { userId })}
             >
               {t('action.modify')}
             </Button>
           </Permission>
           {user.status === 'enabled' ? (
-            <Popconfirm title={t('action.disableConfirm')} onConfirm={() => onDisable(uuid)}>
+            <Popconfirm title={t('action.disableConfirm')} onConfirm={() => onDisable(userId)}>
               <Permission permissions="user:disable">
                 <Button type="link" className={styles.action}>
                   {t('action.disable')}
@@ -84,7 +84,7 @@ export default () => {
               </Permission>
             </Popconfirm>
           ) : (
-            <Popconfirm title={t('action.enableConfirm')} onConfirm={() => onEnable(uuid)}>
+            <Popconfirm title={t('action.enableConfirm')} onConfirm={() => onEnable(userId)}>
               <Permission permissions="user:enable">
                 <Button type="link" className={styles.action}>
                   {t('action.enable')}
@@ -94,7 +94,7 @@ export default () => {
           )}
           <Popconfirm
             title={t('action.resetPasswordConfirm')}
-            onConfirm={() => onResetPassword(uuid)}
+            onConfirm={() => onResetPassword(userId)}
           >
             <Permission permissions="user:reset-password">
               <Button type="link" className={styles.action}>
@@ -102,7 +102,7 @@ export default () => {
               </Button>
             </Permission>
           </Popconfirm>
-          <Popconfirm title={t('action.deleteConfirm')} onConfirm={() => onDelete(uuid)}>
+          <Popconfirm title={t('action.deleteConfirm')} onConfirm={() => onDelete(userId)}>
             <Permission permissions="user:delete">
               <Button danger type="link" className={styles.action}>
                 {t('action.delete')}
@@ -129,7 +129,7 @@ export default () => {
       <Table
         sticky
         pagination={false}
-        rowKey="uuid"
+        rowKey="userId"
         columns={columns}
         dataSource={data}
         className={styles.body}

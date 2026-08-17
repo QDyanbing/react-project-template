@@ -4,6 +4,7 @@
   overflow: hidden;
   border-inline-end: var(--ant-line-width) var(--ant-line-type) var(--ant-color-border-secondary);
   background: var(--ant-color-bg-container);
+  transition: width var(--ant-motion-duration-mid);
 
   .menu {
     flex: 1;
@@ -13,5 +14,16 @@
     overflow-y: auto;
     border-inline-end: none;
     background: transparent;
+  }
+
+  .collapse {
+    flex: none;
+    height: var(--ant-control-height-lg);
+    border-top: var(--ant-line-width) var(--ant-line-type) var(--ant-color-border-secondary);
+    border-radius: 0;
+  }
+
+  &.collapsed {
+    width: var(--layout-sider-collapsed-width);
   }
 }

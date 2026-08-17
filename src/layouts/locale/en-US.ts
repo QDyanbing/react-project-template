@@ -6,6 +6,8 @@ export default {
     projectManagement: 'Projects',
     userManagement: 'Users',
     roleManagement: 'Roles',
+    collapseMenu: 'Collapse menu',
+    expandMenu: 'Expand menu',
     administrator: 'Administrator',
     logout: 'Sign out',
   },

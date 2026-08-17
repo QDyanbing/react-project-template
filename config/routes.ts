@@ -19,6 +19,14 @@ export const router = [
         component: () => import('@/pages/Profile'),
       },
       {
+        path: '/profile/modify',
+        component: () => import('@/pages/ProfileSet'),
+      },
+      {
+        path: '/profile/password',
+        component: () => import('@/pages/PasswordSet'),
+      },
+      {
         path: '/users',
         component: () => import('@/pages/User'),
         permissions: ['user:view'],

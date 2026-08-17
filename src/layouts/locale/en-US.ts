@@ -8,6 +8,8 @@ export default {
     collapseMenu: 'Collapse menu',
     expandMenu: 'Expand menu',
     administrator: 'Administrator',
+    profile: 'Profile',
+    modifyPassword: 'Change password',
     logout: 'Sign out',
   },
 } satisfies I18n.Locale;

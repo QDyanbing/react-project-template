@@ -1,0 +1,29 @@
+.profileSet {
+  height: 100%;
+  background: var(--ant-color-bg-container);
+
+  .container {
+    display: flex;
+    flex-direction: column;
+    height: 100%;
+    padding-block: var(--ant-padding-xl) var(--ant-padding);
+    gap: var(--ant-margin);
+    overflow: hidden;
+
+    .header,
+    .body,
+    .footer {
+      padding-inline: var(--ant-padding);
+    }
+
+    .header.header {
+      margin: 0;
+    }
+
+    .body {
+      flex: 1;
+      height: 0;
+      overflow-y: auto;
+    }
+  }
+}

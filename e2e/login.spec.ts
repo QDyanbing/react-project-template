@@ -129,7 +129,7 @@ test.describe('独立未登录会话', () => {
     await registerSession(result.data.token);
 
     await expect(page).toHaveURL('/profile');
-    await expect(page.getByRole('tab', { name: '账号信息' })).toBeVisible();
+    await expect(page.getByRole('button', { name: '修改账号信息' })).toBeVisible();
   });
 
   test('Case 1.8：不存在 redirect 时登录成功后进入根路径', async ({ page }) => {

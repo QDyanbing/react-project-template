@@ -192,7 +192,7 @@ test.describe('用户新增', () => {
     expect(loginResponse.ok()).toBeTruthy();
     expect(loginResult.success).toBeTruthy();
     await registerSession(loginResult.data.token);
-    await expect(page).toHaveURL('/home');
+    await expect(page).toHaveURL('/roles');
 
     const accountResponsePromise = page.waitForResponse(
       (response) =>

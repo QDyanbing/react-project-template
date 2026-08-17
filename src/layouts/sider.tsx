@@ -5,7 +5,6 @@ import { getStorage, setStorage } from '@/utils/storage';
 import {
   MenuFoldOutlined,
   MenuUnfoldOutlined,
-  ProjectOutlined,
   SafetyCertificateOutlined,
   TeamOutlined,
 } from '@ant-design/icons';
@@ -30,12 +29,6 @@ export default () => {
   );
 
   const items = [
-    {
-      key: '/home',
-      icon: <ProjectOutlined />,
-      label: t('projectManagement'),
-      requiredPermissions: [],
-    },
     {
       key: '/roles',
       icon: <SafetyCertificateOutlined />,

@@ -38,7 +38,7 @@ describe('统一请求', () => {
     mocks.getToken.mockReset();
     mocks.onHistoryReplace.mockReset();
     vi.stubGlobal('fetch', fetchMock);
-    vi.stubGlobal('location', { pathname: '/home', search: '?page=1' });
+    vi.stubGlobal('location', { pathname: '/roles', search: '?page=1' });
   });
 
   afterEach(() => {
@@ -47,24 +47,24 @@ describe('统一请求', () => {
 
   test('GET 请求组装查询参数、Hash 和登录凭证', async () => {
     mocks.getToken.mockReturnValue('access-token');
-    fetchMock.mockResolvedValue(response({ success: true, data: ['project'] }));
+    fetchMock.mockResolvedValue(response({ success: true, data: ['item'] }));
 
     const result = await Request.get<
       { keyword?: string; tags: string[]; pageNum: number },
       string[]
-    >('/api/home?source=template#result', {
+    >('/api/test?source=template#result', {
       keyword: undefined,
       tags: ['react', 'vite'],
       pageNum: 2,
     });
 
-    expect(result?.data).toEqual(['project']);
+    expect(result?.data).toEqual(['item']);
     expect(fetchMock).toHaveBeenCalledOnce();
 
     const [url, init] = fetchMock.mock.calls[0] as [string, RequestInit];
     const headers = new Headers(init.headers);
 
-    expect(url).toBe('/api/home?source=template&tags=react&tags=vite&pageNum=2#result');
+    expect(url).toBe('/api/test?source=template&tags=react&tags=vite&pageNum=2#result');
     expect(init.method).toBe('GET');
     expect(init.body).toBeUndefined();
     expect(headers.get('Accept')).toBe('application/json');
@@ -76,8 +76,8 @@ describe('统一请求', () => {
     fetchMock.mockResolvedValue(response({ success: true, data: true }));
 
     await Request.post(
-      '/api/home',
-      { name: '项目模板' },
+      '/api/test',
+      { name: '测试数据' },
       {
         headers: {
           Accept: 'application/problem+json',
@@ -92,7 +92,7 @@ describe('统一请求', () => {
     const headers = new Headers(init.headers);
 
     expect(init).toMatchObject({
-      body: JSON.stringify({ name: '项目模板' }),
+      body: JSON.stringify({ name: '测试数据' }),
       credentials: 'include',
       method: 'POST',
     });
@@ -104,17 +104,17 @@ describe('统一请求', () => {
   test('PUT 和 DELETE 使用对应 HTTP 方法', async () => {
     fetchMock.mockResolvedValue(response({ success: true, data: true }));
 
-    await Request.put('/api/home/project-uuid', { name: '修改后的项目' });
-    await Request.delete('/api/home/project-uuid');
+    await Request.put('/api/test/resource-id', { name: '修改后的数据' });
+    await Request.delete('/api/test/resource-id');
 
     expect(fetchMock).toHaveBeenNthCalledWith(
       1,
-      '/api/home/project-uuid',
+      '/api/test/resource-id',
       expect.objectContaining({ method: 'PUT' }),
     );
     expect(fetchMock).toHaveBeenNthCalledWith(
       2,
-      '/api/home/project-uuid',
+      '/api/test/resource-id',
       expect.objectContaining({ method: 'DELETE' }),
     );
   });
@@ -124,33 +124,33 @@ describe('统一请求', () => {
       response(
         {
           errorMessage: '登录状态失效',
-          data: '/login?redirect=%2Fhome',
+          data: '/login?redirect=%2Froles',
         },
         401,
       ),
     );
 
-    const result = await Request.get('/api/home');
+    const result = await Request.get('/api/test');
 
     expect(result).toBeUndefined();
     expect(mocks.deleteToken).toHaveBeenCalledOnce();
-    expect(mocks.onHistoryReplace).toHaveBeenCalledWith('/login?redirect=%2Fhome');
+    expect(mocks.onHistoryReplace).toHaveBeenCalledWith('/login?redirect=%2Froles');
     expect(mocks.emitMessage).not.toHaveBeenCalled();
   });
 
   test('已经位于重定向地址时展示错误而不重复跳转', async () => {
-    vi.stubGlobal('location', { pathname: '/login', search: '?redirect=%2Fhome' });
+    vi.stubGlobal('location', { pathname: '/login', search: '?redirect=%2Froles' });
     fetchMock.mockResolvedValue(
       response(
         {
           errorMessage: '登录状态失效',
-          data: '/login?redirect=%2Fhome',
+          data: '/login?redirect=%2Froles',
         },
         401,
       ),
     );
 
-    await Request.get('/api/home');
+    await Request.get('/api/test');
 
     expect(mocks.onHistoryReplace).not.toHaveBeenCalled();
     expect(mocks.emitMessage).toHaveBeenCalledWith('error', '登录状态失效');
@@ -159,10 +159,10 @@ describe('统一请求', () => {
   test('HTTP 401 没有返回跳转地址时携带当前页面跳转登录', async () => {
     fetchMock.mockResolvedValue(response({ errorMessage: '登录状态失效' }, 401));
 
-    await Request.get('/api/home');
+    await Request.get('/api/test');
 
     expect(mocks.deleteToken).toHaveBeenCalledOnce();
-    expect(mocks.onHistoryReplace).toHaveBeenCalledWith('/login?redirect=%2Fhome%3Fpage%3D1');
+    expect(mocks.onHistoryReplace).toHaveBeenCalledWith('/login?redirect=%2Froles%3Fpage%3D1');
   });
 
   test('登录页发生 401 时展示错误且忽略响应中的跳转地址', async () => {
@@ -171,7 +171,7 @@ describe('统一请求', () => {
       response(
         {
           errorMessage: '账号或密码错误',
-          data: '/login?redirect=%2Fhome',
+          data: '/login?redirect=%2Froles',
         },
         401,
       ),
@@ -192,7 +192,7 @@ describe('统一请求', () => {
   ] as const)('HTTP %s 使用统一状态提示', async (status, level, message) => {
     fetchMock.mockResolvedValue(response({}, status));
 
-    await Request.get('/api/home');
+    await Request.get('/api/test');
 
     expect(mocks.emitMessage).toHaveBeenCalledWith(level, message);
   });
@@ -200,19 +200,19 @@ describe('统一请求', () => {
   test('HTTP 错误优先使用后端 Message', async () => {
     fetchMock.mockResolvedValue(response({ message: '后端错误' }, 400));
 
-    await Request.get('/api/home');
+    await Request.get('/api/test');
 
     expect(mocks.emitMessage).toHaveBeenCalledWith('error', '后端错误');
   });
 
   test('业务重定向错误执行页面替换', async () => {
     fetchMock.mockResolvedValue(
-      response({ success: false, errorCode: '302', data: '/login?redirect=%2Fhome' }),
+      response({ success: false, errorCode: '302', data: '/login?redirect=%2Froles' }),
     );
 
-    await Request.get('/api/home');
+    await Request.get('/api/test');
 
-    expect(mocks.onHistoryReplace).toHaveBeenCalledWith('/login?redirect=%2Fhome');
+    expect(mocks.onHistoryReplace).toHaveBeenCalledWith('/login?redirect=%2Froles');
   });
 
   test('业务警告和系统错误使用对应兜底文案', async () => {
@@ -221,9 +221,9 @@ describe('统一请求', () => {
       .mockResolvedValueOnce(response({ success: false }))
       .mockResolvedValueOnce(response({ success: false, errorCode: '404' }));
 
-    await Request.get('/api/home');
-    await Request.get('/api/home');
-    await Request.get('/api/home');
+    await Request.get('/api/test');
+    await Request.get('/api/test');
+    await Request.get('/api/test');
 
     expect(mocks.emitMessage).toHaveBeenNthCalledWith(1, 'warning', 'request.unfinished');
     expect(mocks.emitMessage).toHaveBeenNthCalledWith(2, 'error', 'request.systemError');
@@ -237,8 +237,8 @@ describe('统一请求', () => {
         new Response('{', { headers: { 'Content-Type': 'application/json' } }),
       );
 
-    await Request.get('/api/home');
-    await Request.get('/api/home');
+    await Request.get('/api/test');
+    await Request.get('/api/test');
 
     expect(mocks.emitMessage).toHaveBeenNthCalledWith(1, 'error', 'request.invalidResponse');
     expect(mocks.emitMessage).toHaveBeenNthCalledWith(2, 'error', 'request.invalidResponse');
@@ -249,7 +249,7 @@ describe('统一请求', () => {
       new Response('{', { status: 500, headers: { 'Content-Type': 'application/json' } }),
     );
 
-    await Request.get('/api/home');
+    await Request.get('/api/test');
 
     expect(mocks.emitMessage).toHaveBeenCalledWith('error', 'request.serverError');
   });
@@ -259,8 +259,8 @@ describe('统一请求', () => {
       .mockResolvedValueOnce(new Response(undefined, { status: 204 }))
       .mockResolvedValueOnce(new Response('plain text', { status: 200 }));
 
-    await Request.get('/api/home');
-    await Request.get('/api/home');
+    await Request.get('/api/test');
+    await Request.get('/api/test');
 
     expect(mocks.emitMessage).toHaveBeenNthCalledWith(1, 'error', 'request.invalidResponse');
     expect(mocks.emitMessage).toHaveBeenNthCalledWith(2, 'error', 'request.invalidResponse');
@@ -269,7 +269,7 @@ describe('统一请求', () => {
   test('网络错误由全局错误处理转换', async () => {
     fetchMock.mockRejectedValue(new TypeError('network failed'));
 
-    await Request.get('/api/home');
+    await Request.get('/api/test');
 
     expect(mocks.emitMessage).toHaveBeenCalledWith('error', 'request.networkError');
   });
@@ -278,8 +278,8 @@ describe('统一请求', () => {
     const error = new DOMException('aborted', 'AbortError');
     fetchMock.mockRejectedValue(error);
 
-    await expect(Request.get('/api/home')).resolves.toBeUndefined();
-    await expect(Request.get('/api/home', undefined, { skipErrorHandler: true })).rejects.toBe(
+    await expect(Request.get('/api/test')).resolves.toBeUndefined();
+    await expect(Request.get('/api/test', undefined, { skipErrorHandler: true })).rejects.toBe(
       error,
     );
     expect(mocks.emitMessage).not.toHaveBeenCalled();
@@ -289,7 +289,7 @@ describe('统一请求', () => {
     const data = { errorMessage: '参数错误' };
     fetchMock.mockResolvedValue(response(data, 400));
 
-    const request = Request.get('/api/home', undefined, { skipErrorHandler: true });
+    const request = Request.get('/api/test', undefined, { skipErrorHandler: true });
 
     await expect(request).rejects.toMatchObject({
       name: 'RequestError',

@@ -1,7 +1,7 @@
 export const router = [
   {
     path: '/',
-    redirect: '/home',
+    redirect: '/roles',
   },
   {
     component: () => import('@/layouts/root'),
@@ -13,22 +13,6 @@ export const router = [
       {
         path: '/404',
         component: () => import('@/pages/404'),
-      },
-      {
-        path: '/home',
-        component: () => import('@/pages/Home'),
-      },
-      {
-        path: '/home/detail',
-        component: () => import('@/pages/HomeDetail'),
-      },
-      {
-        path: '/home/create',
-        component: () => import('@/pages/HomeSet'),
-      },
-      {
-        path: '/home/modify',
-        component: () => import('@/pages/HomeSet'),
       },
       {
         path: '/profile',

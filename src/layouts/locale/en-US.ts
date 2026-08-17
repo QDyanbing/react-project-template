@@ -3,7 +3,6 @@ export default {
   namespace: 'layout',
   resources: {
     brand: 'React Project Template',
-    projectManagement: 'Projects',
     userManagement: 'Users',
     roleManagement: 'Roles',
     collapseMenu: 'Collapse menu',

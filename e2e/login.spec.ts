@@ -49,8 +49,8 @@ test.describe('登录成功', () => {
     expect(result.success).toBeTruthy();
     await registerSession(result.data.token);
 
-    await expect(page).toHaveURL('/home');
-    await expect(page.getByRole('menuitem', { name: '项目管理' })).toBeVisible();
+    await expect(page).toHaveURL('/roles');
+    await expect(page.getByRole('menuitem', { name: '角色管理' })).toBeVisible();
   });
 });
 
@@ -103,9 +103,9 @@ test.describe('独立未登录会话', () => {
   });
 
   test('Case 1.6：未登录访问业务页面时跳转登录页并携带 redirect', async ({ page }) => {
-    await page.goto('/home');
+    await page.goto('/roles');
 
-    await expect(page).toHaveURL('/login?redirect=%2Fhome');
+    await expect(page).toHaveURL('/login?redirect=%2Froles');
   });
 
   test('Case 1.7：存在 redirect 时登录成功后返回来源页面', async ({ page }) => {
@@ -155,17 +155,17 @@ test.describe('独立未登录会话', () => {
     await registerSession(result.data.token);
 
     await rootPromise;
-    await expect(page).toHaveURL('/home');
-    await expect(page.getByRole('menuitem', { name: '项目管理' })).toBeVisible();
+    await expect(page).toHaveURL('/roles');
+    await expect(page.getByRole('menuitem', { name: '角色管理' })).toBeVisible();
   });
 
   test('Case 1.9：无效 Token 触发登录失效处理', async ({ page }) => {
     await page.goto('/login');
     await page.evaluate(() => localStorage.setItem('token', JSON.stringify('invalid-token')));
 
-    await page.goto('/home');
+    await page.goto('/roles');
 
-    await expect(page).toHaveURL('/login?redirect=%2Fhome');
+    await expect(page).toHaveURL('/login?redirect=%2Froles');
     await expect.poll(() => page.evaluate(() => localStorage.getItem('token'))).toBeNull();
   });
 
@@ -178,7 +178,7 @@ test.describe('独立未登录会话', () => {
     expect(result.success).toBeTruthy();
     expect(result.data.token).not.toBe('');
     await registerSession(result.data.token);
-    await expect(page).toHaveURL('/home');
+    await expect(page).toHaveURL('/roles');
 
     await page.getByRole('button', { name: '管理员' }).click();
 
@@ -203,9 +203,9 @@ test.describe('独立未登录会话', () => {
       (token) => localStorage.setItem('token', JSON.stringify(token)),
       result.data.token,
     );
-    await page.goto('/home');
+    await page.goto('/roles');
 
-    await expect(page).toHaveURL('/login?redirect=%2Fhome');
+    await expect(page).toHaveURL('/login?redirect=%2Froles');
     await expect.poll(() => page.evaluate(() => localStorage.getItem('token'))).toBeNull();
   });
 });

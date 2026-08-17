@@ -10,7 +10,6 @@
     "verbatimModuleSyntax": true,
     "skipLibCheck": true,
     "strict": true,
-    "noUncheckedIndexedAccess": true,
     "jsx": "react-jsx",
     "types": ["vite/client"],
     "paths": {

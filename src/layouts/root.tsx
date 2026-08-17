@@ -38,7 +38,6 @@ export default () => {
       <Header />
       <Flex flex={1} className={styles.body}>
         <Menu
-          theme="dark"
           mode="inline"
           items={items}
           selectedKeys={selectedKeys}

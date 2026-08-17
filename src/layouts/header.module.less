@@ -1,19 +1,59 @@
 .header {
+  flex: none;
   height: var(--layout-header-height);
-  padding: 0 var(--ant-padding);
-  background: var(--ant-color-primary);
+  padding: 0 var(--ant-padding-lg);
+  background: linear-gradient(
+    90deg,
+    var(--ant-color-primary-hover),
+    var(--ant-color-primary-active)
+  );
   color: var(--ant-color-text-light-solid);
+  box-shadow: var(--ant-box-shadow-secondary);
 
-  .left {
-    height: 100%;
+  .brand {
+    min-width: 0;
 
     .logo {
-      display: block;
-      height: 60%;
+      flex: none;
+      background: color-mix(
+        in srgb,
+        var(--ant-color-text-light-solid) var(--layout-header-action-bg-opacity),
+        transparent
+      );
+      color: var(--ant-color-text-light-solid);
+    }
+
+    .brandText {
+      overflow: hidden;
+      font-size: var(--ant-font-size-lg);
+      text-overflow: ellipsis;
+      white-space: nowrap;
+      color: var(--ant-color-text-light-solid);
     }
   }
 
-  .user {
+  .account.account {
+    --ant-btn-bg-color: transparent;
+    --ant-btn-bg-color-hover: color-mix(
+      in srgb,
+      var(--ant-color-text-light-solid) var(--layout-header-action-bg-opacity),
+      transparent
+    );
+    --ant-btn-bg-color-active: var(--ant-btn-bg-color-hover);
+    --ant-btn-text-color: var(--ant-color-text-light-solid);
+    --ant-btn-text-color-hover: var(--ant-color-text-light-solid);
+    --ant-btn-text-color-active: var(--ant-color-text-light-solid);
+
     color: var(--ant-color-text-light-solid);
+  }
+
+  .divider {
+    height: var(--ant-control-height-sm);
+    margin: 0;
+    border-color: color-mix(
+      in srgb,
+      var(--ant-color-text-light-solid) var(--layout-header-action-bg-opacity),
+      transparent
+    );
   }
 }

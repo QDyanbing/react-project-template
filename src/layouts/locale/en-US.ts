@@ -2,6 +2,7 @@ export default {
   language: 'en-US',
   namespace: 'layout',
   resources: {
+    brand: 'React Project Template',
     projectManagement: 'Projects',
     userManagement: 'Users',
     roleManagement: 'Roles',

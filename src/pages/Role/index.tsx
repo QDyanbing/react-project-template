@@ -1,4 +1,5 @@
 import Permission from '@/components/Permission';
+import { getLocaleValue } from '@/i18n';
 import { onHistoryChange } from '@/utils/history';
 import { showTotal } from '@/utils/pagination';
 import { Button, Pagination, Popconfirm, Space, Spin, Table } from 'antd';
@@ -9,6 +10,11 @@ import useDelete from './hooks/useDelete';
 import styles from './index.module.less';
 import useData from './models/useData';
 import usePage from './models/usePage';
+
+const ACTION_COLUMN_WIDTH = {
+  'zh-CN': 144,
+  'en-US': 160,
+};
 
 export default () => {
   const { mount, unmount, params, onPaginationChange } = usePage();
@@ -28,7 +34,7 @@ export default () => {
     },
     { width: 120, title: t('column.users'), dataIndex: 'userCount' },
     {
-      width: 180,
+      width: getLocaleValue(ACTION_COLUMN_WIDTH),
       title: t('column.action'),
       dataIndex: 'uuid',
       render: (uuid: string) => (

@@ -1,3 +1,4 @@
+import { getLocaleValue } from '@/i18n';
 import { onHistoryChange } from '@/utils/history';
 import { showTotal } from '@/utils/pagination';
 import { Button, Pagination, Popconfirm, Space, Spin, Table } from 'antd';
@@ -8,6 +9,11 @@ import useDelete from './hooks/useDelete';
 import styles from './index.module.less';
 import useData from './models/useData';
 import usePage from './models/usePage';
+
+const ACTION_COLUMN_WIDTH = {
+  'zh-CN': 160,
+  'en-US': 180,
+};
 
 export default () => {
   const { t } = useTranslation('home');
@@ -26,7 +32,7 @@ export default () => {
       dataIndex: 'description',
     },
     {
-      width: 180,
+      width: getLocaleValue(ACTION_COLUMN_WIDTH),
       title: t('columns.action'),
       dataIndex: 'uuid',
       render: (uuid: string) => (

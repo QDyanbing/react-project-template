@@ -28,6 +28,11 @@ const getInitialLanguage = (): Language => {
   return getLanguage(navigator.language).locale;
 };
 
+export const getCurrentLanguage = () => getLanguage(i18n.resolvedLanguage);
+
+export const getLocaleValue = <Value>(values: Record<Language, Value>) =>
+  values[getCurrentLanguage().locale];
+
 i18n.on('languageChanged', (language) => {
   const { locale, dayjs: dayjsLocale } = getLanguage(language);
 

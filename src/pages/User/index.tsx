@@ -1,5 +1,6 @@
 import PasswordView from '@/components/PasswordView';
 import Permission from '@/components/Permission';
+import { getLocaleValue } from '@/i18n';
 import { formatTime } from '@/utils/format';
 import { onHistoryChange } from '@/utils/history';
 import { showTotal } from '@/utils/pagination';
@@ -15,6 +16,11 @@ import styles from './index.module.less';
 import useData from './models/useData';
 import usePage from './models/usePage';
 import usePassword from './models/usePassword';
+
+const ACTION_COLUMN_WIDTH = {
+  'zh-CN': 256,
+  'en-US': 320,
+};
 
 export default () => {
   const { mount, unmount, params, onPaginationChange } = usePage();
@@ -57,7 +63,7 @@ export default () => {
       render: formatTime,
     },
     {
-      width: 320,
+      width: getLocaleValue(ACTION_COLUMN_WIDTH),
       title: t('column.action'),
       dataIndex: 'userId',
       render: (userId: string, user: API.User) => (

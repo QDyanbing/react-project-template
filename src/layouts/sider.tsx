@@ -31,11 +31,11 @@ export default () => {
 
   const items = [
     { key: '/home', icon: <ProjectOutlined />, label: t('projectManagement') },
-    ...(hasPermission(data?.permissions ?? [], ['user:view'])
-      ? [{ key: '/users', icon: <TeamOutlined />, label: t('userManagement') }]
-      : []),
     ...(hasPermission(data?.permissions ?? [], ['role:view'])
       ? [{ key: '/roles', icon: <SafetyCertificateOutlined />, label: t('roleManagement') }]
+      : []),
+    ...(hasPermission(data?.permissions ?? [], ['user:view'])
+      ? [{ key: '/users', icon: <TeamOutlined />, label: t('userManagement') }]
       : []),
   ];
   const selectedKeys = items.filter(({ key }) => pathname.startsWith(key)).map(({ key }) => key);

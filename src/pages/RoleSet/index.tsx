@@ -55,8 +55,8 @@ export default () => {
       <Form
         form={form}
         initialValues={{ permissionCodes: [] }}
-        labelCol={{ span: 6 }}
-        wrapperCol={{ span: 12 }}
+        labelCol={{ span: 4 }}
+        wrapperCol={{ span: 18 }}
         className={styles.body}
         onFinish={onFinish}
       >

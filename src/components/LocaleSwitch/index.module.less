@@ -1,0 +1,16 @@
+.localeSwitch {
+  &.inverse.localeSwitch {
+    --ant-btn-bg-color: transparent;
+    --ant-btn-bg-color-hover: color-mix(
+      in srgb,
+      var(--ant-color-text-light-solid) var(--layout-header-action-bg-opacity),
+      transparent
+    );
+    --ant-btn-bg-color-active: var(--ant-btn-bg-color-hover);
+    --ant-btn-text-color: var(--ant-color-text-light-solid);
+    --ant-btn-text-color-hover: var(--ant-color-text-light-solid);
+    --ant-btn-text-color-active: var(--ant-color-text-light-solid);
+
+    color: var(--ant-color-text-light-solid);
+  }
+}

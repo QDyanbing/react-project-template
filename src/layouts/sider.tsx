@@ -30,14 +30,30 @@ export default () => {
   );
 
   const items = [
-    { key: '/home', icon: <ProjectOutlined />, label: t('projectManagement') },
-    ...(hasPermission(data?.permissions ?? [], ['role:view'])
-      ? [{ key: '/roles', icon: <SafetyCertificateOutlined />, label: t('roleManagement') }]
-      : []),
-    ...(hasPermission(data?.permissions ?? [], ['user:view'])
-      ? [{ key: '/users', icon: <TeamOutlined />, label: t('userManagement') }]
-      : []),
-  ];
+    {
+      key: '/home',
+      icon: <ProjectOutlined />,
+      label: t('projectManagement'),
+      requiredPermissions: [],
+    },
+    {
+      key: '/roles',
+      icon: <SafetyCertificateOutlined />,
+      label: t('roleManagement'),
+      requiredPermissions: ['role:view'],
+    },
+    {
+      key: '/users',
+      icon: <TeamOutlined />,
+      label: t('userManagement'),
+      requiredPermissions: ['user:view'],
+    },
+  ]
+    .filter(({ requiredPermissions }) =>
+      hasPermission(data?.permissions ?? [], requiredPermissions),
+    )
+    .map(({ key, icon, label }) => ({ key, icon, label }));
+
   const selectedKeys = items.filter(({ key }) => pathname.startsWith(key)).map(({ key }) => key);
   const collapseLabel = t(isCollapsed ? 'expandMenu' : 'collapseMenu');
 

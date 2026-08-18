@@ -35,10 +35,9 @@ export const getAuthorization = async (page: Page) => {
 
 export const clearSessions = async (request: APIRequestContext) => {
   const tokens = await getSessions();
-  const errors: unknown[] = [];
 
-  for (const token of tokens) {
-    try {
+  const results = await Promise.allSettled(
+    tokens.map(async (token) => {
       const response = await request.post('/api/logout', {
         headers: { Authorization: `Bearer ${token}` },
       });
@@ -47,10 +46,11 @@ export const clearSessions = async (request: APIRequestContext) => {
       if (!response.ok() || !result.success || !result.data) {
         throw new Error('认证会话清理失败');
       }
-    } catch (error) {
-      errors.push(error);
-    }
-  }
+    }),
+  );
+  const errors = results
+    .filter((result): result is PromiseRejectedResult => result.status === 'rejected')
+    .map(({ reason }) => reason);
 
   if (errors.length > 0) throw new AggregateError(errors, '认证会话清理失败');
 

@@ -4,6 +4,8 @@ import { clearRoles } from './role/data';
 import { clearUsers } from './user/data';
 
 teardown('清理测试数据和认证会话', async ({ request }) => {
+  teardown.setTimeout(120_000);
+
   const tokens = await getSessions();
   const [token] = tokens;
   const errors: unknown[] = [];

@@ -62,29 +62,31 @@ export const createUser = async (page: Page, data: API.UserSetParams) => {
 
 export const clearUsers = async (request: APIRequestContext, token: string) => {
   const names = await getUserNames();
-
-  for (const name of names) {
-    const searchResponse = await request.get('/api/user', {
-      headers: { Authorization: `Bearer ${token}` },
-      params: { keyword: name, pageNum: 1, pageSize: 100 },
-    });
-    const searchResult: API.Result<API.PageResult<API.User>> = await searchResponse.json();
-
-    if (!searchResponse.ok() || !searchResult.success) {
-      throw new Error(`查询待清理用户失败：${name}`);
-    }
-
-    const users = searchResult.data.list.filter((user) => user.name === name);
-
-    for (const user of users) {
-      const deleteResponse = await request.delete(`/api/user/${user.userId}`, {
+  const searchResults = await Promise.all(
+    names.map(async (name) => {
+      const response = await request.get('/api/user', {
         headers: { Authorization: `Bearer ${token}` },
+        params: { keyword: name, pageNum: 1, pageSize: 100 },
       });
-      const deleteResult: API.Result<boolean> = await deleteResponse.json();
+      const result: API.Result<API.PageResult<API.User>> = await response.json();
 
-      if (!deleteResponse.ok() || !deleteResult.success || !deleteResult.data) {
-        throw new Error(`清理测试用户失败：${name}`);
+      if (!response.ok() || !result.success) {
+        throw new Error(`查询待清理用户失败：${name}`);
       }
+
+      return result.data.list.filter((user) => user.name === name);
+    }),
+  );
+  const users = [...new Map(searchResults.flat().map((user) => [user.userId, user])).values()];
+
+  for (const user of users) {
+    const deleteResponse = await request.delete(`/api/user/${user.userId}`, {
+      headers: { Authorization: `Bearer ${token}` },
+    });
+    const deleteResult: API.Result<boolean> = await deleteResponse.json();
+
+    if (!deleteResponse.ok() || !deleteResult.success || !deleteResult.data) {
+      throw new Error(`清理测试用户失败：${user.name}`);
     }
   }
 

@@ -1,5 +1,6 @@
 import type { Page } from '@playwright/test';
 import { expect, test } from '../fixtures';
+import { getPaginationTotal } from '../helpers/pagination';
 import { createRole, getRoles, registerRole } from './data';
 
 const openRoleList = async (page: Page) => {
@@ -132,7 +133,7 @@ test.describe('角色删除', () => {
     await page.getByPlaceholder('请输入角色名称').press('Enter');
 
     await expect(page.getByRole('row').filter({ hasText: name })).toHaveCount(0);
-    await expect(page.getByText('共 0 个角色')).toBeVisible();
+    await expect(getPaginationTotal(page, 0)).toBeVisible();
   });
 });
 
@@ -145,7 +146,7 @@ test.describe('角色列表', () => {
     await page.getByPlaceholder('请输入角色名称').fill(prefix);
     await page.getByPlaceholder('请输入角色名称').press('Enter');
 
-    await expect(page.getByText('共 11 个角色')).toBeVisible();
+    await expect(getPaginationTotal(page, 11)).toBeVisible();
     await expect(page.locator('tbody').getByRole('row')).toHaveCount(10);
   });
 
@@ -183,7 +184,7 @@ test.describe('角色列表', () => {
 
     await expect(page.getByRole('row').filter({ hasText: matchedName })).toBeVisible();
     await expect(page.getByRole('row').filter({ hasText: unmatchedName })).toHaveCount(0);
-    await expect(page.getByText('共 1 个角色')).toBeVisible();
+    await expect(getPaginationTotal(page, 1)).toBeVisible();
   });
 
   test('Case 2.15：清空查询条件后恢复完整列表', async ({ page }) => {
@@ -195,12 +196,12 @@ test.describe('角色列表', () => {
     await openRoleList(page);
     await page.getByPlaceholder('请输入角色名称').fill(name);
     await page.getByPlaceholder('请输入角色名称').press('Enter');
-    await expect(page.getByText('共 1 个角色')).toBeVisible();
+    await expect(getPaginationTotal(page, 1)).toBeVisible();
 
     await page.getByPlaceholder('请输入角色名称').clear();
     await page.getByPlaceholder('请输入角色名称').press('Enter');
 
-    await expect(page.getByText('共 1 个角色')).toBeHidden();
+    await expect(getPaginationTotal(page, 1)).toBeHidden();
     await expect(page.getByRole('row').filter({ hasText: name })).toBeVisible();
     await expect(page.getByRole('row').filter({ hasText: otherName })).toBeVisible();
   });
@@ -218,6 +219,6 @@ test.describe('角色列表', () => {
 
     await expect(page.locator('tbody').getByRole('row')).toHaveCount(1);
     await expect(page.getByRole('row').filter({ hasText: names[0] })).toBeVisible();
-    await expect(page.getByText('共 11 个角色')).toBeVisible();
+    await expect(getPaginationTotal(page, 11)).toBeVisible();
   });
 });

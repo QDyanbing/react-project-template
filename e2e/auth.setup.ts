@@ -4,6 +4,8 @@ import { clearRoles } from './role/data';
 import { clearUsers } from './user/data';
 
 setup('保存管理员认证状态', async ({ page }) => {
+  setup.setTimeout(120_000);
+
   await clearSessions(page.request);
   await page.goto('/login');
 

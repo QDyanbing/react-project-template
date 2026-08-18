@@ -61,29 +61,31 @@ export const createRole = async (page: Page, data: API.RoleSetParams) => {
 
 export const clearRoles = async (request: APIRequestContext, token: string) => {
   const names = await getRoleNames();
-
-  for (const name of names) {
-    const searchResponse = await request.get('/api/role', {
-      headers: { Authorization: `Bearer ${token}` },
-      params: { keyword: name, pageNum: 1, pageSize: 100 },
-    });
-    const searchResult: API.SuccessResult<API.PageResult<API.Role>> = await searchResponse.json();
-
-    if (!searchResponse.ok() || !searchResult.success) {
-      throw new Error(`查询待清理角色失败：${name}`);
-    }
-
-    const roles = searchResult.data.list.filter((role) => role.name === name);
-
-    for (const role of roles) {
-      const deleteResponse = await request.delete(`/api/role/${role.uuid}`, {
+  const searchResults = await Promise.all(
+    names.map(async (name) => {
+      const response = await request.get('/api/role', {
         headers: { Authorization: `Bearer ${token}` },
+        params: { keyword: name, pageNum: 1, pageSize: 100 },
       });
-      const deleteResult: API.SuccessResult<boolean> = await deleteResponse.json();
+      const result: API.SuccessResult<API.PageResult<API.Role>> = await response.json();
 
-      if (!deleteResponse.ok() || !deleteResult.success || !deleteResult.data) {
-        throw new Error(`清理测试角色失败：${name}`);
+      if (!response.ok() || !result.success) {
+        throw new Error(`查询待清理角色失败：${name}`);
       }
+
+      return result.data.list.filter((role) => role.name === name);
+    }),
+  );
+  const roles = [...new Map(searchResults.flat().map((role) => [role.uuid, role])).values()];
+
+  for (const role of roles) {
+    const deleteResponse = await request.delete(`/api/role/${role.uuid}`, {
+      headers: { Authorization: `Bearer ${token}` },
+    });
+    const deleteResult: API.SuccessResult<boolean> = await deleteResponse.json();
+
+    if (!deleteResponse.ok() || !deleteResult.success || !deleteResult.data) {
+      throw new Error(`清理测试角色失败：${role.name}`);
     }
   }
 

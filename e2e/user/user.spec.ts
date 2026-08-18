@@ -1,4 +1,5 @@
 import { expect, test } from '../fixtures';
+import { getPaginationTotal } from '../helpers/pagination';
 import { createRole } from '../role/data';
 import { createUser } from './data';
 
@@ -25,7 +26,7 @@ test.describe('用户管理', () => {
     await expect(row.getByRole('cell').nth(1)).toHaveText(name);
     await expect(row.getByText(roleName, { exact: true })).toBeVisible();
     await expect(row.getByText('启用', { exact: true })).toBeVisible();
-    await expect(page.getByText('共 1 名用户')).toBeVisible();
+    await expect(getPaginationTotal(page, 1)).toBeVisible();
   });
 
   test('Case 3.7：重置用户密码后展示并复制新密码', async ({ page }) => {

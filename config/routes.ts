@@ -44,7 +44,7 @@ export const router = [
       {
         path: '/users/modify',
         component: () => import('@/pages/UserSet'),
-        permissions: ['user:modify'],
+        permissions: ['user:view', 'user:modify'],
       },
       {
         path: '/roles',

@@ -109,4 +109,47 @@ test.describe('菜单、按钮和路由权限', () => {
     await expect(page).toHaveURL(`/roles/modify?uuid=${targetRole.uuid}`);
     await expect(page.getByLabel('角色名称')).toHaveValue(targetName);
   });
+
+  test('Case 5.10：用户修改页面同时要求查看和修改权限', async ({ page }) => {
+    const modifyRoleName = `用户修改权限-${Date.now()}`;
+    const modifyUserName = `仅用户修改账号-${Date.now()}`;
+    const fullRoleName = `用户查看修改权限-${Date.now()}`;
+    const fullUserName = `用户查看修改账号-${Date.now()}`;
+    const targetRoleName = `用户修改目标角色-${Date.now()}`;
+    const targetUserName = `用户修改权限目标-${Date.now()}`;
+    const modifyRole = await createRole(page, {
+      name: modifyRoleName,
+      permissionCodes: ['user:modify'],
+    });
+    const fullRole = await createRole(page, {
+      name: fullRoleName,
+      permissionCodes: ['user:view', 'user:modify'],
+    });
+    const targetRole = await createRole(page, {
+      name: targetRoleName,
+      permissionCodes: [],
+    });
+    const { user: modifyUser, password: modifyPassword } = await createUser(page, {
+      name: modifyUserName,
+      roleUuids: [modifyRole.uuid],
+    });
+    const { user: fullUser, password: fullPassword } = await createUser(page, {
+      name: fullUserName,
+      roleUuids: [fullRole.uuid],
+    });
+    const { user: targetUser } = await createUser(page, {
+      name: targetUserName,
+      roleUuids: [targetRole.uuid],
+    });
+
+    await loginSession(page, { account: modifyUser.account, password: modifyPassword });
+    await page.goto(`/users/modify?userId=${targetUser.userId}`);
+    await expect(page).toHaveURL('/403');
+
+    await loginSession(page, { account: fullUser.account, password: fullPassword });
+    await page.goto(`/users/modify?userId=${targetUser.userId}`);
+
+    await expect(page).toHaveURL(`/users/modify?userId=${targetUser.userId}`);
+    await expect(page.getByLabel('用户姓名')).toHaveValue(targetUserName);
+  });
 });

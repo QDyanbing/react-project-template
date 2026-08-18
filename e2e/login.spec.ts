@@ -1,5 +1,7 @@
 import { expect, test } from './fixtures';
 import { login, registerSession } from './helpers/session';
+import { createRole } from './role/data';
+import { createUser, setUserStatus } from './user/data';
 
 test.describe('登录成功', () => {
   test.use({ storageState: { cookies: [], origins: [] } });
@@ -73,6 +75,38 @@ test('Case 1.3：登录成功后加载当前用户、角色和权限', async ({ 
   await expect(page.getByRole('button', { name: result.data.name })).toBeVisible();
   await expect(page.getByText('超级管理员', { exact: true })).toBeVisible();
   await expect(page.getByText('全部权限 (*)', { exact: true })).toBeVisible();
+});
+
+test('Case 1.11：被禁用账号无法登录', async ({ page }) => {
+  const roleName = `禁用登录角色-${Date.now()}`;
+  const name = `禁用登录用户-${Date.now()}`;
+  const role = await createRole(page, { name: roleName, permissionCodes: [] });
+  const { user, password } = await createUser(page, { name, roleUuids: [role.uuid] });
+  await setUserStatus(page, user.userId, 'disabled');
+
+  await page.goto('/login');
+  await page.evaluate(() => localStorage.clear());
+  await page.reload();
+
+  await page.getByLabel('账号').fill(user.account);
+  await page.getByLabel('密码').fill(password);
+
+  const responsePromise = page.waitForResponse(
+    (response) =>
+      response.request().method() === 'POST' && new URL(response.url()).pathname === '/api/login',
+  );
+
+  await page.getByRole('button', { name: /登\s*录/ }).click();
+
+  const response = await responsePromise;
+  const result: API.Result<{ token: string }> = await response.json();
+
+  expect(response.ok()).toBeTruthy();
+  expect(result.success).toBeFalsy();
+  if (!result.success) expect(result.errorMessage).toBe('当前账号已被禁用');
+  await expect(page.getByText('当前账号已被禁用')).toBeVisible();
+  await expect(page).toHaveURL('/login');
+  expect(await page.evaluate(() => localStorage.getItem('token'))).toBeNull();
 });
 
 test.describe('独立未登录会话', () => {

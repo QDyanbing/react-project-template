@@ -159,4 +159,33 @@ test.describe('角色修改', () => {
     await expect(page.getByLabel('角色描述')).toHaveValue(modifiedDescription);
     await expect(page.getByText('查看角色 (role:view)', { exact: true })).toBeVisible();
   });
+
+  test('Case 2.19：修改角色时名称重复展示接口错误并保留表单', async ({ page }) => {
+    const name = `待重名角色-${Date.now()}`;
+    const duplicateName = `已有角色-${Date.now()}`;
+    const role = await createRole(page, { name, permissionCodes: ['role:view'] });
+    await createRole(page, { name: duplicateName, permissionCodes: [] });
+
+    await page.goto(`/roles/modify?uuid=${role.uuid}`);
+    await expect(page.getByLabel('角色名称')).toHaveValue(name);
+    await page.getByLabel('角色名称').fill(duplicateName);
+
+    const responsePromise = page.waitForResponse(
+      (response) =>
+        response.request().method() === 'PUT' &&
+        new URL(response.url()).pathname === `/api/role/${role.uuid}`,
+    );
+
+    await page.getByRole('button', { name: /保\s*存/ }).click();
+
+    const response = await responsePromise;
+    const result: API.Result<boolean> = await response.json();
+
+    expect(response.ok()).toBeTruthy();
+    expect(result.success).toBeFalsy();
+    if (!result.success) expect(result.errorMessage).toBe('角色名称已存在');
+    await expect(page.getByText('角色名称已存在')).toBeVisible();
+    await expect(page.getByLabel('角色名称')).toHaveValue(duplicateName);
+    await expect(page).toHaveURL(`/roles/modify?uuid=${role.uuid}`);
+  });
 });

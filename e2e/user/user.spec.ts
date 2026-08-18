@@ -1,5 +1,6 @@
 import { expect, test } from '../fixtures';
 import { getPaginationTotal } from '../helpers/pagination';
+import { loginAccount, loginSession, registerSession } from '../helpers/session';
 import { createRole } from '../role/data';
 import { createUser, getUser, getUsers, setUserStatus } from './data';
 
@@ -29,7 +30,7 @@ test.describe('用户管理', () => {
     await expect(getPaginationTotal(page, 1)).toBeVisible();
   });
 
-  test('Case 3.7：重置用户密码后展示并复制新密码', async ({ page }) => {
+  test('Case 3.7：重置用户密码后展示新密码且登录凭证同步更新', async ({ page }) => {
     const roleName = `密码重置角色-${Date.now()}`;
     const name = `密码重置用户-${Date.now()}`;
     const role = await createRole(page, { name: roleName, permissionCodes: [] });
@@ -77,6 +78,33 @@ test.describe('用户管理', () => {
 
     await expect(page.getByText('密码信息', { exact: true })).not.toBeVisible();
     await expect(page).toHaveURL('/users');
+
+    await page.goto('/login');
+    await page.evaluate(() => localStorage.clear());
+    await page.reload();
+
+    const oldLogin = await loginAccount(page, {
+      account: user.account,
+      password: oldPassword,
+    });
+
+    expect(oldLogin.response.ok()).toBeTruthy();
+    expect(oldLogin.result.success).toBeFalsy();
+    await expect(page.getByText('账号或密码错误')).toBeVisible();
+
+    const newLogin = await loginAccount(page, {
+      account: user.account,
+      password: result.data.password,
+    });
+
+    expect(newLogin.response.ok()).toBeTruthy();
+    expect(newLogin.result.success).toBeTruthy();
+    if (!newLogin.result.success) throw new Error('重置后的密码登录失败');
+
+    await registerSession(newLogin.result.data.token);
+    await expect
+      .poll(() => page.evaluate(() => localStorage.getItem('token')))
+      .toBe(JSON.stringify(newLogin.result.data.token));
   });
 
   test('Case 3.8：离开用户列表后清除未关闭的密码', async ({ page }) => {
@@ -299,5 +327,81 @@ test.describe('用户管理', () => {
     await expect(page.locator('tbody').getByRole('row')).toHaveCount(1);
     await expect(page.getByRole('row').filter({ hasText: names[0] })).toBeVisible();
     await expect(getPaginationTotal(page, 11)).toBeVisible();
+  });
+
+  test('Case 3.17：禁止当前登录用户禁用自己', async ({ page }) => {
+    const roleName = `禁止自我禁用角色-${Date.now()}`;
+    const name = `禁止自我禁用用户-${Date.now()}`;
+    const role = await createRole(page, {
+      name: roleName,
+      permissionCodes: ['user:view', 'user:disable'],
+    });
+    const { user, password } = await createUser(page, {
+      name,
+      roleUuids: [role.uuid],
+    });
+    await loginSession(page, { account: user.account, password });
+
+    await page.goto('/users');
+    await page.getByPlaceholder('请输入用户账号或姓名').fill(name);
+    await page.getByPlaceholder('请输入用户账号或姓名').press('Enter');
+
+    const row = page.getByRole('row').filter({ hasText: name });
+    const responsePromise = page.waitForResponse(
+      (response) =>
+        response.request().method() === 'PUT' &&
+        new URL(response.url()).pathname === `/api/user/${user.userId}/status`,
+    );
+
+    await row.getByRole('button', { name: '禁用' }).click();
+    await page.getByRole('button', { name: /确\s*定/ }).click();
+
+    const response = await responsePromise;
+    const result: API.Result<boolean> = await response.json();
+
+    expect(response.ok()).toBeTruthy();
+    expect(result.success).toBeFalsy();
+    if (!result.success) expect(result.errorMessage).toBe('不能禁用当前登录用户');
+    await expect(page.getByText('不能禁用当前登录用户')).toBeVisible();
+    await expect(row.getByText('启用', { exact: true })).toBeVisible();
+    expect((await getUser(page, name)).status).toBe('enabled');
+  });
+
+  test('Case 3.18：禁止当前登录用户删除自己', async ({ page }) => {
+    const roleName = `禁止自我删除角色-${Date.now()}`;
+    const name = `禁止自我删除用户-${Date.now()}`;
+    const role = await createRole(page, {
+      name: roleName,
+      permissionCodes: ['user:view', 'user:delete'],
+    });
+    const { user, password } = await createUser(page, {
+      name,
+      roleUuids: [role.uuid],
+    });
+    await loginSession(page, { account: user.account, password });
+
+    await page.goto('/users');
+    await page.getByPlaceholder('请输入用户账号或姓名').fill(name);
+    await page.getByPlaceholder('请输入用户账号或姓名').press('Enter');
+
+    const row = page.getByRole('row').filter({ hasText: name });
+    const responsePromise = page.waitForResponse(
+      (response) =>
+        response.request().method() === 'DELETE' &&
+        new URL(response.url()).pathname === `/api/user/${user.userId}`,
+    );
+
+    await row.getByRole('button', { name: '删除' }).click();
+    await page.getByRole('button', { name: /确\s*定/ }).click();
+
+    const response = await responsePromise;
+    const result: API.Result<boolean> = await response.json();
+
+    expect(response.ok()).toBeTruthy();
+    expect(result.success).toBeFalsy();
+    if (!result.success) expect(result.errorMessage).toBe('不能删除当前登录用户');
+    await expect(page.getByText('不能删除当前登录用户')).toBeVisible();
+    await expect(row).toBeVisible();
+    expect((await getUser(page, name)).userId).toBe(user.userId);
   });
 });

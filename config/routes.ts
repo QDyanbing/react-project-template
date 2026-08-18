@@ -49,6 +49,7 @@ export const router = [
       {
         path: '/roles',
         component: () => import('@/pages/Role'),
+        permissions: ['role:view'],
       },
       {
         path: '/roles/detail',
@@ -58,10 +59,12 @@ export const router = [
       {
         path: '/roles/create',
         component: () => import('@/pages/RoleSet'),
+        permissions: ['role:create'],
       },
       {
         path: '/roles/modify',
         component: () => import('@/pages/RoleSet'),
+        permissions: ['role:view', 'role:modify'],
       },
       {
         path: '$',

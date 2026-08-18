@@ -58,9 +58,9 @@ export const clearSessions = async (request: APIRequestContext) => {
   await rm(SESSION_FILE, { force: true });
 };
 
-export const login = async (page: Page) => {
-  await page.getByLabel('账号').fill('admin');
-  await page.getByLabel('密码').fill('123456');
+export const loginAccount = async (page: Page, data: API.AccountLoginParams) => {
+  await page.getByLabel('账号').fill(data.account);
+  await page.getByLabel('密码').fill(data.password);
 
   const responsePromise = page.waitForResponse(
     (response) =>
@@ -70,7 +70,36 @@ export const login = async (page: Page) => {
   await page.getByRole('button', { name: /登\s*录/ }).click();
 
   const response = await responsePromise;
-  const result: API.SuccessResult<{ token: string }> = await response.json();
+  const result: API.Result<{ token: string }> = await response.json();
 
   return { response, result };
+};
+
+export const login = async (page: Page) => {
+  const { response, result } = await loginAccount(page, {
+    account: 'admin',
+    password: '123456',
+  });
+
+  if (!result.success) throw new Error('管理员登录失败');
+
+  return { response, result };
+};
+
+export const loginSession = async (page: Page, data: API.AccountLoginParams) => {
+  await page.goto('/login');
+
+  const { response, result } = await loginAccount(page, data);
+
+  if (!response.ok() || !result.success || !result.data.token) {
+    throw new Error(`测试账号登录失败：${data.account}`);
+  }
+
+  await registerSession(result.data.token);
+  await page.waitForFunction(
+    (token) => localStorage.getItem('token') === JSON.stringify(token),
+    result.data.token,
+  );
+
+  return result.data.token;
 };

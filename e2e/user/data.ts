@@ -60,6 +60,19 @@ export const createUser = async (page: Page, data: API.UserSetParams) => {
   return { user: await getUser(page, data.name), password: result.data.password };
 };
 
+export const setUserStatus = async (page: Page, userId: string, status: API.User['status']) => {
+  const headers = await getAuthorization(page);
+  const response = await page.request.put(`/api/user/${userId}/status`, {
+    headers,
+    data: { status },
+  });
+  const result: API.Result<boolean> = await response.json();
+
+  if (!response.ok() || !result.success || !result.data) {
+    throw new Error(`设置测试用户状态失败：${userId}`);
+  }
+};
+
 export const clearUsers = async (request: APIRequestContext, token: string) => {
   const names = await getUserNames();
   const searchResults = await Promise.all(

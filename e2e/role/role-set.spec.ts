@@ -87,6 +87,34 @@ test.describe('角色新增', () => {
     await expect(page.getByText('角色创建成功')).toBeVisible();
     await expect(page).toHaveURL('/roles');
   });
+
+  test('Case 2.18：角色名称重复时展示接口错误并保留表单', async ({ page }) => {
+    const name = `重复角色-${Date.now()}`;
+    await createRole(page, { name, permissionCodes: [] });
+
+    await page.goto('/roles/create');
+    await page.getByLabel('角色名称').fill(name);
+    await page.getByLabel('权限标识').click();
+    await page.getByText('查看角色 (role:view)', { exact: true }).click();
+    await page.keyboard.press('Escape');
+
+    const responsePromise = page.waitForResponse(
+      (response) =>
+        response.request().method() === 'POST' && new URL(response.url()).pathname === '/api/role',
+    );
+
+    await page.getByRole('button', { name: /保\s*存/ }).click();
+
+    const response = await responsePromise;
+    const result: API.Result<boolean> = await response.json();
+
+    expect(response.ok()).toBeTruthy();
+    expect(result.success).toBeFalsy();
+    if (!result.success) expect(result.errorMessage).toBe('角色名称已存在');
+    await expect(page.getByText('角色名称已存在')).toBeVisible();
+    await expect(page.getByLabel('角色名称')).toHaveValue(name);
+    await expect(page).toHaveURL('/roles/create');
+  });
 });
 
 test.describe('角色修改', () => {

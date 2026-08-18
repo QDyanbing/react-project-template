@@ -1,6 +1,7 @@
 import type { Page } from '@playwright/test';
 import { expect, test } from '../fixtures';
 import { getPaginationTotal } from '../helpers/pagination';
+import { createUser } from '../user/data';
 import { createRole, getRoles, registerRole } from './data';
 
 const openRoleList = async (page: Page) => {
@@ -134,6 +135,40 @@ test.describe('角色删除', () => {
 
     await expect(page.getByRole('row').filter({ hasText: name })).toHaveCount(0);
     await expect(getPaginationTotal(page, 0)).toBeVisible();
+  });
+
+  test('Case 2.17：角色仍被用户使用时禁止删除', async ({ page }) => {
+    const roleName = `使用中角色-${Date.now()}`;
+    const userName = `角色关联用户-${Date.now()}`;
+    const role = await createRole(page, { name: roleName, permissionCodes: [] });
+    await createUser(page, { name: userName, roleUuids: [role.uuid] });
+
+    await openRoleList(page);
+    await page.getByPlaceholder('请输入角色名称').fill(roleName);
+    await page.getByPlaceholder('请输入角色名称').press('Enter');
+
+    const row = page.getByRole('row').filter({ hasText: roleName });
+    const responsePromise = page.waitForResponse(
+      (response) =>
+        response.request().method() === 'DELETE' &&
+        new URL(response.url()).pathname === `/api/role/${role.uuid}`,
+    );
+
+    await row.getByRole('button', { name: '删除' }).click();
+    await page.getByRole('button', { name: /确\s*定/ }).click();
+
+    const response = await responsePromise;
+    const result: API.Result<boolean> = await response.json();
+
+    expect(response.ok()).toBeTruthy();
+    expect(result.success).toBeFalsy();
+    if (!result.success) expect(result.errorMessage).toBe('角色仍被用户使用，无法删除');
+    await expect(page.getByText('角色仍被用户使用，无法删除')).toBeVisible();
+    await expect(row).toBeVisible();
+
+    const roles = await getRoles(page, { keyword: roleName, pageNum: 1, pageSize: 10 });
+
+    expect(roles.list.some(({ uuid }) => uuid === role.uuid)).toBeTruthy();
   });
 });
 

@@ -48,4 +48,35 @@ test.describe('用户详情', () => {
     await expect(page.getByText('detail-user@example.com', { exact: true })).toBeVisible();
     await expect(page.getByText('13800000003', { exact: true })).toBeVisible();
   });
+
+  test('Case 3.16：用户详情可以返回列表并进入编辑页面', async ({ page }) => {
+    const roleName = `详情导航角色-${Date.now()}`;
+    const name = `详情导航用户-${Date.now()}`;
+    const role = await createRole(page, { name: roleName, permissionCodes: [] });
+    const { user } = await createUser(page, { name, roleUuids: [role.uuid] });
+
+    await page.goto('/users');
+    await page.getByPlaceholder('请输入用户账号或姓名').fill(name);
+    await page.getByPlaceholder('请输入用户账号或姓名').press('Enter');
+    await page
+      .getByRole('row')
+      .filter({ hasText: name })
+      .getByRole('button', { name: '详情' })
+      .click();
+
+    await expect(page).toHaveURL(`/users/detail?userId=${user.userId}`);
+    await page.getByRole('button', { name: '返回' }).click();
+    await expect(page).toHaveURL('/users');
+    await expect(page.getByRole('row').filter({ hasText: name })).toBeVisible();
+
+    await page
+      .getByRole('row')
+      .filter({ hasText: name })
+      .getByRole('button', { name: '详情' })
+      .click();
+    await page.getByRole('button', { name: '编辑用户' }).click();
+
+    await expect(page).toHaveURL(`/users/modify?userId=${user.userId}`);
+    await expect(page.getByLabel('用户姓名')).toHaveValue(name);
+  });
 });

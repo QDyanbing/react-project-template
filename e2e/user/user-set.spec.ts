@@ -163,6 +163,96 @@ test.describe('用户新增', () => {
     await expect(page).toHaveURL('/users');
   });
 
+  test('Case 3.10：邮箱、手机号或角色无效时阻止提交', async ({ page }) => {
+    await page.goto('/users/create');
+    await page.getByLabel('用户姓名').fill(`表单校验用户-${Date.now()}`);
+    await page.getByLabel('邮箱').fill('invalid-email');
+    await page.getByLabel('手机号').fill('12345');
+
+    const createRequestResultPromise = page
+      .waitForRequest(
+        (request) => request.method() === 'POST' && new URL(request.url()).pathname === '/api/user',
+        { timeout: 500 },
+      )
+      .catch((error: unknown) => error);
+
+    await page.getByRole('button', { name: /保\s*存/ }).click();
+
+    await expect(page.getByText('请输入有效的邮箱地址')).toBeVisible();
+    await expect(page.getByText('请输入有效的手机号')).toBeVisible();
+    await expect(page.getByText('此项为必填项')).toBeVisible();
+    await expect(page).toHaveURL('/users/create');
+    expect(await createRequestResultPromise).toHaveProperty('name', 'TimeoutError');
+  });
+
+  test('Case 3.11：修改页面回显资料并保存最新用户信息', async ({ page }) => {
+    const roleName = `用户修改角色-${Date.now()}`;
+    const otherRoleName = `用户修改追加角色-${Date.now()}`;
+    const name = `待修改用户-${Date.now()}`;
+    const modifiedName = `${name}-已修改`;
+    const modifiedEmail = 'modified-user@example.com';
+    const modifiedPhone = '13900000002';
+    const role = await createRole(page, { name: roleName, permissionCodes: [] });
+    const otherRole = await createRole(page, { name: otherRoleName, permissionCodes: [] });
+    const { user } = await createUser(page, {
+      name,
+      email: 'before-modify@example.com',
+      phone: '13800000004',
+      roleUuids: [role.uuid],
+    });
+    await registerUser(modifiedName);
+
+    await page.goto(`/users/modify?userId=${user.userId}`);
+    await expect(page.getByLabel('用户姓名')).toHaveValue(name);
+    await expect(page.getByLabel('邮箱')).toHaveValue('before-modify@example.com');
+    await expect(page.getByLabel('手机号')).toHaveValue('13800000004');
+    await expect(page.getByText(roleName, { exact: true })).toBeVisible();
+    await page.getByLabel('用户姓名').fill(modifiedName);
+    await page.getByLabel('邮箱').fill(modifiedEmail);
+    await page.getByLabel('手机号').fill(modifiedPhone);
+    await page.getByLabel('角色').click();
+    await page.getByText(otherRoleName, { exact: true }).click();
+    await page.keyboard.press('Escape');
+
+    const responsePromise = page.waitForResponse(
+      (response) =>
+        response.request().method() === 'PUT' &&
+        new URL(response.url()).pathname === `/api/user/${user.userId}`,
+    );
+
+    await page.getByRole('button', { name: /保\s*存/ }).click();
+
+    const response = await responsePromise;
+    const result: API.Result<boolean> = await response.json();
+
+    expect(response.ok()).toBeTruthy();
+    expect(result.success).toBeTruthy();
+    if (result.success) expect(result.data).toBeTruthy();
+    expect(response.request().postDataJSON()).toEqual({
+      name: modifiedName,
+      email: modifiedEmail,
+      phone: modifiedPhone,
+      roleUuids: [role.uuid, otherRole.uuid],
+    });
+    await expect(page.getByText('用户修改成功')).toBeVisible();
+    await expect(page).toHaveURL('/users');
+
+    const modifiedUser = await getUser(page, modifiedName);
+
+    expect(modifiedUser).toEqual(
+      expect.objectContaining({
+        userId: user.userId,
+        name: modifiedName,
+        email: modifiedEmail,
+        phone: modifiedPhone,
+        roles: expect.arrayContaining([
+          expect.objectContaining({ uuid: role.uuid }),
+          expect.objectContaining({ uuid: otherRole.uuid }),
+        ]),
+      }),
+    );
+  });
+
   test('Case 3.9：无修改权限时直接访问用户编辑页进入 403', async ({ page }) => {
     const roleName = `用户查看角色-${Date.now()}`;
     const name = `无修改权限用户-${Date.now()}`;
@@ -192,7 +282,7 @@ test.describe('用户新增', () => {
     expect(loginResponse.ok()).toBeTruthy();
     expect(loginResult.success).toBeTruthy();
     await registerSession(loginResult.data.token);
-    await expect(page).toHaveURL('/roles');
+    await expect(page).toHaveURL('/403');
 
     const accountResponsePromise = page.waitForResponse(
       (response) =>

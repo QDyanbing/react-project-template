@@ -1,0 +1,16 @@
+name: Setup
+description: Install Node.js, Utoo, and project dependencies.
+
+runs:
+  using: composite
+  steps:
+    - uses: actions/setup-node@v4
+      with:
+        node-version: 24.18.0
+
+    - uses: utooland/setup-utoo@v1
+      with:
+        utoo-version: '1.1.8'
+
+    - run: ut install
+      shell: bash

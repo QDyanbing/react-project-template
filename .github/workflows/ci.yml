@@ -15,47 +15,41 @@ permissions:
   contents: read
 
 jobs:
-  verify:
+  lint:
     runs-on: ubuntu-latest
-    timeout-minutes: 20
+    timeout-minutes: 10
     steps:
-      - name: Checkout repository
-        uses: actions/checkout@v4
+      - uses: actions/checkout@v4
+      - uses: ./.github/actions/setup
+      - run: ut run format:check
+      - run: ut run lint
+      - run: ut run typecheck
 
-      - name: Set up Node.js
-        uses: actions/setup-node@v4
-        with:
-          node-version: 24.18.0
+  test:
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    steps:
+      - uses: actions/checkout@v4
+      - uses: ./.github/actions/setup
+      - run: ut run test:coverage
 
-      - name: Install Utoo
-        run: npm install --global utoo@1.1.8
+  build:
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    steps:
+      - uses: actions/checkout@v4
+      - uses: ./.github/actions/setup
+      - run: ut run build
 
-      - name: Install dependencies
-        run: ut install
-
-      - name: Install Playwright Chromium
-        run: ut execute playwright install --with-deps chromium
-
-      - name: Check formatting
-        run: ut run format:check
-
-      - name: Run lint checks
-        run: ut run lint
-
-      - name: Run type check
-        run: ut run typecheck
-
-      - name: Run unit tests with coverage
-        run: ut run test:coverage
-
-      - name: Build production bundle
-        run: ut run build
-
-      - name: Run browser functional tests
-        run: ut run test:e2e
-
-      - name: Upload Playwright diagnostics
-        if: failure()
+  e2e:
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    steps:
+      - uses: actions/checkout@v4
+      - uses: ./.github/actions/setup
+      - run: ut execute playwright install --with-deps chromium
+      - run: ut run test:e2e
+      - if: failure()
         uses: actions/upload-artifact@v4
         with:
           name: playwright-diagnostics
@@ -64,3 +58,20 @@ jobs:
             test-results
           if-no-files-found: ignore
           retention-days: 7
+
+  ci:
+    if: always()
+    needs:
+      - lint
+      - test
+      - build
+      - e2e
+    runs-on: ubuntu-latest
+    timeout-minutes: 2
+    steps:
+      - name: Check required jobs
+        run: |
+          test '${{ needs.lint.result }}' = success
+          test '${{ needs.test.result }}' = success
+          test '${{ needs.build.result }}' = success
+          test '${{ needs.e2e.result }}' = success

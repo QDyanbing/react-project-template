@@ -4,6 +4,10 @@ import type { RouteComponent } from '@tanstack/react-router';
 import type { ResourceKey } from 'i18next';
 
 declare global {
+  interface ImportMetaEnv {
+    readonly VITE_API_BASE_URL?: string;
+  }
+
   namespace I18n {
     interface Locale {
       language: Language;

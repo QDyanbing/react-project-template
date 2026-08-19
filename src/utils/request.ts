@@ -224,9 +224,9 @@ async function send<TData, TResult>(
   const { skipErrorHandler = false, ...init } = options;
   const headers = new Headers(init.headers);
   const token = getToken();
-  let requestUrl = url;
+  let requestUrl = `${import.meta.env.VITE_API_BASE_URL ?? ''}${url}`;
 
-  if (method === 'GET') requestUrl = appendSearchParams(url, data);
+  if (method === 'GET') requestUrl = appendSearchParams(requestUrl, data);
 
   if (!headers.has('Accept')) headers.set('Accept', 'application/json');
   if (token && !headers.has('Authorization')) {

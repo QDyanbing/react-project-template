@@ -37,11 +37,13 @@ describe('统一请求', () => {
     mocks.emitMessage.mockReset();
     mocks.getToken.mockReset();
     mocks.onHistoryReplace.mockReset();
+    vi.stubEnv('VITE_API_BASE_URL', '');
     vi.stubGlobal('fetch', fetchMock);
     vi.stubGlobal('location', { pathname: '/roles', search: '?page=1' });
   });
 
   afterEach(() => {
+    vi.unstubAllEnvs();
     vi.unstubAllGlobals();
   });
 
@@ -69,6 +71,18 @@ describe('统一请求', () => {
     expect(init.body).toBeUndefined();
     expect(headers.get('Accept')).toBe('application/json');
     expect(headers.get('Authorization')).toBe('Bearer access-token');
+  });
+
+  test('使用环境变量中的 API 地址请求真实后端', async () => {
+    vi.stubEnv('VITE_API_BASE_URL', 'https://api.example.com/backend');
+    fetchMock.mockResolvedValue(response({ success: true, data: true }));
+
+    await Request.get('/api/test');
+
+    expect(fetchMock).toHaveBeenCalledWith(
+      'https://api.example.com/backend/api/test',
+      expect.objectContaining({ method: 'GET' }),
+    );
   });
 
   test('写请求序列化 JSON 并保留调用方请求头', async () => {

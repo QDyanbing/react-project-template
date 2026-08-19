@@ -5,9 +5,11 @@ const BASE_URL = 'http://localhost:8000';
 export default defineConfig({
   testDir: './e2e',
   workers: 1,
+  reporter: process.env.CI ? [['line'], ['html', { open: 'never' }]] : 'list',
   use: {
     baseURL: BASE_URL,
     locale: 'zh-CN',
+    screenshot: 'only-on-failure',
     trace: 'retain-on-failure',
     viewport: null,
     launchOptions: {

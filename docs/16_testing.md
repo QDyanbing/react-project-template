@@ -127,13 +127,12 @@ Vitest 原生支持 V8 和 Istanbul 两种覆盖率 Provider。V8 不需要预�
 
 选择 V8 Coverage，并统计 Statements、Branches、Functions 和 Lines。
 
-全局最低覆盖率统一设置为 80%。以下内容不进入覆盖率：
+单元测试覆盖率最低设置为 80%，统计范围与单元测试职责保持一致：
 
-- 类型声明。
-- Locale 资源。
-- Mock 数据与 Mock 路由。
-- 工程配置和 Vite 插件。
-- 只负责应用挂载的入口文件。
+- `src/utils` 下的公共工具和底层逻辑。
+- `src/i18n/languages.ts` 中与框架无关的语言配置逻辑。
+
+页面、组件、Store、Hook 和 Service 由 Playwright 浏览器功能测试覆盖，不计入 Vitest 的 V8 覆盖率。发布门禁同时执行覆盖率测试和完整浏览器功能测试，不能只通过缩小 Vitest 统计范围跳过业务流程验证。
 
 覆盖率只用于发现没有执行的代码路径，不允许为了达到数字编写没有行为价值的断言，也不使用大面积忽略注释绕过阈值。
 
@@ -149,7 +148,7 @@ Vitest 原生支持 V8 和 Istanbul 两种覆盖率 Provider。V8 不需要预�
 
 - 单元测试：Vitest 4，Node 环境。
 - 浏览器功能测试：Playwright，运行完整应用，默认 Chromium。
-- 覆盖率：Vitest V8 Coverage，全局 Statements、Branches、Functions 和 Lines 不低于 80%。
+- 覆盖率：Vitest V8 Coverage，单元测试范围内的 Statements、Branches、Functions 和 Lines 不低于 80%。
 - 接口服务：继续使用现有 Vite 服务端 Mock；测试代码内部禁止 Mock 被测链路。
 - 测试位置：纯单元测试贴近源码，浏览器功能测试独立放在根目录 `e2e`。
 

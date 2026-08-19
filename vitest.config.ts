@@ -5,7 +5,7 @@ export default defineConfig({
   test: {
     coverage: {
       provider: 'v8',
-      include: ['src/**/*.{ts,tsx}'],
+      include: ['src/utils/**/*.ts', 'src/i18n/languages.ts'],
       exclude: [
         '**/*.d.ts',
         'src/**/locale/**',

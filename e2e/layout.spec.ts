@@ -79,4 +79,14 @@ test.describe('基础状态页面', () => {
 
     await expect(page).toHaveURL('/roles');
   });
+
+  test('Case 5.11：500 页面说明异常并可返回首页', async ({ page }) => {
+    await page.goto('/500');
+
+    await expect(page.getByText('页面出现异常', { exact: true })).toBeVisible();
+    await expect(page.getByText('页面暂时无法正常显示，请返回首页后重试。')).toBeVisible();
+    await page.getByRole('button', { name: '返回首页' }).click();
+
+    await expect(page).toHaveURL('/roles');
+  });
 });

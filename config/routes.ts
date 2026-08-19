@@ -15,6 +15,10 @@ export const router = [
         component: () => import('@/pages/404'),
       },
       {
+        path: '/500',
+        component: () => import('@/pages/500'),
+      },
+      {
         path: '/profile',
         component: () => import('@/pages/Profile'),
       },

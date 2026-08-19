@@ -1,0 +1,66 @@
+name: CI
+
+on:
+  push:
+    branches:
+      - master
+  pull_request:
+  workflow_dispatch:
+
+concurrency:
+  group: ci-${{ github.ref }}
+  cancel-in-progress: true
+
+permissions:
+  contents: read
+
+jobs:
+  verify:
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Set up Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: 24.18.0
+
+      - name: Install Utoo
+        run: npm install --global utoo@1.1.8
+
+      - name: Install dependencies
+        run: ut install
+
+      - name: Install Playwright Chromium
+        run: ut execute playwright install --with-deps chromium
+
+      - name: Check formatting
+        run: ut run format:check
+
+      - name: Run lint checks
+        run: ut run lint
+
+      - name: Run type check
+        run: ut run typecheck
+
+      - name: Run unit tests with coverage
+        run: ut run test:coverage
+
+      - name: Build production bundle
+        run: ut run build
+
+      - name: Run browser functional tests
+        run: ut run test:e2e
+
+      - name: Upload Playwright diagnostics
+        if: failure()
+        uses: actions/upload-artifact@v4
+        with:
+          name: playwright-diagnostics
+          path: |
+            playwright-report
+            test-results
+          if-no-files-found: ignore
+          retention-days: 7

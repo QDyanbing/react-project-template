@@ -1,6 +1,20 @@
 {
   "name": "react-project-template",
   "version": "0.0.0",
+  "description": "A production-oriented React project template with authentication, RBAC, i18n, mocks, and tests.",
+  "keywords": [
+    "react",
+    "typescript",
+    "vite",
+    "antd",
+    "zustand",
+    "template"
+  ],
+  "homepage": "https://github.com/QDyanbing/react-project-template#readme",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/QDyanbing/react-project-template.git"
+  },
   "license": "MIT",
   "type": "module",
   "scripts": {

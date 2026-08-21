@@ -2,10 +2,13 @@ FROM node:24.18.0-bookworm-slim AS builder
 
 WORKDIR /app
 
-RUN npm install --global utoo@1.1.8
+RUN apt-get update \
+  && apt-get install --yes --no-install-recommends ca-certificates \
+  && rm -rf /var/lib/apt/lists/* \
+  && npm install --global utoo@1.1.8
 
 COPY package.json ./
-RUN ut install --ignore-scripts
+RUN ut install --ignore-scripts --registry https://registry.npmjs.org
 
 COPY . .
 

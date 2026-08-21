@@ -825,7 +825,11 @@ JSX Props 固定按以下优先级排列：
 ## 26. Git
 
 - 未明确要求时，不 Stage、不 Commit、不 Push。
-- Commit 使用 Conventional Commits：`feat:`、`fix:`、`refactor:`、`docs:`、`chore:`。
+- 禁止直接在 `master` 上修改和提交；开始改动前必须从最新 `master` 创建独立分支。
+- `master` 只能通过 Pull Request 更新，不允许任何人或自动化直接 Push。
+- Pull Request 标题必须使用英文，正文必须使用中文，并使用仓库自带模板。
+- Commit 使用 Crucialy 支持的 Conventional Commits Type：`feat`、`fix`、`docs`、`style`、`refactor`、`perf`、`test`、`build`、`ci`、`chore`、`revert`。
+- Commit 标题必须使用英文，Subject 不超过 50 个字符。
 - 一个完整能力和其必要使用层迁移通常放在同一个 Commit。
 - 只有能够独立理解、独立验证、独立回退的功能才拆成多个 Commit。
 - 用户要求多个 Commit 时按功能边界拆分，不机械地一个文件一个 Commit。

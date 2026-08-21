@@ -81,7 +81,7 @@ type Result<T> =
     };
 ```
 
-完整部署和反向代理说明见[生产环境接入与部署](docs/17_deployment.md)。
+完整部署选型和反向代理说明见[生产部署选型与接入](docs/17_deployment.md)。
 
 ## 项目结构
 
@@ -163,7 +163,7 @@ ut run build
 - [日期时间方案选型](docs/14_date-time.md)
 - [国际化方案选型](docs/15_internationalization.md)
 - [测试方案选型](docs/16_testing.md)
-- [生产环境接入与部署](docs/17_deployment.md)
+- [生产部署选型与接入](docs/17_deployment.md)
 - [历史项目任务清单](docs/project-plan.md)
 
 ## License

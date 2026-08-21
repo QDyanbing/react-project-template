@@ -103,6 +103,38 @@ HTTP 401 可以在 `data` 中返回登录地址。请求层会清理本地登录
 
 ## 构建产物
 
+默认镜像可以直接构建：
+
+```bash
+docker build --tag react-project-template:local .
+```
+
+同域部署不需要传入前端 API 地址。运行时通过 `API_UPSTREAM` 指向后端服务，值必须是包含协议和端口、末尾不带 `/` 的服务 Origin，不追加 `/api` 路径。
+
+使用容器名称访问后端时，前后端必须加入同一个用户自定义网络。下面假设后端已经以 `backend-service` 名称接入 `application-network`：
+
+```bash
+docker run --rm \
+  --network application-network \
+  --publish 8080:80 \
+  --env API_UPSTREAM=http://backend-service:8080 \
+  react-project-template:local
+```
+
+Nginx 会保留浏览器请求中的 `/api/...` 路径并转发到该服务，并通过容器的本地 DNS 重新解析服务名；后端容器以相同服务名重建后不需要同步重启前端容器。容器没有显式配置 `API_UPSTREAM` 时默认指向 `http://127.0.0.1:3000`，容器可以独立启动，但 API 请求会在没有同容器后端时返回 502；实际部署应显式设置真实地址。
+
+前后端必须跨域部署时，在构建阶段写入公开的后端地址：
+
+```bash
+docker build \
+  --build-arg VITE_API_BASE_URL=https://api.example.com \
+  --tag react-project-template:local .
+```
+
+这时浏览器会直接请求配置的后端地址，不经过镜像内的 `/api` 代理。
+
+需要直接发布静态文件时，仍然使用：
+
 ```bash
 ut install
 VITE_API_BASE_URL= ut run build
@@ -119,7 +151,7 @@ VITE_API_BASE_URL= ut run build
 
 ## Nginx 规则
 
-核心规则如下，真实项目按后端服务名和网关结构调整 `proxy_pass`：
+镜像使用官方 Nginx 镜像的配置模板能力，在容器启动时注入 `API_UPSTREAM`，并从容器的 `/etc/resolv.conf` 读取本地 DNS。模板替换只处理 `API_UPSTREAM` 和镜像生成的 `NGINX_LOCAL_RESOLVERS`，不会误改其他 Nginx 变量，也不会修改浏览器端环境变量。实际配置位于 `config/nginx.conf.template`，核心规则如下：
 
 ```nginx
 server {
@@ -127,6 +159,9 @@ server {
   server_name _;
   root /usr/share/nginx/html;
   index index.html;
+
+  resolver ${NGINX_LOCAL_RESOLVERS} valid=10s;
+  set $api_upstream "${API_UPSTREAM}";
 
   location = /index.html {
     add_header Cache-Control "no-cache";
@@ -138,7 +173,7 @@ server {
   }
 
   location /api/ {
-    proxy_pass http://backend-service;
+    proxy_pass $api_upstream$request_uri;
     proxy_set_header Host $host;
     proxy_set_header X-Real-IP $remote_addr;
     proxy_set_header X-Forwarded-For $proxy_add_x_forwarded_for;
@@ -157,6 +192,7 @@ server {
 - `/assets` 文件名包含内容 Hash，可以长期缓存并标记为 `immutable`。
 - 只有不存在的前端页面路径回退到 `index.html`；不存在的 `/assets` 直接返回 404。
 - `/api` 必须使用独立的 `location` 代理，不能落入 SPA 回退规则，后端错误也不能被转换成前端页面。
+- `API_UPSTREAM` 使用服务名时通过容器本地 DNS 动态解析，后端容器重建并更换 IP 后能够自动恢复代理。
 - HTTPS、证书、HSTS 和公网入口限流由外层网关或部署环境负责，不在前端镜像中绑定实现。
 
 ## 发布流程

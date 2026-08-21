@@ -83,6 +83,15 @@ type Result<T> =
 
 完整部署选型和反向代理说明见[生产部署选型与接入](docs/17_deployment.md)。
 
+默认生产镜像：
+
+```bash
+docker build --tag react-project-template:local .
+docker run --rm --publish 8080:80 react-project-template:local
+```
+
+接入真实后端时，通过同一容器网络和 `API_UPSTREAM` 配置代理，具体命令见部署文档。
+
 ## 项目结构
 
 ```text

@@ -33,6 +33,7 @@ jobs:
       - uses: ./.github/actions/setup
       - run: ut run test:coverage
       - run: ut run test:workflow
+      - run: ut run test:release
 
   build:
     runs-on: ubuntu-latest

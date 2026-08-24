@@ -6,6 +6,7 @@ pnpm-lock.yaml
 # Build and test output
 dist/
 build/
+artifacts/
 coverage/
 playwright-report/
 test-results/

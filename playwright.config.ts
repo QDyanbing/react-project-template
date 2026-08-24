@@ -1,6 +1,11 @@
 import { defineConfig } from '@playwright/test';
 
-const BASE_URL = 'http://localhost:8000';
+const E2E_PORT = Number(process.env.E2E_PORT ?? 8001);
+if (!Number.isInteger(E2E_PORT) || E2E_PORT < 1 || E2E_PORT > 65535) {
+  throw new Error('E2E_PORT must be an integer between 1 and 65535.');
+}
+
+const BASE_URL = `http://127.0.0.1:${E2E_PORT}`;
 
 export default defineConfig({
   testDir: './e2e',
@@ -17,9 +22,9 @@ export default defineConfig({
     },
   },
   webServer: {
-    command: 'ut run dev:mock',
+    command: `ut run dev:mock --host 127.0.0.1 --port ${E2E_PORT} --strictPort`,
     url: BASE_URL,
-    reuseExistingServer: !process.env.CI,
+    reuseExistingServer: false,
   },
   projects: [
     {

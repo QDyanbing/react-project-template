@@ -142,6 +142,18 @@ VITE_API_BASE_URL= ut run build
 
 构建产物位于 `dist`。`ut run preview` 只用于本地检查生产构建结果，不能作为生产服务器。
 
+使用发布命令生成交付物时，前端只在 Docker Builder 中构建一次。Nginx 镜像构建完成后，命令从该镜像导出同一份静态资源，因此静态压缩包与镜像不会出现依赖或环境配置差异。跨域地址需要在执行发布命令时显式传入：
+
+```bash
+VITE_API_BASE_URL=https://api.example.com ut run release
+```
+
+发布镜像默认使用 `linux/amd64`，ARM64 部署环境可以执行：
+
+```bash
+RELEASE_PLATFORM=linux/arm64 ut run release
+```
+
 容器构建需要采用多阶段结构：
 
 - Builder 阶段安装依赖并生成 `dist`。
@@ -201,22 +213,21 @@ server {
 
 标准发布流程：
 
-1. 执行格式、Lint、类型、单元测试、E2E 和构建检查。
-2. 使用目标环境的公开配置构建镜像。
-3. 使用版本号或提交 SHA 标记并推送镜像。
-4. 部署镜像并检查静态页面、前端路由和 API 健康状态。
-5. 对登录、退出、权限拦截、用户管理、角色管理和个人中心执行冒烟验证。
-6. 验证失败时回滚到上一不可变镜像，不覆盖旧镜像标签。
+1. 根据变更影响执行 `ut run major`、`ut run minor` 或 `ut run patch`，自动修改版本并创建版本提交。
+2. 版本提交合入后执行 `ut run tag [--<前缀>]`，自动完成格式、Lint、类型、单元测试、E2E 和生产构建检查，并创建、推送 Annotated Tag。
+3. 执行 `ut run release`，在 `artifacts/<Tag>/` 生成静态资源压缩包、Nginx 镜像归档、发布清单和 SHA-256 校验文件。
+4. 将静态资源发布到目标静态托管环境，或者使用 `docker load --input <镜像归档>` 导入 Nginx 镜像后再上传到项目选定的镜像仓库。
+5. 部署产物并检查静态页面、前端路由和 API 健康状态。
+6. 对登录、退出、权限拦截、用户管理、角色管理和个人中心执行冒烟验证。
+7. 验证失败时回滚到上一不可变产物，不覆盖旧版本文件或镜像标签。
 
-发布前检查命令：
+首次执行发布流程前，安装 Playwright Chromium，并确认 Tar、Docker CLI、Docker Buildx 和 Docker daemon 可用：
 
 ```bash
-ut run format:check
-ut run lint
-ut run typecheck
-ut run test:coverage
-ut run test:e2e
-ut run build
+ut execute playwright install --with-deps chromium
+docker info
+docker buildx version
+tar --version
 ```
 
 ## 验收标准

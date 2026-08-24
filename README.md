@@ -18,6 +18,8 @@
 
 - Node.js `>=24`，推荐使用 Volta 自动切换到 `24.18.0`。
 - 默认包管理器为 Utoo `1.1.8`，命令行为 `ut`。
+- 首次运行 E2E 或创建发布 Tag 前，需要执行 `ut execute playwright install --with-deps chromium` 安装浏览器及系统依赖。
+- 生成发布产物需要系统提供 Tar、Docker CLI 和 Docker Buildx，并已启动 Docker daemon。
 
 ## 快速开始
 
@@ -50,10 +52,17 @@ ut run dev:mock
 | `ut run typecheck`       | 执行 TypeScript 类型检查       |
 | `ut run test:unit`       | 执行 Vitest 单元测试           |
 | `ut run test:coverage`   | 执行单元测试并检查覆盖率       |
+| `ut run test:workflow`   | 执行 CI 工作流配置测试         |
+| `ut run test:release`    | 执行版本发布脚本测试           |
 | `ut run test:e2e`        | 执行 Playwright 浏览器功能测试 |
 | `ut run test:e2e:headed` | 在可见浏览器中执行功能测试     |
 | `ut run build`           | 类型检查并生成生产构建         |
 | `ut run preview`         | 本地预览生产构建               |
+| `ut run major [--rc]`    | 升级主版本号并创建版本提交     |
+| `ut run minor [--rc]`    | 升级次版本号并创建版本提交     |
+| `ut run patch [--rc]`    | 升级修订版本号并创建版本提交   |
+| `ut run tag [--<前缀>]`  | 完整检查、创建并推送发布 Tag   |
+| `ut run release`         | 构建静态资源和 Nginx 镜像产物  |
 
 ## 连接真实后端
 
@@ -134,16 +143,22 @@ src/
 
 单元测试负责公共工具和底层逻辑，覆盖率门禁为 80%；页面、Store、Hook、Service 和接口协同通过完整 Playwright 流程验证。推送到 `master` 或创建 Pull Request 时，GitHub Actions 会执行格式检查、Lint、类型检查、覆盖率、生产构建和浏览器功能测试。
 
-发布前在本地执行：
+根据变更影响执行一个版本升级命令。命令会更新 `package.json` 并自动创建版本提交：
 
 ```bash
-ut run format:check
-ut run lint
-ut run typecheck
-ut run test:coverage
-ut run test:e2e
-ut run build
+ut run patch
 ```
+
+版本提交通过 PR 合入后，在需要发布的 Commit 上依次执行：
+
+```bash
+ut run tag
+ut run release
+```
+
+`tag` 会自动完成全部发布检查，创建 Annotated Tag 并推送到 `origin`。`release` 只在 Docker 中构建一次前端，从同一个 Nginx 镜像导出静态资源并生成镜像归档，最终在 `artifacts/<Tag>/` 输出发布清单和 SHA-256 校验文件。镜像平台默认是 `linux/amd64`，可以通过 `RELEASE_PLATFORM=linux/arm64` 等环境变量覆盖。
+
+需要生成 `weilai-1.4.0` 格式的 Tag 时，将 Tag 命令改为 `ut run tag --weilai`。同一版本可以使用不同前缀分别生成多套环境交付产物。完整规则见[版本发布规范](docs/18_release.md)。
 
 ## 自定义模板
 

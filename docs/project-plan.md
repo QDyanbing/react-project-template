@@ -99,7 +99,7 @@
 - [x] 确定构建产物保存方式：E2E 失败时上传 Playwright 诊断。
 - [x] 确定部署环境和部署方式：默认使用 Docker 多阶段构建和 Nginx 静态托管，保留直接发布 `dist` 的能力。
 - [x] 确定多环境配置注入方式：构建时注入 `VITE_API_BASE_URL`。
-- [ ] 确定版本号、Tag 和 Release 方案。
+- [x] 确定版本号、Tag 和发布规范：使用 Semantic Versioning。
 
 ## 2. 初始化工程
 

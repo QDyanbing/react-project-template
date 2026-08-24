@@ -173,6 +173,7 @@ ut run build
 - [国际化方案选型](docs/15_internationalization.md)
 - [测试方案选型](docs/16_testing.md)
 - [生产部署选型与接入](docs/17_deployment.md)
+- [版本发布规范](docs/18_release.md)
 - [历史项目任务清单](docs/project-plan.md)
 
 ## License

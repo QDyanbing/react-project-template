@@ -21,7 +21,7 @@ export default create<Store>((set) => {
 
     try {
       set({ loading: true });
-      const result = await getSearch(params);
+      const result = await getSearch({ ...params, status: params.status?.value });
       if (!result || !usePage.getState().ready) return;
 
       set({ data: result.data.list, total: result.data.total });

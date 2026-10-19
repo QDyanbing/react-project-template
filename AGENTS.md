@@ -395,8 +395,10 @@ Store 文件固定按以下顺序书写：
 ### 8.6 Select 与关联数据回显
 
 - 所有 `Select` 必须开启 `labelInValue`；单选值使用 `{ value, label }`，多选值使用该结构的数组。
-- 关联选择的 `value` 使用被关联实体的真实主键，`label` 使用业务展示字段；编辑回填从详情返回的关联对象生成，例如 `{ value: template.uuid, label: template.name }`，多选同理。
-- 表单值与接口参数分开建模；提交时在 `onFinish` 中提取 `value`，例如转为 `templateUuid: values.template.value`，多选转为主键数组。不得将 `{ value, label }` 混入 Service 的 API 类型或提交给后端。
+- Model 中的选择条件必须保留完整的 `{ value, label }` 或其数组，Select 直接读取该值；不得只保存主键后依赖当前 `options` 补回 `label`。离开列表页保留查询条件时，必须同时保留展示文本，以便再次进入时直接回显。
+- 选项结构和展示方式按业务需要确定；仅需字段名映射时优先使用 `fieldNames`，需要组合展示文本或转换选项时可以使用 `map`。
+- 关联选择的 `value` 使用被关联实体的真实主键，`label` 默认使用 `name` 等业务展示字段；没有明确展示要求时，不得额外拼接 UUID、Code 等主键或编码。编辑回填从详情返回的关联对象生成，例如 `{ value: template.uuid, label: template.name }`，多选同理。
+- 表单值、页面查询条件与接口参数分开建模；表单提交时在 `onFinish` 中提取 `value`，例如转为 `templateUuid: values.template.value`，多选转为主键数组；筛选查询时在数据层调用 Service 前提取 `value`。不得将 `{ value, label }` 混入 Service 的 API 类型或提交给后端。
 
 ## 9. 页面目录契约
 

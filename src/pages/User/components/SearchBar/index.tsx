@@ -25,6 +25,7 @@ export default () => {
         />
         <Select
           allowClear
+          labelInValue
           options={[
             { value: 'enabled', label: t('status.enabled') },
             { value: 'disabled', label: t('status.disabled') },

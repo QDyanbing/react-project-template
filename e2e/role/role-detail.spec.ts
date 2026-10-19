@@ -59,7 +59,7 @@ test.describe('角色详情', () => {
     await page.getByLabel('角色名称').fill(modifiedName);
     await page.getByLabel('角色描述').fill(modifiedDescription);
     await page.getByLabel('权限标识').click();
-    await page.getByText('查看角色 (role:view)', { exact: true }).click();
+    await page.getByText('查看角色', { exact: true }).click();
     await page.keyboard.press('Escape');
     await page.getByRole('button', { name: /保\s*存/ }).click();
     await expect(page.getByText('角色修改成功')).toBeVisible();

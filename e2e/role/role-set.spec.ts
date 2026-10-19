@@ -11,7 +11,7 @@ test.describe('角色新增', () => {
     await page.goto('/roles/create');
     await permissionResponsePromise;
     await page.getByLabel('权限标识').click();
-    await page.getByText('查看用户 (user:view)', { exact: true }).click();
+    await page.getByText('查看用户', { exact: true }).click();
     await page.keyboard.press('Escape');
 
     const createRequestResultPromise = page
@@ -49,8 +49,8 @@ test.describe('角色新增', () => {
 
     await page.getByLabel('权限标识').click();
 
-    await expect(page.getByText('查看用户 (user:view)', { exact: true })).toBeVisible();
-    await expect(page.getByText('查看角色 (role:view)', { exact: true })).toBeVisible();
+    await expect(page.getByText('查看用户', { exact: true })).toBeVisible();
+    await expect(page.getByText('查看角色', { exact: true })).toBeVisible();
   });
 
   test('Case 2.3：新增角色并配置权限成功', async ({ page }) => {
@@ -62,8 +62,8 @@ test.describe('角色新增', () => {
     await page.getByLabel('角色名称').fill(name);
     await page.getByLabel('角色描述').fill(description);
     await page.getByLabel('权限标识').click();
-    await page.getByText('查看用户 (user:view)', { exact: true }).click();
-    await page.getByText('查看角色 (role:view)', { exact: true }).click();
+    await page.getByText('查看用户', { exact: true }).click();
+    await page.getByText('查看角色', { exact: true }).click();
     await page.keyboard.press('Escape');
 
     const responsePromise = page.waitForResponse(
@@ -95,7 +95,7 @@ test.describe('角色新增', () => {
     await page.goto('/roles/create');
     await page.getByLabel('角色名称').fill(name);
     await page.getByLabel('权限标识').click();
-    await page.getByText('查看角色 (role:view)', { exact: true }).click();
+    await page.getByText('查看角色', { exact: true }).click();
     await page.keyboard.press('Escape');
 
     const responsePromise = page.waitForResponse(
@@ -134,7 +134,7 @@ test.describe('角色修改', () => {
     await page.getByLabel('角色名称').fill(modifiedName);
     await page.getByLabel('角色描述').fill(modifiedDescription);
     await page.getByLabel('权限标识').click();
-    await page.getByText('查看角色 (role:view)', { exact: true }).click();
+    await page.getByText('查看角色', { exact: true }).click();
     await page.keyboard.press('Escape');
 
     const responsePromise = page.waitForResponse(
@@ -157,7 +157,7 @@ test.describe('角色修改', () => {
     await page.goto(`/roles/modify?uuid=${role.uuid}`);
     await expect(page.getByLabel('角色名称')).toHaveValue(modifiedName);
     await expect(page.getByLabel('角色描述')).toHaveValue(modifiedDescription);
-    await expect(page.getByText('查看角色 (role:view)', { exact: true })).toBeVisible();
+    await expect(page.getByText('查看角色', { exact: true })).toBeVisible();
   });
 
   test('Case 2.19：修改角色时名称重复展示接口错误并保留表单', async ({ page }) => {

@@ -10,6 +10,10 @@ import useDetail from './models/useDetail';
 import usePage from './models/usePage';
 import usePermissionOptions from './models/usePermissionOptions';
 
+interface FormValues extends Omit<API.RoleSetParams, 'permissionCodes'> {
+  permissions: { value: string; label: string }[];
+}
+
 export default () => {
   const { mount, unmount } = usePage();
   const { loading: detailLoading, data } = useDetail();
@@ -19,15 +23,18 @@ export default () => {
   const { loading: modifyLoading, onModify } = useModify();
 
   const [{ uuid }] = useUrlState<{ uuid?: string }>();
-  const [form] = Form.useForm<API.RoleSetParams>();
+  const [form] = Form.useForm<FormValues>();
 
   const { t } = useTranslation('roleSet');
 
-  const onFinish = async (values: API.RoleSetParams) => {
+  const onFinish = async (values: FormValues) => {
+    const { permissions, ...fields } = values;
+    const params = { ...fields, permissionCodes: permissions.map(({ value }) => value) };
+
     if (uuid) {
-      await onModify(values);
+      await onModify(params);
     } else {
-      await onCreate(values);
+      await onCreate(params);
     }
   };
 
@@ -40,8 +47,11 @@ export default () => {
   useEffect(() => {
     if (data) {
       const { name, description, permissions } = data;
-      const permissionCodes = permissions.map(({ code }) => code);
-      form.setFieldsValue({ name, description, permissionCodes });
+      form.setFieldsValue({
+        name,
+        description,
+        permissions: permissions.map(({ code, name }) => ({ value: code, label: name })),
+      });
     } else {
       form.resetFields();
     }
@@ -54,7 +64,7 @@ export default () => {
     >
       <Form
         form={form}
-        initialValues={{ permissionCodes: [] }}
+        initialValues={{ permissions: [] }}
         labelCol={{ span: 4 }}
         wrapperCol={{ span: 18 }}
         className={styles.body}
@@ -71,16 +81,15 @@ export default () => {
           <Input.TextArea placeholder={t('descriptionPlaceholder')} />
         </Form.Item>
         <Form.Item
-          name="permissionCodes"
+          name="permissions"
           label={t('permissions')}
           rules={[{ required: true, message: t('required') }]}
         >
           <Select
+            labelInValue
             mode="multiple"
-            options={permissions.map(({ code, name }) => ({
-              value: code,
-              label: `${name} (${code})`,
-            }))}
+            fieldNames={{ label: 'name', value: 'code' }}
+            options={permissions}
             placeholder={t('permissionsPlaceholder')}
           />
         </Form.Item>

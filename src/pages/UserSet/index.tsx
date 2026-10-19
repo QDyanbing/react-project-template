@@ -12,6 +12,10 @@ import usePage from './models/usePage';
 import usePassword from './models/usePassword';
 import useRoleOptions from './models/useRoleOptions';
 
+interface FormValues extends Omit<API.UserSetParams, 'roleUuids'> {
+  roles: { value: string; label: string }[];
+}
+
 export default () => {
   const { mount, unmount } = usePage();
   const { loading: detailLoading, data } = useDetail();
@@ -22,15 +26,18 @@ export default () => {
   const { loading: modifyLoading, onModify } = useModify();
 
   const [{ userId }] = useUrlState<{ userId?: string }>();
-  const [form] = Form.useForm<API.UserSetParams>();
+  const [form] = Form.useForm<FormValues>();
 
   const { t } = useTranslation('userSet');
 
-  const onFinish = async (values: API.UserSetParams) => {
+  const onFinish = async (values: FormValues) => {
+    const { roles, ...fields } = values;
+    const params = { ...fields, roleUuids: roles.map(({ value }) => value) };
+
     if (userId) {
-      await onModify(values);
+      await onModify(params);
     } else {
-      await onCreate(values);
+      await onCreate(params);
     }
   };
 
@@ -51,8 +58,12 @@ export default () => {
   useEffect(() => {
     if (data) {
       const { name, email, phone, roles } = data;
-      const roleUuids = roles.map(({ uuid: roleUuid }) => roleUuid);
-      form.setFieldsValue({ name, email, phone, roleUuids });
+      form.setFieldsValue({
+        name,
+        email,
+        phone,
+        roles: roles.map(({ uuid, name }) => ({ value: uuid, label: name })),
+      });
     } else {
       form.resetFields();
     }
@@ -65,7 +76,7 @@ export default () => {
     >
       <Form
         form={form}
-        initialValues={{ roleUuids: [] }}
+        initialValues={{ roles: [] }}
         labelCol={{ span: 4 }}
         wrapperCol={{ span: 18 }}
         className={styles.body}
@@ -93,11 +104,12 @@ export default () => {
           <Input placeholder={t('phonePlaceholder')} />
         </Form.Item>
         <Form.Item
-          name="roleUuids"
+          name="roles"
           label={t('roles')}
           rules={[{ required: true, message: t('required') }]}
         >
           <Select
+            labelInValue
             mode="multiple"
             fieldNames={{ label: 'name', value: 'uuid' }}
             options={roles}

@@ -200,6 +200,7 @@ src/
 - 例如用户关联角色时，`UserSetParams` 必须提交 `roleUuids: string[]`，不得提交 `roles: Role[]`；角色关联权限时必须提交 `permissionCodes: string[]`。
 - 后端向前端返回数据时，必须返回被关联实体的完整对象或完整对象数组，不得只返回关联主键。
 - 返回类型必须直接复用被关联模块的实体类型；例如 `User.roles` 必须使用 `Role[]`，不得返回 `roleUuids`，也不得在用户模块重复定义角色类型。
+- 例如新增数据关联模板时，请求参数使用 `templateUuid: string`，响应实体使用 `template: Template`，其中 `Template` 复用模板实体模型，包含 `uuid`、`name` 等业务字段；多选关联对应使用 `templateUuids: string[]` 和 `templates: Template[]`。
 - 请求参数与响应实体的关联字段结构不同，必须分别使用 `<Domain>SetParams` 和 `<Domain>` 建模，不得为了复用类型混合主键与完整对象。
 - 后端接口文档只返回关联主键、要求前端提交完整关联对象，或重复定义关联实体结构时，必须先明确指出接口契约问题及其影响，停止按该契约直接实现。
 - 接口契约问题未经确认前，不得通过照抄接口文档、放宽前端类型或在页面临时转换的方式掩盖问题。
@@ -386,10 +387,16 @@ Store 文件固定按以下顺序书写：
 - 使用 Ant Design Form 管理字段、校验和提交。
 - Form 类型能够从 `Form.useForm<T>()` 推导时，不在 `<Form<T>>` 上重复标注。
 - 字段校验只能放在 `Form.Item.rules` 或明确的表单校验函数中。
-- `onFinish` 只根据当前模式调用对应行为 Hook，不直接调用 Service。
+- `onFinish` 只负责将表单值转换为接口参数，并根据当前模式调用对应行为 Hook，不直接调用 Service。
 - 修改态详情返回后使用 `form.setFieldsValue`；无详情时使用 `form.resetFields`。
 - 取消按钮调用 `onHistoryBack(defaultPath)`，不得固定跳回某个与来源无关的页面。
 - 提交按钮通过 `form.submit()` 触发表单流程，不绕过 Form 校验。
+
+### 8.6 Select 与关联数据回显
+
+- 所有 `Select` 必须开启 `labelInValue`；单选值使用 `{ value, label }`，多选值使用该结构的数组。
+- 关联选择的 `value` 使用被关联实体的真实主键，`label` 使用业务展示字段；编辑回填从详情返回的关联对象生成，例如 `{ value: template.uuid, label: template.name }`，多选同理。
+- 表单值与接口参数分开建模；提交时在 `onFinish` 中提取 `value`，例如转为 `templateUuid: values.template.value`，多选转为主键数组。不得将 `{ value, label }` 混入 Service 的 API 类型或提交给后端。
 
 ## 9. 页面目录契约
 
